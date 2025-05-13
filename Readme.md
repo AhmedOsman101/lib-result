@@ -60,7 +60,7 @@ function divide(a, b) {
 }
 
 const divison = divide(6, 2);
-if (isOk(divison)) console.log(divison.ok); // 6
+if (isOk(divison)) console.log(divison.ok); // 3
 else console.error(divison.error.message);
 
 const mayDivide = divide(1, 0);
