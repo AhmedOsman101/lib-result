@@ -64,9 +64,9 @@ if (isOk(divison)) console.log(divison.ok); // 6
 else console.error(divison.error.message);
 
 const mayDivide = divide(1, 0);
-if (isErr(mayDivide))
+if (isErr(mayDivide)) {
   console.error(mayDivide.error.message); // Cannot Divide By Zero
-else console.log(mayDivide.ok);
+} else console.log(mayDivide.ok);
 
 const errorResult = ErrFromText("Failed");
 try {
@@ -85,3 +85,9 @@ try {
 - `isOk(result)`: Checks if the result is `Ok`.
 - `isErr(result)`: Checks if the result is `Err`.
 - `unwrap(result)`: Extracts the `Ok` value or throws the `Err` error.
+
+## Source Code
+
+The source code for lib-result is hosted on GitHub. You can view the full codebase, contribute, or report issues at the following repository:
+[https://github.com/AhmedOsman101/lib-result](https://github.com/AhmedOsman101/lib-result)
+Feel free to open issues for bugs or feature requests, or submit pull requests to improve the package!
