@@ -8,8 +8,13 @@
   "scripts": {
     "build": "tsc"
   },
-  "files": ["dist"],
-  "keywords": ["typescript", "npm"],
+  "files": [
+    "dist"
+  ],
+  "keywords": [
+    "typescript",
+    "npm"
+  ],
   "author": "Ahmad Othman",
   "license": "MIT",
   "devDependencies": {
