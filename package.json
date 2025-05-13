@@ -1,0 +1,18 @@
+{
+  "name": "@ahmad_othman101/result-rs",
+  "version": "1.0.1",
+  "description": "A simple implementation of Rust's Result enum",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc"
+  },
+  "files": ["dist"],
+  "keywords": ["typescript", "npm"],
+  "author": "Ahmad Othman",
+  "license": "MIT",
+  "devDependencies": {
+    "typescript": "^5.5.4"
+  }
+}
