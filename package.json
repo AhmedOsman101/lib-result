@@ -1,22 +1,35 @@
 {
-  "name": "@ahmad_othman101/result-rs",
-  "version": "1.0.1",
-  "description": "A simple implementation of Rust's Result enum",
-  "main": "dist/index.js",
-  "module": "dist/index.mjs",
-  "types": "dist/index.d.ts",
+  "name": "lib-result",
+  "author": "Ahmad Othman",
+  "license": "MIT",
+  "version": "1.0.0",
+  "description": "A Rust-inspired `Result` type for type-safe error handling in TypeScript and JavaScript",
+  "main": "./dist/cjs/index.js",
+  "module": "./dist/esm/index.js",
+  "types": "./dist/types/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/esm/index.js",
+      "require": "./dist/cjs/index.js",
+      "types": "./dist/types/index.d.ts"
+    }
+  },
   "scripts": {
-    "build": "tsc"
+    "build": "npm run build:cjs && npm run build:esm",
+    "build:cjs": "tsc -p tsconfig.json",
+    "build:esm": "tsc -p tsconfig.esm.json",
+    "prepublishOnly": "npm run build"
   },
   "files": [
     "dist"
   ],
   "keywords": [
     "typescript",
-    "npm"
+    "javascript",
+    "result",
+    "rust",
+    "error-handling"
   ],
-  "author": "Ahmad Othman",
-  "license": "MIT",
   "devDependencies": {
     "typescript": "^5.5.4"
   }
