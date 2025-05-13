@@ -44,7 +44,7 @@ try {
 ### JavaScript
 
 ```javascript
-const { Ok, Err, ErrFromText, isErr, isOk, unwrap } = require("lib-check");
+const { Ok, Err, ErrFromText, isErr, isOk, unwrap } = require("lib-result");
 
 class DivisionError extends Error {
   constructor(message) {
