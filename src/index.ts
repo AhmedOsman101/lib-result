@@ -1,31 +1,105 @@
+/** Represents a successful result state with a value and no error */
 type OkState<T> = { ok: T; error: undefined };
+
+/** Represents an error result state with an error and no value */
 type ErrorState<E extends Error = Error> = { ok: undefined; error: E };
 
-// Rust's Result enum simulation
+/**
+ * Simulates Rust's Result enum, representing either success (Ok) or failure (Err)
+ * @template T The type of the success value
+ * @template E The error type, must extend Error (defaults to Error)
+ */
 export type Result<T, E extends Error = Error> = OkState<T> | ErrorState<E>;
 
+/**
+ * Creates a successful Result
+ * @template T The type of the success value
+ * @param ok The success value
+ * @returns A Result in the Ok state
+ * @example
+ * const result = Ok(42);
+ * // result: { ok: 42, error: undefined }
+ */
 export function Ok<T>(ok: T): OkState<T> {
   return { ok, error: undefined };
 }
 
+/**
+ * Creates a failure Result from an Error instance
+ * @template E The error type, must extend Error (defaults to Error)
+ * @param error The error instance
+ * @returns A Result in the Err state
+ * @throws {TypeError} If the provided error is not an Error instance
+ * @example
+ * const result = Err(new Error("Something went wrong"));
+ * // result: { ok: undefined, error: Error("Something went wrong") }
+ */
 export function Err<E extends Error = Error>(error: E): ErrorState<E> {
   if (error instanceof Error) return { ok: undefined, error };
   throw new TypeError('Err expects an Error instance');
 }
 
+/**
+ * Creates a failure Result from a string message
+ * @param message The error message
+ * @returns A Result in the Err state with a new Error instance
+ * @example
+ * const result = ErrFromText("Something went wrong");
+ * // result: { ok: undefined, error: Error("Something went wrong") }
+ */
 export function ErrFromText(message: string): ErrorState<Error> {
   return { ok: undefined, error: new Error(message) };
 }
 
-// Utility functions for javascript users
+// --- Utility functions for javascript users --- //
+
+/**
+ * Checks if a Result is in the Ok state
+ * @template T The type of the success value
+ * @template E The error type
+ * @param result The Result to check
+ * @returns A type guard indicating whether the Result is in the Ok state
+ * @example
+ * if (isOk(result)) {
+ *   // TypeScript knows result.ok is available here
+ *   console.log(result.ok);
+ * }
+ */
 export function isOk<T, E extends Error = Error>(result: Result<T, E>): result is OkState<T> {
   return result.ok !== undefined;
 }
 
+/**
+ * Checks if a Result is in the Err state
+ * @template T The type of the success value
+ * @template E The error type
+ * @param result The Result to check
+ * @returns A type guard indicating whether the Result is in the Err state
+ * @example
+ * if (isErr(result)) {
+ *   // TypeScript knows result.error is available here
+ *   console.error(result.error.message);
+ * }
+ */
 export function isErr<T, E extends Error = Error>(result: Result<T, E>): result is ErrorState<E> {
   return result.error !== undefined;
 }
 
+/**
+ * Extracts the success value from a Result, or throws the error if it's in the Err state
+ * @template T The type of the success value
+ * @template E The error type
+ * @param result The Result to unwrap
+ * @returns The success value if the Result is in the Ok state
+ * @throws The error if the Result is in the Err state
+ * @example
+ * try {
+ *   const value = unwrap(result);
+ *   console.log(value); // Only runs if result is Ok
+ * } catch (error) {
+ *   console.error(error); // Runs if result is Err
+ * }
+ */
 export function unwrap<T, E extends Error = Error>(result: Result<T, E>): T {
   if (isOk(result)) return result.ok;
   throw result.error;
