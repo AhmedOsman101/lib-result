@@ -88,6 +88,6 @@ try {
 
 ## Source Code
 
-The source code for lib-result is hosted on GitHub. You can view the full codebase, contribute, or report issues at the following repository:
-[https://github.com/AhmedOsman101/lib-result](https://github.com/AhmedOsman101/lib-result)
+You can view the full codebase, contribute, or report issues at the following repository:
+[AhmedOsman101/lib-result](https://github.com/AhmedOsman101/lib-result)
 Feel free to open issues for bugs or feature requests, or submit pull requests to improve the package!
