@@ -26,8 +26,8 @@ type ErrorState<E extends Error = Error> = { ok: undefined; error: E };
 
 /**
  * Simulates Rust's Result enum, representing either success (Ok) or failure (Err)
- * @template T The type of the success value
- * @template E The error type, must extend Error (defaults to Error)
+ * @template T - The type of the success value
+ * @template E - The error type, must extend Error (defaults to Error)
  */
 export type Result<T, E extends Error = Error> = OkState<T> | ErrorState<E>;
 
@@ -49,7 +49,7 @@ export function Ok<T>(ok: T): OkState<T> {
  * @template E - The error type, must extend Error (defaults to Error)
  * @param {E} error - The error instance, must be an instance of Error
  * @returns {ErrorState<E>} A Result in the Err state
- * @throws {TypeError} If the provided error is not an Error instance
+ * @throws TypeError If the provided error is not an Error instance
  * @example
  * const result = Err(new Error("Something went wrong"));
  * // result: { ok: undefined, error: Error("Something went wrong") }
@@ -78,7 +78,7 @@ export function ErrFromText(message: string): ErrorState<Error> {
  * @template T - The type of the success value
  * @template E - The error type
  * @param {Result<T, E>} result - The Result to check
- * @returns {boolean} True if the Result is in the Ok state
+ * @returns {result is OkState<T>} True if the Result is in the Ok state
  * @example
  * if (isOk(result)) {
  *   console.log(result.ok); // Safe to access result.ok
@@ -95,7 +95,7 @@ export function isOk<T, E extends Error = Error>(
  * @template T - The type of the success value
  * @template E - The error type
  * @param {Result<T, E>} result - The Result to check
- * @returns {boolean} True if the Result is in the Err state
+ * @returns {result is ErrorState<E>} True if the Result is in the Err state
  * @example
  * if (isErr(result)) {
  *   console.error(result.error.message); // Safe to access result.error
@@ -113,7 +113,7 @@ export function isErr<T, E extends Error = Error>(
  * @template E - The error type
  * @param {Result<T, E>} result - The Result to unwrap
  * @returns {T} The success value if the Result is in the Ok state
- * @throws {E} The error if the Result is in the Err state
+ * @throws The error E if the Result is in the Err state
  * @example
  * try {
  *   const value = unwrap(result);
