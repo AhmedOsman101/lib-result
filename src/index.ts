@@ -1,3 +1,23 @@
+/**
+ * @typedef {Object} OkState
+ * @template T
+ * @property {T} ok - The success value
+ * @property {undefined} error - Always undefined in the Ok state
+ */
+
+/**
+ * @typedef {Object} ErrorState
+ * @template E
+ * @property {undefined} ok - Always undefined in the Err state
+ * @property {E} error - The error object, typically an instance of Error
+ */
+
+/**
+ * @typedef {OkState<T> | ErrorState<E>} Result
+ * @template T - The type of the success value
+ * @template E - The type of the error, typically an Error object
+ */
+
 /** Represents a successful result state with a value and no error */
 type OkState<T> = { ok: T; error: undefined };
 
@@ -13,9 +33,9 @@ export type Result<T, E extends Error = Error> = OkState<T> | ErrorState<E>;
 
 /**
  * Creates a successful Result
- * @template T The type of the success value
- * @param ok The success value
- * @returns A Result in the Ok state
+ * @template T - The type of the success value
+ * @param {T} ok - The success value
+ * @returns {OkState<T>} A Result in the Ok state
  * @example
  * const result = Ok(42);
  * // result: { ok: 42, error: undefined }
@@ -26,9 +46,9 @@ export function Ok<T>(ok: T): OkState<T> {
 
 /**
  * Creates a failure Result from an Error instance
- * @template E The error type, must extend Error (defaults to Error)
- * @param error The error instance
- * @returns A Result in the Err state
+ * @template E - The error type, must extend Error (defaults to Error)
+ * @param {E} error - The error instance, must be an instance of Error
+ * @returns {ErrorState<E>} A Result in the Err state
  * @throws {TypeError} If the provided error is not an Error instance
  * @example
  * const result = Err(new Error("Something went wrong"));
@@ -36,13 +56,13 @@ export function Ok<T>(ok: T): OkState<T> {
  */
 export function Err<E extends Error = Error>(error: E): ErrorState<E> {
   if (error instanceof Error) return { ok: undefined, error };
-  throw new TypeError('Err expects an Error instance');
+  throw new TypeError("Err expects an Error instance");
 }
 
 /**
  * Creates a failure Result from a string message
- * @param message The error message
- * @returns A Result in the Err state with a new Error instance
+ * @param {string} message - The error message
+ * @returns {ErrorState<Error>} A Result in the Err state with a new Error instance
  * @example
  * const result = ErrFromText("Something went wrong");
  * // result: { ok: undefined, error: Error("Something went wrong") }
@@ -55,43 +75,45 @@ export function ErrFromText(message: string): ErrorState<Error> {
 
 /**
  * Checks if a Result is in the Ok state
- * @template T The type of the success value
- * @template E The error type
- * @param result The Result to check
- * @returns A type guard indicating whether the Result is in the Ok state
+ * @template T - The type of the success value
+ * @template E - The error type
+ * @param {Result<T, E>} result - The Result to check
+ * @returns {boolean} True if the Result is in the Ok state
  * @example
  * if (isOk(result)) {
- *   // TypeScript knows result.ok is available here
- *   console.log(result.ok);
+ *   console.log(result.ok); // Safe to access result.ok
  * }
  */
-export function isOk<T, E extends Error = Error>(result: Result<T, E>): result is OkState<T> {
+export function isOk<T, E extends Error = Error>(
+  result: Result<T, E>
+): result is OkState<T> {
   return result.ok !== undefined;
 }
 
 /**
  * Checks if a Result is in the Err state
- * @template T The type of the success value
- * @template E The error type
- * @param result The Result to check
- * @returns A type guard indicating whether the Result is in the Err state
+ * @template T - The type of the success value
+ * @template E - The error type
+ * @param {Result<T, E>} result - The Result to check
+ * @returns {boolean} True if the Result is in the Err state
  * @example
  * if (isErr(result)) {
- *   // TypeScript knows result.error is available here
- *   console.error(result.error.message);
+ *   console.error(result.error.message); // Safe to access result.error
  * }
  */
-export function isErr<T, E extends Error = Error>(result: Result<T, E>): result is ErrorState<E> {
+export function isErr<T, E extends Error = Error>(
+  result: Result<T, E>
+): result is ErrorState<E> {
   return result.error !== undefined;
 }
 
 /**
  * Extracts the success value from a Result, or throws the error if it's in the Err state
- * @template T The type of the success value
- * @template E The error type
- * @param result The Result to unwrap
- * @returns The success value if the Result is in the Ok state
- * @throws The error if the Result is in the Err state
+ * @template T - The type of the success value
+ * @template E - The error type
+ * @param {Result<T, E>} result - The Result to unwrap
+ * @returns {T} The success value if the Result is in the Ok state
+ * @throws {E} The error if the Result is in the Err state
  * @example
  * try {
  *   const value = unwrap(result);
