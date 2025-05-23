@@ -87,7 +87,7 @@ export function ErrFromText(message: string): ErrorState<Error> {
 export function isOk<T, E extends Error = Error>(
   result: Result<T, E>
 ): result is OkState<T> {
-  return result.ok !== undefined;
+  return result.error === undefined;
 }
 
 /**
