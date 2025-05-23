@@ -2,7 +2,7 @@
   "name": "lib-result",
   "author": "Ahmad Othman",
   "license": "MIT",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "A Rust-inspired `Result` type for type-safe error handling in TypeScript and JavaScript",
   "main": "./dist/cjs/index.js",
   "module": "./dist/esm/index.js",
@@ -24,8 +24,16 @@
     "test-js": "node --test src/*.test.js",
     "test": "npm run test-ts && npm run test-js"
   },
-  "files": ["dist"],
-  "keywords": ["typescript", "javascript", "result", "rust", "error-handling"],
+  "files": [
+    "dist"
+  ],
+  "keywords": [
+    "typescript",
+    "javascript",
+    "result",
+    "rust",
+    "error-handling"
+  ],
   "devDependencies": {
     "@types/node": "^22.15.21",
     "typescript": "^5.5.4"
