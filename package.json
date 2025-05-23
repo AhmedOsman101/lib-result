@@ -18,19 +18,16 @@
     "build": "npm run build:cjs && npm run build:esm",
     "build:cjs": "tsc -p tsconfig.json",
     "build:esm": "tsc -p tsconfig.esm.json",
-    "prepublishOnly": "npm run build"
+    "build-test": "npx esbuild src/result.test.ts --outfile=src/result.test.js --format=esm",
+    "prepublishOnly": "npm run build",
+    "test-ts": "npx ts-node src/*.test.ts",
+    "test-js": "node --test src/*.test.js",
+    "test": "npm run test-ts && npm run test-js"
   },
-  "files": [
-    "dist"
-  ],
-  "keywords": [
-    "typescript",
-    "javascript",
-    "result",
-    "rust",
-    "error-handling"
-  ],
+  "files": ["dist"],
+  "keywords": ["typescript", "javascript", "result", "rust", "error-handling"],
   "devDependencies": {
+    "@types/node": "^22.15.21",
     "typescript": "^5.5.4"
   }
 }
