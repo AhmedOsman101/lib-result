@@ -13,34 +13,48 @@
  */
 
 /**
- * @typedef {OkState<T> | ErrorState<E>} Result
+ * @typedef {Object} Prettify
+ * @template T
+ * @description A utility type that preserves the properties of type T, improving type inference
+ * @property {T[K]} [K] - All properties from type T
+ */
+
+/**
+ * @typedef {Prettify<OkState<T> | ErrorState<E>>} Result
  * @template T - The type of the success value
  * @template E - The type of the error, typically an Error object
  */
 
 /** Represents a successful result state with a value and no error */
-type OkState<T> = { ok: T; error: undefined };
+export type OkState<T> = { ok: T; error: undefined };
 
 /** Represents an error result state with an error and no value */
-type ErrorState<E extends Error = Error> = { ok: undefined; error: E };
+export type ErrorState<E extends Error = Error> = { ok: undefined; error: E };
+
+/** Utility type to improve type inference by preserving properties */
+export type Prettify<T> = {
+  [K in keyof T]: T[K];
+} & {};
 
 /**
  * Simulates Rust's Result enum, representing either success (Ok) or failure (Err)
  * @template T - The type of the success value
  * @template E - The error type, must extend Error (defaults to Error)
  */
-export type Result<T, E extends Error = Error> = OkState<T> | ErrorState<E>;
+export type Result<T, E extends Error = Error> = Prettify<
+  OkState<T> | ErrorState<E>
+>;
 
 /**
  * Creates a successful Result
  * @template T - The type of the success value
  * @param {T} ok - The success value
- * @returns {OkState<T>} A Result in the Ok state
+ * @returns {Prettify<OkState<T>>} A Result in the Ok state
  * @example
  * const result = Ok(42);
  * // result: { ok: 42, error: undefined }
  */
-export function Ok<T>(ok: T): OkState<T> {
+export function Ok<T>(ok: T): Prettify<OkState<T>> {
   return { ok, error: undefined };
 }
 
@@ -48,13 +62,15 @@ export function Ok<T>(ok: T): OkState<T> {
  * Creates a failure Result from an Error instance
  * @template E - The error type, must extend Error (defaults to Error)
  * @param {E} error - The error instance, must be an instance of Error
- * @returns {ErrorState<E>} A Result in the Err state
+ * @returns {Prettify<ErrorState<E>>} A Result in the Err state
  * @throws TypeError If the provided error is not an Error instance
  * @example
  * const result = Err(new Error("Something went wrong"));
  * // result: { ok: undefined, error: Error("Something went wrong") }
  */
-export function Err<E extends Error = Error>(error: E): ErrorState<E> {
+export function Err<E extends Error = Error>(
+  error: E
+): Prettify<ErrorState<E>> {
   if (error instanceof Error) return { ok: undefined, error };
   throw new TypeError("Err expects an Error instance");
 }
@@ -62,12 +78,12 @@ export function Err<E extends Error = Error>(error: E): ErrorState<E> {
 /**
  * Creates a failure Result from a string message
  * @param {string} message - The error message
- * @returns {ErrorState<Error>} A Result in the Err state with a new Error instance
+ * @returns {Prettify<ErrorState<Error>>} A Result in the Err state with a new Error instance
  * @example
  * const result = ErrFromText("Something went wrong");
  * // result: { ok: undefined, error: Error("Something went wrong") }
  */
-export function ErrFromText(message: string): ErrorState<Error> {
+export function ErrFromText(message: string): Prettify<ErrorState<Error>> {
   return { ok: undefined, error: new Error(message) };
 }
 
