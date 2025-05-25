@@ -79,7 +79,7 @@ try {
 
 ## API
 
-- `Ok<T>(value: T)`: Creates an `Ok` result with a value.
+- `Ok<T>(ok: T)`: Creates an `Ok` result with a value.
 - `Err<E extends Error>(error: E)`: Creates an `Err` result with an error.
 - `ErrFromText(message: string)`: Creates an `Err` result from a string message.
 - `isOk(result)`: Checks if the result is `Ok`.
