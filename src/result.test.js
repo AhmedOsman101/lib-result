@@ -1,11 +1,8 @@
 import { deepEqual, equal, ok, throws } from "node:assert/strict";
 import test from "node:test";
 import { Err, ErrFromText, isErr, isOk, Ok, unwrap } from "./index.ts";
-class DivisionError extends Error {
-  constructor(message) {
-    super(message);
-  }
-}
+
+class DivisionError extends Error {}
 function divide(a, b) {
   if (b === 0) {
     return Err(new DivisionError("Cannot Divide By Zero"));
@@ -20,7 +17,10 @@ test("divide() returns correct OkState", () => {
 });
 test("divide() returns correct ErrorState", () => {
   const failedResult = divide(4, 0);
-  deepEqual(failedResult, { ok: void 0, error: new DivisionError("Cannot Divide By Zero") });
+  deepEqual(failedResult, {
+    ok: void 0,
+    error: new DivisionError("Cannot Divide By Zero"),
+  });
   ok(isErr(failedResult));
   ok(!isOk(failedResult));
 });
@@ -46,19 +46,13 @@ test("ErrFromText() returns ErrorState with Error", () => {
   equal(result.error.message, "fail");
   ok(isErr(result));
 });
-test("unwrap() returns value for Ok", () => {
-  const result = Ok("hello");
-  equal(unwrap(result), "hello");
+test("unwrap() returns value for Ok and Result", () => {
+  const user = { ok: { id: 5, foo: "bar" }, error: void 0 };
+  const result = Ok(user);
+  equal(unwrap(result), user);
 });
 test("unwrap() throws error for Err", () => {
   const error = new Error("fail");
   const result = Err(error);
   throws(() => unwrap(result), /fail/);
-});
-test("Prettify<OkState<number>> is OkState<number>", () => {
-  const ResultFunction = (a) => {
-    return a;
-  };
-  const result = ResultFunction(Ok(2));
-  deepEqual(result, { ok: 2, error: void 0 });
 });
