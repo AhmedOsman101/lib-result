@@ -15,14 +15,14 @@
     }
   },
   "scripts": {
-    "build": "npm run build:cjs && npm run build:esm",
+    "build": "npm run build:cjs && npm run build:esm && npm run build-test",
     "build:cjs": "tsc -p tsconfig.json",
     "build:esm": "tsc -p tsconfig.esm.json",
     "build-test": "npx esbuild src/result.test.ts --outfile=src/result.test.js --format=esm",
     "prepublishOnly": "npm run build",
     "test-ts": "npx ts-node src/*.test.ts",
     "test-js": "node --test src/*.test.js",
-    "test": "npm run test-ts && npm run test-js"
+    "test": "npm run build; clear && npm run test-ts && npm run test-js"
   },
   "files": [
     "dist"
