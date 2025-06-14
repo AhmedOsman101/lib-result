@@ -1,6 +1,14 @@
-import { deepEqual, equal, ok, throws } from "node:assert/strict";
+import assert from "node:assert";
 import test from "node:test";
-import { Err, ErrFromText, isErr, isOk, Ok, unwrap } from "./index.ts";
+import {
+  Err,
+  ErrFromText,
+  isErr,
+  isOk,
+  Ok,
+  wrap,
+  wrapAsync,
+} from "../../dist/esm/index.js";
 
 class DivisionError extends Error {}
 function divide(a, b) {
@@ -9,50 +17,52 @@ function divide(a, b) {
   }
   return Ok(a / b);
 }
-test("divide() returns correct OkState", () => {
-  const result = divide(4, 2);
-  deepEqual(result, { ok: 2, error: void 0 });
-  ok(isOk(result));
-  ok(!isErr(result));
+function toPromise(fn) {
+  try {
+    return Promise.resolve(fn());
+  } catch (err) {
+    return Promise.reject(err);
+  }
+}
+test("divide returns error on division by zero", () => {
+  const division = divide(1, 0);
+  assert.ok(division.isError());
+  assert.equal(division.error.message, "Cannot Divide By Zero");
 });
-test("divide() returns correct ErrorState", () => {
-  const failedResult = divide(4, 0);
-  deepEqual(failedResult, {
-    ok: void 0,
-    error: new DivisionError("Cannot Divide By Zero"),
+test("divide returns result on valid division", () => {
+  const division = divide(10, 2);
+  assert.ok(division.isOk());
+  assert.equal(division.ok, 5);
+});
+test("ErrFromText unwrap throws error with correct message", () => {
+  const errorResult = ErrFromText("Failed");
+  assert.throws(() => errorResult.unwrap(), { message: "Failed" });
+});
+test("wrap(): returns Ok on success", () => {
+  const res = wrap(() => 42);
+  assert.ok(isOk(res));
+  assert.equal(res.ok, 42);
+});
+test("wrap(): returns Err on thrown error", () => {
+  const res = wrap(() => {
+    throw new Error("Boom!");
   });
-  ok(isErr(failedResult));
-  ok(!isOk(failedResult));
+  assert.ok(isErr(res));
+  assert.equal(res.error?.message, "Boom!");
 });
-test("Ok() returns correct OkState", () => {
-  const result = Ok(123);
-  deepEqual(result, { ok: 123, error: void 0 });
-  ok(isOk(result));
-  ok(!isErr(result));
+test("wrapAsync(): resolves with Ok on success", async () => {
+  const res = await wrapAsync(async () => {
+    return await toPromise(() => "hello async");
+  });
+  assert.ok(isOk(res));
+  assert.equal(res.ok, "hello async");
 });
-test("Err() returns correct ErrorState", () => {
-  const error = new Error("fail");
-  const result = Err(error);
-  deepEqual(result, { ok: void 0, error });
-  ok(isErr(result));
-  ok(!isOk(result));
-});
-test("Err() throws if not Error", () => {
-  throws(() => Err("not an error"), TypeError);
-});
-test("ErrFromText() returns ErrorState with Error", () => {
-  const result = ErrFromText("fail");
-  ok(result.error instanceof Error);
-  equal(result.error.message, "fail");
-  ok(isErr(result));
-});
-test("unwrap() returns value for Ok and Result", () => {
-  const user = { ok: { id: 5, foo: "bar" }, error: void 0 };
-  const result = Ok(user);
-  equal(unwrap(result), user);
-});
-test("unwrap() throws error for Err", () => {
-  const error = new Error("fail");
-  const result = Err(error);
-  throws(() => unwrap(result), /fail/);
+test("wrapAsync(): resolves with Err on failure", async () => {
+  const res = await wrapAsync(async () => {
+    return await toPromise(() => {
+      throw new Error("Async fail");
+    });
+  });
+  assert.ok(isErr(res));
+  assert.equal(res.error?.message, "Async fail");
 });
