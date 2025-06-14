@@ -1,4 +1,31 @@
 /**
+ * Defines methods for a `Result` type, providing type-safe operations for checking and extracting values.
+ * @template T - The type of the success value.
+ * @template E - The error type, must extend `Error`.
+ * @template U - The return type of `unwrap`, typically `T` for `OkState` or `never` for `ErrorState`.
+ */
+interface ResultMethods<T, E extends Error, U> {
+  /**
+   * Checks if the result is in the `Ok` state (contains a value and no error).
+   * @returns `true` if the result is `Ok`, narrowing the type to `OkState<T, E>`.
+   */
+  isOk(): this is OkState<T, E>;
+
+  /**
+   * Checks if the result is in the `Err` state (contains an error and no value).
+   * @returns `true` if the result is `Err`, narrowing the type to `ErrorState<E, T>`.
+   */
+  isError(): this is ErrorState<E, T>;
+
+  /**
+   * Extracts the value from an `OkState<T>` result or throws the error from an `ErrorState<E>` result.
+   * @returns The success value (`T`) if `OkState<T>`, or throws the error (`E`) if `ErrorState<E>`.
+   * @throws {E} The error if the result is in the Error state.
+   */
+  unwrap(): U;
+}
+
+/**
  * Represents a successful result state with an `ok` value and no error (undefined).
  * @template T - The type of the success value.
  * @template E - The error type, must extend `Error` (defaults to `Error`).
