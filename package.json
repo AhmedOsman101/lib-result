@@ -2,7 +2,7 @@
   "name": "lib-result",
   "author": "Ahmad Othman",
   "license": "MIT",
-  "version": "2.0.0",
+  "version": "1.0.9",
   "description": "A Rust-inspired `Result` type for type-safe error handling in TypeScript and JavaScript",
   "type": "module",
   "main": "./dist/cjs/index.js",
