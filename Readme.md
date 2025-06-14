@@ -2,6 +2,8 @@
 
 A Rust-inspired `Result` type for type-safe error handling in TypeScript and JavaScript.
 
+> **Deprecation Notice for Version 1.x**: As of version 2.0.0, the standalone `isOk` and `isErr` functions are deprecated in favor of the `isOk()` and `isError()` methods on `Result` objects (e.g., `result.isOk()`). Please update your code to use the new method-based API and migrate to version 2.x for continued support.
+
 ## Installation
 
 ```bash
@@ -13,7 +15,7 @@ npm install lib-result
 ### TypeScript
 
 ```typescript
-import { Err, ErrFromText, Ok, type Result, unwrap } from "lib-result";
+import { Err, ErrFromText, Ok, type Result, wrap, wrapAsync } from "lib-result";
 
 class DivisionError extends Error {}
 
@@ -24,23 +26,51 @@ function divide(a: number, b: number): Result<number, DivisionError> {
   return Ok(a / b);
 }
 
-const { ok: result, error } = divide(1, 0);
-if (error !== undefined) console.error(error.message);
-else console.log(result);
+// Method-based API
+const result = divide(6, 2);
+if (result.isOk()) {
+  console.log(result.ok); // 3
+} else {
+  console.error(result.error.message);
+}
 
-const errorResult: Result<string> = ErrFromText("Failed");
+const mayDivide = divide(1, 0);
+if (mayDivide.isErr()) {
+  console.error(mayDivide.error.message); // "Cannot Divide By Zero"
+}
+
+// Using unwrap
+const errorResult = ErrFromText("Failed");
 try {
-  const value = unwrap(errorResult);
+  const value = errorResult.unwrap();
   console.log(value);
 } catch (e) {
-  console.error(e.message); // 'Failed'
+  console.error(e.message); // "Failed"
+}
+
+// Using wrap for synchronous operations
+const wrappedResult = wrap(() => divide(10, 2));
+if (wrappedResult.isOk()) {
+  console.log(wrappedResult.ok); // 5
+}
+
+// Using wrapAsync for asynchronous operations
+async function asyncDivide(
+  a: number,
+  b: number
+): Promise<Result<number, DivisionError>> {
+  return divide(a, b);
+}
+const asyncResult = await wrapAsync(() => asyncDivide(8, 2));
+if (asyncResult.isOk()) {
+  console.log(asyncResult.ok); // 4
 }
 ```
 
 ### JavaScript
 
 ```javascript
-const { Ok, Err, ErrFromText, isErr, isOk, unwrap } = require("lib-result");
+import { Err, ErrFromText, Ok, wrap, wrapAsync } from "lib-result";
 
 class DivisionError extends Error {}
 
@@ -51,32 +81,63 @@ function divide(a, b) {
   return Ok(a / b);
 }
 
-const divison = divide(6, 2);
-if (isOk(divison)) console.log(divison.ok); // 3
-else console.error(divison.error.message);
+// Method-based API
+const result = divide(6, 2);
+if (result.isOk()) {
+  console.log(result.ok); // 3
+} else {
+  console.error(result.error.message);
+}
 
 const mayDivide = divide(1, 0);
-if (isErr(mayDivide)) {
-  console.error(mayDivide.error.message); // Cannot Divide By Zero
-} else console.log(mayDivide.ok);
+if (mayDivide.isErr()) {
+  console.error(mayDivide.error.message); // "Cannot Divide By Zero"
+}
 
+// Using unwrap
 const errorResult = ErrFromText("Failed");
 try {
-  const value = unwrap(errorResult);
+  const value = errorResult.unwrap();
   console.log(value);
 } catch (e) {
-  console.error(e.message); // 'Failed'
+  console.error(e.message); // "Failed"
 }
+
+// Using wrap for synchronous operations
+const wrappedResult = wrap(() => divide(10, 2));
+if (wrappedResult.isOk()) {
+  console.log(wrappedResult.ok); // 5
+}
+
+// Using wrapAsync for asynchronous operations
+async function asyncDivide(a, b) {
+  return divide(a, b);
+}
+wrapAsync(() => asyncDivide(8, 2)).then(asyncResult => {
+  if (asyncResult.isOk()) {
+    console.log(asyncResult.ok); // 4
+  }
+});
 ```
 
 ## API
 
-- `Ok<T>(ok: T)`: Creates an `Ok` result with a value.
-- `Err<E extends Error>(error: E)`: Creates an `Err` result with an error.
-- `ErrFromText(message: string)`: Creates an `Err` result from a string message.
-- `isOk(result)`: Checks if the result is `Ok`.
-- `isErr(result)`: Checks if the result is `Err`.
-- `unwrap(result)`: Extracts the `Ok` value or throws the `Err` error.
+### Functions
+
+- `Ok<T, E extends Error = Error>(ok: T)`: Creates an `Ok` result with a success value.
+- `Err<E extends Error, T>(error: E)`: Creates an `ErrorState` result with an error instance.
+- `ErrFromText<T>(message: string)`: Creates an `ErrorState` result from a string message.
+- `wrap<T, E extends Error = Error>(callback: () => T)`: Wraps a synchronous function, returning an `Ok` result for the return value or an `ErrorState` result for thrown errors.
+- `wrapAsync<T, E extends Error = Error>(callback: () => Promise<T>)`: Wraps an asynchronous function, returning a `Promise` resolving to an `Ok` result for resolved values or an `ErrorState` result for rejected errors.
+- `unwrap<T, E extends Error>(result: Result<T, E>)`: Extracts the `Ok` value or throws the `ErrorState` error.
+- `isOk<T, E extends Error>(result: Result<T, E>)` _(Deprecated)_: Checks if the result is `Ok`. Use `result.isOk()` instead.
+- `isErr<T, E extends Error>(result: Result<T, E>)` _(Deprecated)_: Checks if the result is `Err`. Use `result.isError()` instead.
+
+### Result Methods
+
+- `result.isOk(): this is OkState<T, E>`: Returns `true` if the result is `Ok`, narrowing the type to `OkState`.
+- `result.isError(): this is ErrorState<E, T>`: Returns `true` if the result is `ErrorState`, narrowing the type to `ErrorState`.
+- `result.unwrap(): T`: Returns the `Ok` value or throws the `ErrorState` error.
 
 ## Source Code
 
