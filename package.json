@@ -27,16 +27,8 @@
     "test:js": "node --test src/tests/*.test.js",
     "test": "pnpm build && clear && pnpm test:ts && pnpm test:js"
   },
-  "files": [
-    "dist"
-  ],
-  "keywords": [
-    "typescript",
-    "javascript",
-    "result",
-    "rust",
-    "error-handling"
-  ],
+  "files": ["dist"],
+  "keywords": ["typescript", "javascript", "result", "rust", "error-handling"],
   "devDependencies": {
     "@types/node": "^22.15.21",
     "esbuild": "^0.25.5",
