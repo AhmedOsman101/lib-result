@@ -9,10 +9,10 @@
     "strict": true,
     "skipLibCheck": true,
     "declaration": true,
-    "allowImportingTsExtensions": true,
-    "noEmit": true,
+    "allowImportingTsExtensions": false,
+    "noEmit": false,
     "declarationDir": "./dist/types"
   },
   "include": ["src/**/*"],
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules", "src/tests/*"]
 }
