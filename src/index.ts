@@ -174,53 +174,53 @@ export async function wrapAsync<T>(
     return Err(toError(error));
   }
 }
+
+// --- Functions for backward compatibility with v1 (deprecated since v2.0.0 ) --- //
+
+/**
+ * Checks if a `Result` is in the `Ok` state.
+ * @template T - The type of the success value.
  * @template E - The error type
  * @param {Result<T, E>} result - The Result to check
- * @returns {result is OkState<T>} True if the Result is in the Ok state
+ * @returns {result is OkState<T>} `true` if the `Result` is in the `Ok` state, narrowing the type to `OkState<T, E>`.
+ * @deprecated Since version 2.0.0. Use `result.isOk()` for a more consistent and encapsulated API.
  * @example
+ * const result = Ok(42);
+ * // Deprecated usage
  * if (isOk(result)) {
- *   console.log(result.ok); // Safe to access result.ok
+ *   console.log(result.ok);
+ * }
+ * // Preferred usage
+ * if (result.isOk()) {
+ *   console.log(result.ok);
  * }
  */
 export function isOk<T, E extends Error = Error>(
   result: Result<T, E>
-): result is OkState<T> {
+): result is OkState<T, E> {
   return result.error === undefined;
 }
 
 /**
- * Checks if a Result is in the Err state
- * @template T - The type of the success value
- * @template E - The error type
- * @param {Result<T, E>} result - The Result to check
- * @returns {result is ErrorState<E>} True if the Result is in the Err state
+ * Checks if a `Result` is in the `Error` state.
+ * @template T - The type of the success value.
+ * @template E - The error type, must extend `Error` (defaults to `Error`).
+ * @param {Result<T, E>} result - The `Result` to check.
+ * @returns {result is ErrorState<E>} `true` if the `Result` is in the `Error` state, narrowing the type to `ErrorState<E, T>`.
+ * @deprecated Since version 2.0.0. Use `result.isError()` for a more consistent and encapsulated API.
  * @example
- * if (isErr(result)) {
- *   console.error(result.error.message); // Safe to access result.error
+ * const result = Err(new Error("Failed"));
+ * // Deprecated usage
+ * if (isError(result)) {
+ *   console.error(result.error.message);
+ * }
+ * // Preferred usage
+ * if (result.isErr()) {
+ *   console.error(result.error.message);
  * }
  */
 export function isErr<T, E extends Error = Error>(
   result: Result<T, E>
-): result is ErrorState<E> {
+): result is ErrorState<E, T> {
   return result.error !== undefined;
-}
-
-/**
- * Extracts the success value from a Result, or throws the error if it's in the Err state
- * @template T - The type of the success value
- * @template E - The error type
- * @param {Result<T, E>} result - The Result to unwrap
- * @returns {T} The success value if the Result is in the Ok state
- * @throws The error E if the Result is in the Err state
- * @example
- * try {
- *   const value = unwrap(result);
- *   console.log(value); // Only runs if result is Ok
- * } catch (error) {
- *   console.error(error); // Runs if result is Err
- * }
- */
-export function unwrap<T, E extends Error = Error>(result: Result<T, E>): T {
-  if (isOk(result)) return result.ok;
-  throw result.error;
 }
