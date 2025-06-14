@@ -12,5 +12,3 @@
 * enhance Result type with helper methods ([e322c89](https://github.com/AhmedOsman101/lib-result/commit/e322c89fbe21bb9f4b5714109ffc996de57c456e))
 * moved Result type and OkState/ErrorState types to index.d.ts ([241514d](https://github.com/AhmedOsman101/lib-result/commit/241514d1773ae5febc1c1d517cef3cc0202d4262))
 * setup release-please for automation ([0f10377](https://github.com/AhmedOsman101/lib-result/commit/0f1037790412d50b064ca119274625a70da33d29))
-
-## Changelog
