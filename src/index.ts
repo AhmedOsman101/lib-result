@@ -1,29 +1,4 @@
-/**
- * @typedef {Object} OkState
- * @template T
- * @property {T} ok - The success value
- * @property {undefined} error - Always undefined in the Ok state
- */
-
-/**
- * @typedef {Object} ErrorState
- * @template E
- * @property {undefined} ok - Always undefined in the Err state
- * @property {E} error - The error object, typically an instance of Error
- */
-
-/** Represents a successful result state with a value and no error */
-export type OkState<T> = { ok: T; error: undefined };
-
-/** Represents an error result state with an error and no value */
-export type ErrorState<E extends Error = Error> = { ok: undefined; error: E };
-
-/**
- * Simulates Rust's Result enum, representing either success (Ok) or failure (Err)
- * @template T - The type of the success value
- * @template E - The error type, must extend Error (defaults to Error)
- */
-export type Result<T, E extends Error = Error> = OkState<T> | ErrorState<E>;
+import type { ErrorState, OkState, Result } from "./index.d";
 
 /**
  * Creates a successful Result
