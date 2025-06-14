@@ -15,11 +15,7 @@ npm install lib-result
 ```typescript
 import { Err, ErrFromText, Ok, type Result, unwrap } from "lib-result";
 
-class DivisionError extends Error {
-  constructor(message: string) {
-    super(message);
-  }
-}
+class DivisionError extends Error {}
 
 function divide(a: number, b: number): Result<number, DivisionError> {
   if (b === 0) {
@@ -46,11 +42,7 @@ try {
 ```javascript
 const { Ok, Err, ErrFromText, isErr, isOk, unwrap } = require("lib-result");
 
-class DivisionError extends Error {
-  constructor(message) {
-    super(message);
-  }
-}
+class DivisionError extends Error {}
 
 function divide(a, b) {
   if (b === 0) {
