@@ -1,15 +1,7 @@
 import assert from "node:assert";
 import test from "node:test";
-import type { Result } from "../index.d.ts";
-import {
-  Err,
-  ErrFromText,
-  isErr,
-  isOk,
-  Ok,
-  wrap,
-  wrapAsync,
-} from "../index.ts";
+import type { Result } from "../index.d";
+import { Err, ErrFromText, Ok, wrap, wrapAsync } from "../index.ts";
 
 class DivisionError extends Error {}
 
@@ -55,7 +47,7 @@ test("ErrFromText unwrap throws error with correct message", () => {
 test("wrap(): returns Ok on success", () => {
   const res = wrap(() => 42);
 
-  assert.ok(isOk(res));
+  assert.ok(res.isOk());
   assert.equal(res.ok, 42);
 });
 
@@ -64,7 +56,7 @@ test("wrap(): returns Err on thrown error", () => {
     throw new Error("Boom!");
   });
 
-  assert.ok(isErr(res));
+  assert.ok(res.isError());
   assert.equal(res.error?.message, "Boom!");
 });
 
@@ -75,7 +67,7 @@ test("wrapAsync(): resolves with Ok on success", async () => {
     return await toPromise(() => "hello async");
   });
 
-  assert.ok(isOk(res));
+  assert.ok(res.isOk());
   assert.equal(res.ok, "hello async");
 });
 
@@ -86,6 +78,6 @@ test("wrapAsync(): resolves with Err on failure", async () => {
     });
   });
 
-  assert.ok(isErr(res));
+  assert.ok(res.isError());
   assert.equal(res.error?.message, "Async fail");
 });

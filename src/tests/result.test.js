@@ -1,14 +1,6 @@
 import assert from "node:assert";
 import test from "node:test";
-import {
-  Err,
-  ErrFromText,
-  isErr,
-  isOk,
-  Ok,
-  wrap,
-  wrapAsync,
-} from "../../dist/esm/index.js";
+import { Err, ErrFromText, Ok, wrap, wrapAsync } from "../../dist/esm/index.js";
 
 class DivisionError extends Error {}
 function divide(a, b) {
@@ -40,21 +32,21 @@ test("ErrFromText unwrap throws error with correct message", () => {
 });
 test("wrap(): returns Ok on success", () => {
   const res = wrap(() => 42);
-  assert.ok(isOk(res));
+  assert.ok(res.isOk());
   assert.equal(res.ok, 42);
 });
 test("wrap(): returns Err on thrown error", () => {
   const res = wrap(() => {
     throw new Error("Boom!");
   });
-  assert.ok(isErr(res));
+  assert.ok(res.isError());
   assert.equal(res.error?.message, "Boom!");
 });
 test("wrapAsync(): resolves with Ok on success", async () => {
   const res = await wrapAsync(async () => {
     return await toPromise(() => "hello async");
   });
-  assert.ok(isOk(res));
+  assert.ok(res.isOk());
   assert.equal(res.ok, "hello async");
 });
 test("wrapAsync(): resolves with Err on failure", async () => {
@@ -63,6 +55,6 @@ test("wrapAsync(): resolves with Err on failure", async () => {
       throw new Error("Async fail");
     });
   });
-  assert.ok(isErr(res));
+  assert.ok(res.isError());
   assert.equal(res.error?.message, "Async fail");
 });
