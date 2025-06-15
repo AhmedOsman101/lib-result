@@ -4,12 +4,10 @@
     "emitDeclarationOnly": true,
     "declaration": true,
     "declarationDir": "./dist/types",
-    "noEmit": false,
-    "outDir": "./dist/types",
     "module": "ESNext",
     "target": "ESNext",
     "stripInternal": true
   },
-  "include": ["src/**/*"],
-  "exclude": ["tests"]
+  "include": ["src/index.ts"],
+  "exclude": ["tests", "src/types.d.ts"]
 }
