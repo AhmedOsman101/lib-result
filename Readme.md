@@ -35,7 +35,7 @@ if (result.isOk()) {
 }
 
 const mayDivide = divide(1, 0);
-if (mayDivide.isErr()) {
+if (mayDivide.isError()) {
   console.error(mayDivide.error.message); // "Cannot Divide By Zero"
 }
 
@@ -86,7 +86,7 @@ if (result.isOk()) {
 }
 
 const mayDivide = divide(1, 0);
-if (mayDivide.isErr()) {
+if (mayDivide.isError()) {
   console.error(mayDivide.error.message); // "Cannot Divide By Zero"
 }
 
