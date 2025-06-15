@@ -5,39 +5,35 @@
   "version": "2.0.2",
   "description": "A Rust-inspired `Result` type for type-safe error handling in TypeScript and JavaScript",
   "type": "module",
-  "main": "./dist/cjs/index.cjs",
+  "main": "./dist/cjs/index.js",
   "module": "./dist/esm/index.js",
-  "types": "./dist/types/index.d.ts",
+  "types": "./dist/esm/index.d.ts",
   "exports": {
     ".": {
       "import": "./dist/esm/index.js",
-      "require": "./dist/cjs/index.cjs"
-    },
-    "./types": {
-      "types": "./dist/types/types.d.ts"
+      "require": "./dist/cjs/index.js"
     }
   },
   "files": ["dist"],
   "scripts": {
     "format": "pnpm exec biome check --fix src/",
     "format:unsafe": "pnpm exec biome check --fix --unsafe src/",
-    "clean": "rm -rf dist",
-    "build": "./build.sh",
+    "clean": "rm -rf dist/*",
+    "build": "pnpm clean && pnpm build:cjs && pnpm build:esm && pnpm build:tests",
     "build:cjs": "pnpm exec tsc -p tsconfig.json",
     "build:esm": "pnpm exec tsc -p tsconfig.esm.json",
-    "build:types": "pnpm exec tsc -p tsconfig.types.json && cp -f src/types.d.ts dist/types/types.d.ts",
     "build:tests": "./build-tests.sh",
-    "prepublishOnly": "pnpm build",
-    "test:ts": "pnpm exec ts-node --esm tests/*.test.ts",
+    "prepublishOnly": "pnpm build && pnpm format",
+    "test:ts": "pnpm exec tsx tests/*.test.ts",
     "test:js": "node --test tests/*.test.js",
     "test": "pnpm build && clear && pnpm test:ts && pnpm test:js"
   },
   "devDependencies": {
+    "@biomejs/biome": "2.0.0-beta.6",
     "@types/node": "^22.15.21",
     "esbuild": "^0.25.5",
-    "ts-node": "^10.9.2",
-    "typescript": "^5.5.4",
-    "@biomejs/biome": "2.0.0-beta.6"
+    "tsx": "^4.20.3",
+    "typescript": "^5.5.4"
   },
   "keywords": ["typescript", "javascript", "result", "rust", "error-handling"],
   "repository": {
