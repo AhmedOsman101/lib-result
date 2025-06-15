@@ -55,15 +55,11 @@ if (wrappedResult.isOk()) {
 }
 
 // Using wrapAsync for asynchronous operations
-async function asyncDivide(
-  a: number,
-  b: number
-): Promise<Result<number, DivisionError>> {
-  return divide(a, b);
-}
-const asyncResult = await wrapAsync(() => asyncDivide(8, 2));
+const asyncResult = await wrapAsync(() =>
+  fetch("https://jsonplaceholder.typicode.com/users/1")
+);
 if (asyncResult.isOk()) {
-  console.log(asyncResult.ok); // 4
+  console.log(asyncResult.ok.status); // 200
 }
 ```
 
@@ -110,14 +106,12 @@ if (wrappedResult.isOk()) {
 }
 
 // Using wrapAsync for asynchronous operations
-async function asyncDivide(a, b) {
-  return divide(a, b);
+const asyncResult = await wrapAsync(() =>
+  fetch("https://jsonplaceholder.typicode.com/users/1")
+);
+if (asyncResult.isOk()) {
+  console.log(asyncResult.ok.status); // 200
 }
-wrapAsync(() => asyncDivide(8, 2)).then(asyncResult => {
-  if (asyncResult.isOk()) {
-    console.log(asyncResult.ok); // 4
-  }
-});
 ```
 
 ## API

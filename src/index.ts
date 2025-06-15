@@ -60,7 +60,7 @@ export function Err<E extends Error, T>(error: E): ErrorState<E, T> {
     };
   }
 
-  throw new TypeError("Errorexpects an Error instance");
+  throw new TypeError("Err expects an Error instance");
 }
 
 /*
