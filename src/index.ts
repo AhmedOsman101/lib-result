@@ -1,4 +1,4 @@
-import type { ErrorState, OkState, Result } from "./index.d";
+import type { ErrorState, OkState, Result } from "./types.d.ts";
 
 /**
  * @returns {OkState<T>} A Result in the Ok state
