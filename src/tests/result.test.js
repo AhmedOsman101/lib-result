@@ -58,3 +58,15 @@ test("wrapAsync(): resolves with Err on failure", async () => {
   assert.ok(res.isError());
   assert.equal(res.error?.message, "Async fail");
 });
+test("wrapAsync(): resolves with Ok on success (fetch)", async () => {
+  const res = await wrapAsync(() =>
+    fetch("https://jsonplaceholder.typicode.com/users/1")
+  );
+  assert.ok(res.isOk());
+  assert.ok(res.ok.ok);
+});
+test("wrapAsync(): resolves with ErrorState on failure (fetch)", async () => {
+  const res = await wrapAsync(() => fetch("://invalid"));
+  assert.ok(res.isError());
+  assert.equal(res.error.cause.code, "ERR_INVALID_URL");
+});
