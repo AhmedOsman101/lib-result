@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.0.2](https://github.com/AhmedOsman101/lib-result/compare/v2.0.0...v2.0.2) (2025-06-15)
+
+
+### Features
+
+* setup release-please for automation ([0f10377](https://github.com/AhmedOsman101/lib-result/commit/0f1037790412d50b064ca119274625a70da33d29))
+
 ## [2.0.0](https://github.com/AhmedOsman101/lib-result/compare/v1.0.9...v2.0.0) (2025-06-14)
 
 ### Features
