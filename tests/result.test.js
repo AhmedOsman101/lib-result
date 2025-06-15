@@ -1,8 +1,8 @@
 import assert from "node:assert";
 import test from "node:test";
 import { Err, ErrFromText, Ok, wrap, wrapAsync } from "../dist/esm/index.js";
-class DivisionError extends Error {
-}
+
+class DivisionError extends Error {}
 function divide(a, b) {
   if (b === 0) {
     return Err(new DivisionError("Cannot Divide By Zero"));
@@ -59,8 +59,8 @@ test("wrapAsync(): resolves with Err on failure", async () => {
   assert.equal(res.error.message, "Async fail");
 });
 test("wrapAsync(): resolves with Ok on success (fetch)", async () => {
-  const res = await wrapAsync(
-    () => fetch("https://jsonplaceholder.typicode.com/users/1")
+  const res = await wrapAsync(() =>
+    fetch("https://jsonplaceholder.typicode.com/users/1")
   );
   assert.ok(res.isOk());
   assert.ok(res.ok.ok);
