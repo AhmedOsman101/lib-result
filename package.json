@@ -2,7 +2,7 @@
   "name": "lib-result",
   "author": "Ahmad Othman",
   "license": "MIT",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "A Rust-inspired `Result` type for type-safe error handling in TypeScript and JavaScript",
   "type": "module",
   "main": "./dist/cjs/index.cjs",
@@ -17,7 +17,9 @@
       "types": "./dist/types/types.d.ts"
     }
   },
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "format": "pnpm exec biome check --fix src/",
     "format:unsafe": "pnpm exec biome check --fix --unsafe src/",
@@ -39,7 +41,13 @@
     "typescript": "^5.5.4",
     "@biomejs/biome": "2.0.0-beta.6"
   },
-  "keywords": ["typescript", "javascript", "result", "rust", "error-handling"],
+  "keywords": [
+    "typescript",
+    "javascript",
+    "result",
+    "rust",
+    "error-handling"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/AhmedOsman101/lib-result.git"
