@@ -1,9 +1,18 @@
 {
-  "extends": "./tsconfig.json",
   "compilerOptions": {
-    "module": "esnext",
-    "target": "ESNext",
+    "target": "esnext",
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
     "outDir": "./dist/esm",
-    "declaration": false
-  }
+    "declaration": true,
+    "rootDir": "./src",
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "skipLibCheck": true,
+    "allowImportingTsExtensions": false,
+    "noEmit": false,
+    "noUncheckedIndexedAccess": true
+  },
+  "include": ["src/**/*"]
 }
