@@ -23,8 +23,8 @@
     "build:types": "pnpm exec tsc -p tsconfig.types.json",
     "build:tests": "./build-tests.sh",
     "prepublishOnly": "pnpm build",
-    "test:ts": "pnpm exec ts-node --esm src/tests/*.test.ts",
-    "test:js": "node --test src/tests/*.test.js",
+    "test:ts": "pnpm exec ts-node --esm tests/*.test.ts",
+    "test:js": "node --test tests/*.test.js",
     "test": "pnpm build && clear && pnpm test:ts && pnpm test:js"
   },
   "files": ["dist"],

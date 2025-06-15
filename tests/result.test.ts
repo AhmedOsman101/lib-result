@@ -1,7 +1,7 @@
 import assert from "node:assert";
 import test from "node:test";
-import type { Result } from "../index.d";
-import { Err, ErrFromText, Ok, wrap, wrapAsync } from "../index.ts";
+import type { Result } from "../src/index.d.ts";
+import { Err, ErrFromText, Ok, wrap, wrapAsync } from "../src/index.ts";
 
 class DivisionError extends Error {}
 
