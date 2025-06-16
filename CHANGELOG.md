@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.1.4](https://github.com/AhmedOsman101/lib-result/compare/v2.1.3...v2.1.4) (2025-06-16)
+
+
+### Bug Fixes
+
+* update import path in tests ([e1ffb86](https://github.com/AhmedOsman101/lib-result/commit/e1ffb866846b4d03dde1e76eb7d03666b714f422))
+
 ## [2.1.0](https://github.com/AhmedOsman101/lib-result/compare/v2.0.2...v2.1.0) (2025-06-15)
 
 ### Features
