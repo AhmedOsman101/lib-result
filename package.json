@@ -11,23 +11,21 @@
   "homepage": "https://github.com/AhmedOsman101/lib-result#readme",
   "keywords": ["typescript", "javascript", "result", "rust", "error-handling"],
   "type": "module",
-  "main": "./dist/cjs/index.js",
-  "module": "./dist/esm/index.js",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "import": "./dist/esm/index.js",
-      "require": "./dist/cjs/index.js"
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
     }
   },
   "files": ["dist"],
   "scripts": {
-    "format": "pnpm exec biome check --fix src/",
-    "format:unsafe": "pnpm exec biome check --fix --unsafe src/",
+    "format": "pnpm exec biome check --fix .",
+    "format:unsafe": "pnpm exec biome check --fix --unsafe .",
     "clean": "rm -rf dist/*",
     "build": "./build.sh",
-    "build:cjs": "pnpm exec tsc -p tsconfig.json",
-    "build:esm": "pnpm exec tsc -p tsconfig.esm.json",
     "build:tests": "./build-tests.sh",
     "prepublishOnly": "pnpm build && pnpm format",
     "test:ts": "pnpm exec tsx tests/*.test.ts",
@@ -39,9 +37,7 @@
     "@biomejs/biome": "2.0.0-beta.6",
     "@types/node": "^22.15.21",
     "esbuild": "^0.25.5",
-    "rollup": "^4.43.0",
-    "rollup-plugin-dts": "^6.2.1",
-    "rollup-plugin-typescript2": "^0.36.0",
+    "tsup": "^8.5.0",
     "tsx": "^4.20.3",
     "typescript": "^5.5.4"
   }
