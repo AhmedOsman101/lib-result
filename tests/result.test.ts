@@ -7,7 +7,7 @@ import {
   type Result,
   wrap,
   wrapAsync,
-} from "../src/index.js";
+} from "../dist/index.js";
 
 class DivisionError extends Error {}
 

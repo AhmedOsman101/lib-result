@@ -1,6 +1,6 @@
 import assert from "node:assert";
 import test from "node:test";
-import { Err, ErrFromText, Ok, wrap, wrapAsync } from "../dist/esm/index.js";
+import { Err, ErrFromText, Ok, wrap, wrapAsync } from "../dist/index.js";
 
 class DivisionError extends Error {}
 function divide(a, b) {
