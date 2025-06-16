@@ -4,7 +4,7 @@
  * @template E - The error type, must extend `Error`.
  * @template U - The return type of `unwrap`, typically `T` for `OkState` or `never` for `ErrorState`.
  */
-interface ResultMethods<T, E extends Error, U> {
+interface ResultMethods<T, E extends Error> {
   /**
    * Checks if the result is in the `Ok` state (contains a value and no error).
    * @returns `true` if the result is `Ok`, narrowing the type to `OkState<T, E>`.
@@ -22,7 +22,23 @@ interface ResultMethods<T, E extends Error, U> {
    * @returns The success value (`T`) if `OkState<T>`, or throws the error (`E`) if `ErrorState<E>`.
    * @throws {E} The error if the result is in the Error state.
    */
-  unwrap(): U;
+  unwrap(): T;
+
+  /**
+   * Transforms the success value of a `Result` using the provided function, preserving the error if in the `Err` state.
+   * @template U - The type of the transformed success value.
+   * @param fn - A function that takes the `Ok` value of type `T` and returns a new value of type `U`.
+   * @returns A new `Result` containing the transformed value (`Ok<U>`) if the original `Result` is `Ok`, or the same error (`Err<E>`) if the original `Result` is `Err`.
+   * @example
+   * const result = Ok(5);
+   * const mapped = result.map(x => x.toString());
+   * // mapped: Result<string, Error> = Ok("5")
+   *
+   * const error: Result<number, Error> = Err(new Error("Failed"));
+   * const mappedError = error.map(x => x.toString());
+   * // mappedError: Result<string, Error> = Err(Error("Failed"))
+   */
+  map<U>(fn: (value: T) => U): Result<U, E>;
 }
 
 /**
@@ -35,7 +51,7 @@ export type OkState<T, E extends Error = Error> = {
   ok: T;
   /** Always `undefined` in the `Ok` state, indicating no error. */
   error: undefined;
-} & ResultMethods<T, E, T>;
+} & ResultMethods<T, E>;
 
 /**
  * Represents an error result state with an error of type `E` and no value (undefined).
@@ -47,7 +63,7 @@ export type ErrorState<E extends Error, T> = {
   ok: undefined;
   /** The error of type `E`. */
   error: E;
-} & ResultMethods<T, E, never>;
+} & ResultMethods<T, E>;
 
 /**
  * Simulates Rust's `Result` enum, representing either a success (`Ok`) or failure (`Err`).
