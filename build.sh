@@ -13,6 +13,7 @@ mkdir -p dist/{esm,cjs}
 
 mv dist/tmp/index.esm.js dist/esm/index.js
 mv dist/tmp/index.cjs dist/cjs/index.js
+rm -rf dist/tmp
 
 cjsPkg="dist/cjs/package.json"
 
