@@ -4,7 +4,7 @@
  * @template E - The error type, must extend `Error`.
  * @template U - The return type of `unwrap`, typically `T` for `OkState` or `never` for `ErrorState`.
  */
-interface ResultMethods<T, E extends Error> {
+export interface ResultMethods<T, E extends Error> {
   /**
    * Checks if the result is in the `Ok` state (contains a value and no error).
    * @returns `true` if the result is `Ok`, narrowing the type to `OkState<T, E>`.
@@ -39,6 +39,30 @@ interface ResultMethods<T, E extends Error> {
    * // mappedError: Result<string, Error> = Err(Error("Failed"))
    */
   map<U>(fn: (value: T) => U): Result<U, E>;
+
+  /**
+   * Chains a transformation by passing the `Ok` value to a function that returns a new `Result`, preserving the `Err` state if present.
+   * @template U - The type of the success value in the returned `Result`.
+   * @param {(value: T) => Result<U, E>} fn - A function that takes the `Ok` value of type `T` and returns a new `Result<U, E>`.
+   * @returns {Result<U, E>} A new `Result<U, E>`: the result of `fn` if the original `Result` is `Ok`, or the same `Err` state if the original `Result` is `Err`.
+   * @example
+   * // Chaining transformations
+   * const result: Result<number, Error> = Ok(5);
+   * const chained = result
+   *   .pipe(x => Ok(x * 2)) // Result<number, Error> = Ok(10)
+   *   .pipe(x => Ok(x.toString())); // Result<string, Error> = Ok("10")
+   * if (chained.isOk()) {
+   *   console.log(chained.ok); // "10"
+   * }
+   *
+   * // Preserving Err state
+   * const error: Result<number, Error> = Err(new Error("Failed"));
+   * const chainedError = error.pipe(x => Ok(x * 2)); // Result<number, Error> = Err(Error("Failed"))
+   * if (chainedError.isErr()) {
+   *   console.log(chainedError.error.message); // "Failed"
+   * }
+   */
+  pipe<U>(fn: (value: T) => Result<U, E>): Result<U, E>;
 }
 
 /**

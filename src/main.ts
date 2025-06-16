@@ -27,6 +27,10 @@ export function Ok<T, E extends Error = Error>(ok: T): OkState<T, E> {
       if (this.isError()) return Err(this.error);
       return Ok(fn(this.ok));
     },
+    pipe<U>(fn: (value: T) => Result<U, E>): Result<U, E> {
+      if (this.isError()) return Err(this.error);
+      return fn(this.ok);
+    },
   };
 }
 
@@ -56,6 +60,9 @@ export function Err<E extends Error, T>(error: E): ErrorState<E, T> {
         throw this.error;
       },
       map<U>(_fn: (value: T) => U): Result<U, E> {
+        return Err(this.error);
+      },
+      pipe<U>(_fn: (value: T) => Result<U, E>): Result<U, E> {
         return Err(this.error);
       },
     };
@@ -88,6 +95,9 @@ export function ErrFromText<T>(message: string): ErrorState<Error, T> {
       throw this.error;
     },
     map<U>(_fn: (value: T) => U): Result<U, Error> {
+      return Err(this.error);
+    },
+    pipe<U>(_fn: (value: T) => Result<U, Error>): Result<U, Error> {
       return Err(this.error);
     },
   };
