@@ -9,13 +9,7 @@
     "url": "https://github.com/AhmedOsman101/lib-result.git"
   },
   "homepage": "https://github.com/AhmedOsman101/lib-result#readme",
-  "keywords": [
-    "typescript",
-    "javascript",
-    "result",
-    "rust",
-    "error-handling"
-  ],
+  "keywords": ["typescript", "javascript", "result", "rust", "error-handling"],
   "type": "module",
   "main": "./dist/cjs/index.js",
   "module": "./dist/esm/index.js",
@@ -26,9 +20,7 @@
       "require": "./dist/cjs/index.js"
     }
   },
-  "files": [
-    "dist"
-  ],
+  "files": ["dist"],
   "scripts": {
     "format": "pnpm exec biome check --fix src/",
     "format:unsafe": "pnpm exec biome check --fix --unsafe src/",

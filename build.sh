@@ -13,3 +13,8 @@ mkdir -p dist/{esm,cjs}
 
 mv dist/tmp/index.esm.js dist/esm/index.js
 mv dist/tmp/index.cjs dist/cjs/index.js
+
+cjsPkg="dist/cjs/package.json"
+
+cp package.json "${cjsPkg}"
+sed 's|"module"|"commonjs"|' package.json >"${cjsPkg}"

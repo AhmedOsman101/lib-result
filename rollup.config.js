@@ -10,7 +10,8 @@ export default defineConfig([
     // external: [Object.keys(pkg.dependencies)],
     output: {
       file: "dist/tmp/index.cjs",
-      format: "cjs",
+      format: "commonjs",
+      dynamicImportInCjs: true,
     },
     plugins: [
       typescript({
