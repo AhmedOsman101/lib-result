@@ -2,8 +2,8 @@
   "extends": "./tsconfig.json", // Inherit base config
   "compilerOptions": {
     /* Basic Settings */
-    "target": "ES2020", // Modern enough for Node.js 14+
-    "module": "CommonJS", // Output CommonJS modules
-    "moduleResolution": "Node" // Use Node.js-style module resolution
+    "target": "ES2022", // Modern enough for Node.js 14+
+    "module": "nodenext", // Output CommonJS modules
+    "moduleResolution": "nodenext" // Use Node.js-style module resolution
   }
 }

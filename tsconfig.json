@@ -1,9 +1,16 @@
 {
   "compilerOptions": {
-    "outDir": "./dist", // Output directory
-    "rootDir": "./src", // Source directory
-
-    /* Strictness & Type Checking */
+    /* Base Options: */
+    "target": "es2022",
+    "esModuleInterop": true, // Enable ESM/CJS interoperability
+    "allowSyntheticDefaultImports": true, // Allow default imports from modules without default exports
+    "skipLibCheck": true,
+    "allowJs": true,
+    "moduleDetection": "force",
+    "isolatedModules": true,
+    "verbatimModuleSyntax": true,
+    "outDir": "dist", // Output directory
+    /* Strictness */
     "strict": true, // Enable all strict type checks
     "noImplicitAny": true, // Prevent implicit 'any' types
     "strictNullChecks": true, // Enable strict null checks
@@ -11,24 +18,13 @@
     "strictBindCallApply": true, // Strict check for bind/call/apply
     "noImplicitThis": true, // Prevent implicit 'this' as 'any'
     "alwaysStrict": true, // Parse in strict mode
-
-    /* Interop & Compatibility */
-    "esModuleInterop": true, // Enable ESM/CJS interoperability
-    "allowSyntheticDefaultImports": true, // Allow default imports from modules without default exports
-
+    "noUncheckedIndexedAccess": true,
+    "noImplicitOverride": true,
     /* Output Control */
     "declaration": true, // Generate .d.ts type declarations
-
-    /* Quality & Maintainability */
-    "noUnusedLocals": true, // Error on unused locals
-    "noUnusedParameters": true, // Error on unused parameters
-    "noImplicitReturns": true, // Error on implicit returns
-    "noFallthroughCasesInSwitch": true, // Prevent fallthrough in switch cases
-
-    /* Advanced */
-    "skipLibCheck": false, // Skip declaration file checking (faster builds)
-    "forceConsistentCasingInFileNames": true, // Ensure consistent file casing
-    "exactOptionalPropertyTypes": true // Treat optional properties as exact
+    "sourceMap": true,
+    "declarationMap": true,
+    "lib": ["es2022"]
   },
   "include": ["src/**/*.ts"],
   "exclude": ["node_modules", "dist", "**/*.test.ts"]
