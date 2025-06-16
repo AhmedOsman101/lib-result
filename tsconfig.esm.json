@@ -1,9 +1,9 @@
 {
   "compilerOptions": {
     "target": "esnext",
-    "module": "nodenext",
-    "moduleResolution": "nodenext",
-    "outDir": "./dist/esm",
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "outDir": "./dist/tmp",
     "declaration": true,
     "rootDir": "./src",
     "esModuleInterop": true,
@@ -12,7 +12,8 @@
     "skipLibCheck": true,
     "allowImportingTsExtensions": false,
     "noEmit": false,
-    "noUncheckedIndexedAccess": true
+    "noUncheckedIndexedAccess": true,
+    "importHelpers": false
   },
   "include": ["src/**/*"]
 }

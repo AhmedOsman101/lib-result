@@ -1,8 +1,8 @@
 {
   "compilerOptions": {
-    "target": "es2015",
-    "module": "commonjs",
-    "outDir": "./dist/cjs",
+    "target": "esnext",
+    "module": "esnext",
+    "outDir": "./dist/tmp",
     "rootDir": "./src",
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
@@ -11,7 +11,8 @@
     "declaration": true,
     "allowImportingTsExtensions": false,
     "noEmit": false,
-    "noUncheckedIndexedAccess": true
+    "noUncheckedIndexedAccess": true,
+    "importHelpers": false
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "tests"]
