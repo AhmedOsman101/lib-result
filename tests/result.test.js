@@ -16,6 +16,7 @@ function toPromise(fn) {
     return Promise.reject(err);
   }
 }
+const double = x => x * 2;
 test("divide returns error on division by zero", () => {
   const division = divide(1, 0);
   assert.ok(division.isError());
@@ -25,6 +26,18 @@ test("divide returns result on valid division", () => {
   const division = divide(10, 2);
   assert.ok(division.isOk());
   assert.equal(division.ok, 5);
+});
+test("successful divide map returns doubled value", () => {
+  const division = divide(10, 2);
+  const doubled = division.map(double);
+  assert.ok(doubled.isOk());
+  assert.equal(doubled.ok, 10);
+});
+test("failed divide map returns Error value", () => {
+  const division = divide(10, 0);
+  const doubled = division.map(double);
+  assert.ok(doubled.isError());
+  assert.equal(doubled.error.message, "Cannot Divide By Zero");
 });
 test("ErrFromText unwrap throws error with correct message", () => {
   const errorResult = ErrFromText("Failed");
