@@ -4,10 +4,16 @@
   "license": "MIT",
   "version": "2.1.0",
   "description": "A Rust-inspired `Result` type for type-safe error handling in TypeScript and JavaScript",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/AhmedOsman101/lib-result.git"
+  },
+  "homepage": "https://github.com/AhmedOsman101/lib-result#readme",
+  "keywords": ["typescript", "javascript", "result", "rust", "error-handling"],
   "type": "module",
   "main": "./dist/cjs/index.js",
   "module": "./dist/esm/index.js",
-  "types": "./dist/esm/index.d.ts",
+  "types": "./dist/index.d.ts",
   "exports": {
     ".": {
       "import": "./dist/esm/index.js",
@@ -19,7 +25,7 @@
     "format": "pnpm exec biome check --fix src/",
     "format:unsafe": "pnpm exec biome check --fix --unsafe src/",
     "clean": "rm -rf dist/*",
-    "build": "pnpm clean && pnpm build:cjs && pnpm build:esm && pnpm build:tests",
+    "build": "./build.sh",
     "build:cjs": "pnpm exec tsc -p tsconfig.json",
     "build:esm": "pnpm exec tsc -p tsconfig.esm.json",
     "build:tests": "./build-tests.sh",
@@ -29,16 +35,14 @@
     "test": "pnpm build && clear && pnpm test:ts && pnpm test:js"
   },
   "devDependencies": {
+    "@arethetypeswrong/cli": "^0.18.2",
     "@biomejs/biome": "2.0.0-beta.6",
     "@types/node": "^22.15.21",
     "esbuild": "^0.25.5",
+    "rollup": "^4.43.0",
+    "rollup-plugin-dts": "^6.2.1",
+    "rollup-plugin-typescript2": "^0.36.0",
     "tsx": "^4.20.3",
     "typescript": "^5.5.4"
-  },
-  "keywords": ["typescript", "javascript", "result", "rust", "error-handling"],
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/AhmedOsman101/lib-result.git"
-  },
-  "homepage": "https://github.com/AhmedOsman101/lib-result#readme"
+  }
 }
