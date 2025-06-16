@@ -1,19 +1,35 @@
 {
   "compilerOptions": {
-    "target": "es2017",
-    "module": "esnext",
-    "outDir": "./dist/tmp",
-    "rootDir": "./src",
-    "esModuleInterop": true,
-    "forceConsistentCasingInFileNames": true,
-    "strict": true,
-    "skipLibCheck": true,
-    "declaration": true,
-    "allowImportingTsExtensions": false,
-    "noEmit": false,
-    "noUncheckedIndexedAccess": true,
-    "importHelpers": false
+    "outDir": "./dist", // Output directory
+    "rootDir": "./src", // Source directory
+
+    /* Strictness & Type Checking */
+    "strict": true, // Enable all strict type checks
+    "noImplicitAny": true, // Prevent implicit 'any' types
+    "strictNullChecks": true, // Enable strict null checks
+    "strictFunctionTypes": true, // Strict function type variance
+    "strictBindCallApply": true, // Strict check for bind/call/apply
+    "noImplicitThis": true, // Prevent implicit 'this' as 'any'
+    "alwaysStrict": true, // Parse in strict mode
+
+    /* Interop & Compatibility */
+    "esModuleInterop": true, // Enable ESM/CJS interoperability
+    "allowSyntheticDefaultImports": true, // Allow default imports from modules without default exports
+
+    /* Output Control */
+    "declaration": true, // Generate .d.ts type declarations
+
+    /* Quality & Maintainability */
+    "noUnusedLocals": true, // Error on unused locals
+    "noUnusedParameters": true, // Error on unused parameters
+    "noImplicitReturns": true, // Error on implicit returns
+    "noFallthroughCasesInSwitch": true, // Prevent fallthrough in switch cases
+
+    /* Advanced */
+    "skipLibCheck": false, // Skip declaration file checking (faster builds)
+    "forceConsistentCasingInFileNames": true, // Ensure consistent file casing
+    "exactOptionalPropertyTypes": true // Treat optional properties as exact
   },
-  "include": ["src/**/*"],
-  "exclude": ["node_modules", "tests"]
+  "include": ["src/**/*.ts"],
+  "exclude": ["node_modules", "dist", "**/*.test.ts"]
 }
