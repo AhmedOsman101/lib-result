@@ -100,3 +100,10 @@ export type ErrorState<E extends Error, T> = {
 export type Result<T, E extends Error = Error> =
   | OkState<T, E>
   | ErrorState<E, T>;
+
+export interface CustomErrorProps {
+  // biome-ignore lint/suspicious/noExplicitAny: Allows any key-value pairs
+  [key: string]: any;
+}
+
+export type CustomError = Error & CustomErrorProps;
