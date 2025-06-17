@@ -2,6 +2,11 @@
 
 A Rust-inspired `Result` type for type-safe error handling in TypeScript and JavaScript.
 
+> [!NOTE]
+>
+> To check out the full documentation, API details, and advanced usage
+> See the [lib-result Wiki](https://github.com/AhmedOsman101/lib-result/wiki) for comprehensive guides, API docs, and examples. The wiki is the main source for up-to-date documentation.
+
 > [!WARNING]
 >
 > **Deprecation Notice for Version 1.x** As of version 2.0.0, the standalone `isOk`, `isErr`, and `unwrap` functions are deprecated in favor of the `isOk()`, `isError()`, and `unwrap()` methods on `Result` objects (e.g., `result.isOk()`).
@@ -167,7 +172,7 @@ if (customErr.isError()) {
 - `ErrFromObject<T>(props: CustomErrorProps, message?: string)`: Creates an `ErrorState` result with a custom error object and message.
 - `wrap<T, E extends Error = Error>(callback: () => T)`: Wraps a synchronous function, returning an `Ok` result for the return value or an `ErrorState` result for thrown errors.
 - `wrapAsync<T, E extends Error = Error>(callback: () => Promise<T>)`: Wraps an asynchronous function, returning a `Promise` resolving to an `Ok` result for resolved values or an `ErrorState` result for rejected errors.
-- `unwrap<T, E extends Error>(result: Result<T, E>)` _(Deprecated)_: Extracts the `Ok` value or throws the `ErrorState` error.
+- `unwrap<T, E extends Error>(result: Result<T, E>)` _(Deprecated)_: Extracts the `Ok` value or throws the `ErrorState` error. Use `result.unwrap()` instead.
 - `isOk<T, E extends Error>(result: Result<T, E>)` _(Deprecated)_: Checks if the result is `Ok`. Use `result.isOk()` instead.
 - `isErr<T, E extends Error>(result: Result<T, E>)` _(Deprecated)_: Checks if the result is `Err`. Use `result.isError()` instead.
 
