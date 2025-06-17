@@ -1,6 +1,13 @@
 import assert from "node:assert";
 import test from "node:test";
-import { Err, ErrFromText, Ok, wrap, wrapAsync } from "../dist/index.js";
+import {
+  Err,
+  ErrFromObject,
+  ErrFromText,
+  Ok,
+  wrap,
+  wrapAsync,
+} from "../dist/index.js";
 
 class DivisionError extends Error {}
 function divide(a, b) {
@@ -42,6 +49,49 @@ test("failed divide map returns Error value", () => {
 test("ErrFromText unwrap throws error with correct message", () => {
   const errorResult = ErrFromText("Failed");
   assert.throws(() => errorResult.unwrap(), { message: "Failed" });
+});
+test("map transforms value type (number to string)", () => {
+  const result = divide(8, 2);
+  const mapped = result.map(x => `Value: ${x}`);
+  assert.ok(mapped.isOk());
+  assert.equal(mapped.ok, "Value: 4");
+});
+test("pipe chains Ok results", () => {
+  const result = divide(10, 2);
+  const piped = result.pipe(x => Ok(x * 2)).pipe(x => Ok(x.toString()));
+  assert.ok(piped.isOk());
+  assert.equal(piped.ok, "10");
+});
+test("pipe preserves Err state", () => {
+  const error = divide(10, 0);
+  const piped = error.pipe(x => Ok(x * 2));
+  assert.ok(piped.isError());
+  assert.equal(piped.error.message, "Cannot Divide By Zero");
+});
+test("pipe short-circuits on first Err in chain", () => {
+  const result = divide(10, 2)
+    .pipe(x => divide(x, 0))
+    .pipe(x => Ok(x * 100));
+  assert.ok(result.isError());
+  assert.equal(result.error.message, "Cannot Divide By Zero");
+});
+test("ErrFromObject creates ErrorState with custom properties", () => {
+  const errProps = { code: 404, info: "Not Found" };
+  const result = ErrFromObject(errProps, "Custom error");
+  assert.ok(result.isError());
+  assert.equal(result.error.message, "Custom error");
+  assert.equal(result.error.code, 404);
+  assert.equal(result.error.info, "Not Found");
+  assert.throws(() => result.unwrap(), { message: "Custom error" });
+});
+test("ErrFromObject methods: map and pipe return ErrorState", () => {
+  const result = ErrFromObject({ foo: "bar" }, "fail");
+  const mapped = result.map(x => x + 1);
+  const piped = result.pipe(x => Ok(x + 1));
+  assert.ok(mapped.isError());
+  assert.ok(piped.isError());
+  assert.equal(mapped.error.message, "fail");
+  assert.equal(piped.error.message, "fail");
 });
 test("wrap(): returns Ok on success", () => {
   const res = wrap(() => 42);
