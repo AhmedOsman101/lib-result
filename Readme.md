@@ -61,6 +61,26 @@ const asyncResult = await wrapAsync(() =>
 if (asyncResult.isOk()) {
   console.log(asyncResult.ok.status); // 200
 }
+
+// Using map and pipe for chaining transformations
+const chained = divide(10, 2)
+  .map((x) => x + 1) // Ok(6)
+  .pipe((x) => divide(x, 2)); // Ok(3)
+if (chained.isOk()) {
+  console.log(chained.ok); // 3
+}
+
+// Using ErrFromObject to create an error with custom properties
+import { ErrFromObject } from "lib-result";
+const customErr = ErrFromObject<number>(
+  { code: 123, info: "Custom" },
+  "Something went wrong"
+);
+if (customErr.isError()) {
+  console.error(customErr.error.message); // "Something went wrong"
+  console.error(customErr.error.code); // 123
+  console.error(customErr.error.info); // "Custom"
+}
 ```
 
 ### JavaScript
@@ -112,6 +132,26 @@ const asyncResult = await wrapAsync(() =>
 if (asyncResult.isOk()) {
   console.log(asyncResult.ok.status); // 200
 }
+
+// Using map and pipe for chaining transformations
+const chained = divide(10, 2)
+  .map((x) => x + 1) // Ok(6)
+  .pipe((x) => divide(x, 2)); // Ok(3)
+if (chained.isOk()) {
+  console.log(chained.ok); // 3
+}
+
+// Using ErrFromObject to create an error with custom properties
+import { ErrFromObject } from "lib-result";
+const customErr = ErrFromObject(
+  { code: 123, info: "Custom" },
+  "Something went wrong"
+);
+if (customErr.isError()) {
+  console.error(customErr.error.message); // "Something went wrong"
+  console.error(customErr.error.code); // 123
+  console.error(customErr.error.info); // "Custom"
+}
 ```
 
 ## API
@@ -121,9 +161,10 @@ if (asyncResult.isOk()) {
 - `Ok<T, E extends Error = Error>(ok: T)`: Creates an `Ok` result with a success value.
 - `Err<E extends Error, T>(error: E)`: Creates an `ErrorState` result with an error instance.
 - `ErrFromText<T>(message: string)`: Creates an `ErrorState` result from a string message.
+- `ErrFromObject<T>(props: CustomErrorProps, message?: string)`: Creates an `ErrorState` result with a custom error object and message.
 - `wrap<T, E extends Error = Error>(callback: () => T)`: Wraps a synchronous function, returning an `Ok` result for the return value or an `ErrorState` result for thrown errors.
 - `wrapAsync<T, E extends Error = Error>(callback: () => Promise<T>)`: Wraps an asynchronous function, returning a `Promise` resolving to an `Ok` result for resolved values or an `ErrorState` result for rejected errors.
-- `unwrap<T, E extends Error>(result: Result<T, E>)`: Extracts the `Ok` value or throws the `ErrorState` error.
+- `unwrap<T, E extends Error>(result: Result<T, E>)` _(Deprecated)_: Extracts the `Ok` value or throws the `ErrorState` error.
 - `isOk<T, E extends Error>(result: Result<T, E>)` _(Deprecated)_: Checks if the result is `Ok`. Use `result.isOk()` instead.
 - `isErr<T, E extends Error>(result: Result<T, E>)` _(Deprecated)_: Checks if the result is `Err`. Use `result.isError()` instead.
 
@@ -132,6 +173,8 @@ if (asyncResult.isOk()) {
 - `result.isOk(): this is OkState<T, E>`: Returns `true` if the result is `Ok`, narrowing the type to `OkState`.
 - `result.isError(): this is ErrorState<E, T>`: Returns `true` if the result is `ErrorState`, narrowing the type to `ErrorState`.
 - `result.unwrap(): T`: Returns the `Ok` value or throws the `ErrorState` error.
+- `result.map<U>(fn: (value: T) => U): Result<U, E>`: Transforms the `Ok` value if present, preserving errors.
+- `result.pipe<U>(fn: (value: T) => Result<U, E>): Result<U, E>`: Chains a transformation that returns a new `Result`, short-circuiting on errors.
 
 ## Source Code
 
