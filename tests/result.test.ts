@@ -74,6 +74,15 @@ test("map transforms value type (number to string)", () => {
   assert.equal(mapped.ok, "Value: 4");
 });
 
+test("failed map returns the error", () => {
+  const failedResult = Ok(5)
+    .map(x => `value is ${x}`)
+    .map(x => JSON.parse(x));
+
+  assert.ok(failedResult.isError());
+  assert.ok(failedResult.error.message.startsWith("Unexpected token"));
+});
+
 test("pipe chains Ok results", () => {
   const result = divide(10, 2); // Ok(5)
   const piped = result
