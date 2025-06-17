@@ -31,12 +31,18 @@ export function Ok<T, E extends Error = Error>(ok: T): OkState<T, E> {
       return this.ok;
     },
     map<U>(fn: (value: T) => U): Result<U, E> {
-      if (this.isError()) return Err(this.error);
-      return Ok(fn(this.ok));
+      try {
+        return Ok(fn(this.ok));
+      } catch (e) {
+        return Err(toError(e) as E);
+      }
     },
     pipe<U>(fn: (value: T) => Result<U, E>): Result<U, E> {
-      if (this.isError()) return Err(this.error);
-      return fn(this.ok);
+      try {
+        return fn(this.ok);
+      } catch (e) {
+        return Err(toError(e) as E);
+      }
     },
   };
 }
