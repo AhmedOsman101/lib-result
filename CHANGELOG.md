@@ -1,5 +1,18 @@
 # Changelog
 
+All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
+
+## [2.2.0](https://github.com/AhmedOsman101/lib-result/compare/v2.1.4...v2.2.0) (2025-06-17)
+
+
+### Features
+
+* add custom error creation utility ([af25a70](https://github.com/AhmedOsman101/lib-result/commit/af25a70f5437b2702c16c671417fe6bf2e03283c))
+* add err from object for custom errors ([b037e7c](https://github.com/AhmedOsman101/lib-result/commit/b037e7c51b59941dfdab2f4c035cbe257084f39e))
+* add map function to result type ([3ef5907](https://github.com/AhmedOsman101/lib-result/commit/3ef59070dc6a3e30b53fce81ebac7b7a519ae567))
+* add pipe method to Result type ([2abad0d](https://github.com/AhmedOsman101/lib-result/commit/2abad0da24897d5d31974f5e60e038d899c89943))
+* deprecate unwrap function in favor of result.unwrap ([b633183](https://github.com/AhmedOsman101/lib-result/commit/b6331839ed0c95051a4e557c0e1a1da99c8ce154))
+
 ## [2.1.0](https://github.com/AhmedOsman101/lib-result/compare/v2.0.2...v2.1.0) (2025-06-15)
 
 ### Features
