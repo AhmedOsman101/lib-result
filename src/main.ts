@@ -1,4 +1,11 @@
-import type { ErrorState, OkState, Result } from "./types.js";
+import type {
+  CustomError,
+  CustomErrorProps,
+  ErrorState,
+  OkState,
+  Result,
+} from "./types.js";
+import { createCustomError, toError } from "./utils.js";
 
 /**
  * Creates a successful `Result` in the `Ok` state.
@@ -104,23 +111,43 @@ export function ErrFromText<T>(message: string): ErrorState<Error, T> {
 }
 
 /**
- * Converts an unknown value to an `Error` instance.
- * @param {unknown} e - The value to convert, typically an error or a string.
- * @returns {Error} An `Error` instance. If `e` is already an `Error`, it is returned unchanged.
- * If `e` is a string, a new `Error` is created with that message. Otherwise, a new `Error`
- * with the message "Unknown error" is returned.
+ * Creates a failure `Result` in the `Error` state from custom error properties and an optional message.
+ * Useful for attaching additional metadata to errors.
+ *
+ * @template T - The type of the success value (used for type compatibility with `Result`).
+ * @param {CustomErrorProps} props - An object containing custom properties to attach to the error.
+ * @param {string} message - The error message (default is empty string).
+ * @returns {ErrorState<CustomError, T>} A `Result` in the `Error` state with a custom error and no value.
  * @example
- * try {
- *   throw "Something went wrong";
- * } catch (e) {
- *   const error = toError(e); // Error: "Something went wrong"
- *   console.log(error.message);
+ * const result = ErrFromObject({ code: 404, info: "Not Found" }, "Custom error");
+ * if (result.isError()) {
+ *   console.log(result.error.code); // 404
+ *   console.log(result.error.message); // "Custom error"
  * }
  */
-function toError(e: unknown): Error {
-  return e instanceof Error
-    ? e
-    : new Error(typeof e === "string" ? e : "Unknown error");
+export function ErrFromObject<T>(
+  props?: CustomErrorProps,
+  message = ""
+): ErrorState<CustomError, T> {
+  return {
+    ok: undefined,
+    error: createCustomError(props, message),
+    isError(): this is ErrorState<CustomError, T> {
+      return this.error !== undefined;
+    },
+    isOk(): this is OkState<T, CustomError> {
+      return this.error === undefined;
+    },
+    unwrap(): never {
+      throw this.error;
+    },
+    map<U>(_fn: (value: T) => U): Result<U, CustomError> {
+      return Err(this.error);
+    },
+    pipe<U>(_fn: (value: T) => Result<U, CustomError>): Result<U, CustomError> {
+      return Err(this.error);
+    },
+  };
 }
 
 /**
