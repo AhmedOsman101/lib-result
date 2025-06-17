@@ -2,7 +2,10 @@
 
 A Rust-inspired `Result` type for type-safe error handling in TypeScript and JavaScript.
 
-> **Deprecation Notice for Version 1.x**: As of version 2.0.0, the standalone `isOk` and `isErr` functions are deprecated in favor of the `isOk()` and `isError()` methods on `Result` objects (e.g., `result.isOk()`). Please update your code to use the new method-based API and migrate to version 2.x for continued support.
+> [!WARNING]
+>
+> **Deprecation Notice for Version 1.x** As of version 2.0.0, the standalone `isOk`, `isErr`, and `unwrap` functions are deprecated in favor of the `isOk()`, `isError()`, and `unwrap()` methods on `Result` objects (e.g., `result.isOk()`).
+> Please update your code to use the new method-based API and migrate to version 2.x for continued support.
 
 ## Installation
 
@@ -64,8 +67,8 @@ if (asyncResult.isOk()) {
 
 // Using map and pipe for chaining transformations
 const chained = divide(10, 2)
-  .map((x) => x + 1) // Ok(6)
-  .pipe((x) => divide(x, 2)); // Ok(3)
+  .map(x => x + 1) // Ok(6)
+  .pipe(x => divide(x, 2)); // Ok(3)
 if (chained.isOk()) {
   console.log(chained.ok); // 3
 }
@@ -135,8 +138,8 @@ if (asyncResult.isOk()) {
 
 // Using map and pipe for chaining transformations
 const chained = divide(10, 2)
-  .map((x) => x + 1) // Ok(6)
-  .pipe((x) => divide(x, 2)); // Ok(3)
+  .map(x => x + 1) // Ok(6)
+  .pipe(x => divide(x, 2)); // Ok(3)
 if (chained.isOk()) {
   console.log(chained.ok); // 3
 }
