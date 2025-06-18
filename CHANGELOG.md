@@ -1,5 +1,16 @@
 # Changelog
 
+## [2.3.0](https://github.com/AhmedOsman101/lib-result/compare/v2.2.1...v2.3.0) (2025-06-18)
+
+### Features
+
+- add error handling to `map` and `pipe` ([adc6719](https://github.com/AhmedOsman101/lib-result/commit/adc6719533fcb7bec14ed8a5029fcca1a6309120))
+- add `wrapThrowable` and `wrapAsyncThrowable` result methods ([eac71e9](https://github.com/AhmedOsman101/lib-result/commit/eac71e97df02ca4c4c8b6e6deb5b6ba89fddb8fd))
+
+### Bug Fixes
+
+- improve error conversion in `toError` util ([38c9759](https://github.com/AhmedOsman101/lib-result/commit/38c97594cbb4e921824a62c87807dbbd10e8ca83))
+
 ## [2.2.0](https://github.com/AhmedOsman101/lib-result/compare/v2.1.4...v2.2.0) (2025-06-17)
 
 ### Features
