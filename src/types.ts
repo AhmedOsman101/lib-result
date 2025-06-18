@@ -70,24 +70,25 @@ export interface ResultMethods<T, E extends Error> {
  * @template T - The type of the success value.
  * @template E - The error type, must extend `Error` (defaults to `Error`).
  */
-export type OkState<T, E extends Error = Error> = {
+export interface OkState<T, E extends Error = Error>
+  extends ResultMethods<T, E> {
   /** The success value of type `T`. */
   ok: T;
   /** Always `undefined` in the `Ok` state, indicating no error. */
   error: undefined;
-} & ResultMethods<T, E>;
+}
 
 /**
  * Represents an error result state with an error of type `E` and no value (undefined).
  * @template E - The error type, must extend `Error`.
  * @template T - The type of the success value (used for type compatibility with `Result`).
  */
-export type ErrorState<E extends Error, T> = {
+export interface ErrorState<E extends Error, T> extends ResultMethods<T, E> {
   /** Always `undefined` in the `Error` state, indicating no value. */
   ok: undefined;
   /** The error of type `E`. */
   error: E;
-} & ResultMethods<T, E>;
+}
 
 /**
  * Simulates Rust's `Result` enum, representing either a success (`Ok`) or failure (`Err`).
@@ -106,6 +107,15 @@ export interface CustomErrorProps {
   [key: string]: any;
 }
 
+/**
+ * Represents a custom error type that extends the built-in `Error` object
+ * with additional properties defined in `CustomErrorProps`.
+ *
+ * @example
+ * const err: CustomError = Object.assign(new Error("Oops"), { code: 404, info: "Not Found" });
+ * console.log(err.info); // "Not Found"
+ * console.log(err.code); // 404
+ */
 export type CustomError = Error & CustomErrorProps;
 
 /**
