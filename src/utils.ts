@@ -15,9 +15,9 @@ import type { CustomError, CustomErrorProps } from "./types.js";
  * }
  */
 export function toError(e: unknown): Error {
-  return e instanceof Error
-    ? e
-    : new Error(typeof e === "string" ? e : "Unknown error");
+  if (e instanceof Error) return e;
+  if (typeof e === "string") new Error(e);
+  return new Error("Unknown error", { cause: e });
 }
 
 // Factory function to create an Error with custom properties
