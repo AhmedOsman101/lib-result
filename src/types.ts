@@ -108,4 +108,15 @@ export interface CustomErrorProps {
 
 export type CustomError = Error & CustomErrorProps;
 
+/**
+ * A function type that takes a tuple of arguments and returns a value.
+ * @template Args - A tuple type representing the arguments the function accepts.
+ * @template T - The return type of the function.
+ * @example
+ * // A function that takes two numbers and returns a number
+ * type Add = Callback<[number, number], number>;
+ *
+ * // A function that takes no arguments and returns a string
+ * type GetText = Callback<[], string>;
+ */
 export type Callback<Args extends unknown[], T> = (...args: Args) => T;

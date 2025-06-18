@@ -2,17 +2,24 @@ import type { CustomError, CustomErrorProps } from "./types.js";
 
 /**
  * Converts an unknown value to an `Error` instance.
- * @param {unknown} e - The value to convert, typically an error or a string.
- * @returns {Error} An `Error` instance. If `e` is already an `Error`, it is returned unchanged.
- * If `e` is a string, a new `Error` is created with that message. Otherwise, a new `Error`
- * with the message "Unknown error" is returned.
+ * @param {unknown} e - The value to convert. Can be an `Error`, string, or any other value.
+ * @returns {Error} An `Error` instance:
+ * - Returns the input unchanged if it's already an `Error` instance
+ * - Creates a new `Error` with the input as message if it's a string
+ * - Creates a new `Error` with "Unknown error" message and the input as cause otherwise
  * @example
- * try {
- *   throw "Something went wrong";
- * } catch (e) {
- *   const error = toError(e); // Error: "Something went wrong"
- *   console.log(error.message);
- * }
+ * // With Error instance
+ * const error = toError(new Error("Failed"));
+ * console.log(error.message); // "Failed"
+ *
+ * // With string
+ * const stringError = toError("Operation failed");
+ * console.log(stringError.message); // "Operation failed"
+ *
+ * // With other value
+ * const unknownError = toError({ code: 404 });
+ * console.log(unknownError.message); // "Unknown error"
+ * console.log(unknownError.cause); // { code: 404 }
  */
 export function toError(e: unknown): Error {
   if (e instanceof Error) return e;
