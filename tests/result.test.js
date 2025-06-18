@@ -8,10 +8,10 @@ import {
   wrap,
   wrapAsync,
   wrapAsyncThrowable,
-  wrapThrowable
+  wrapThrowable,
 } from "../dist/index.js";
-class DivisionError extends Error {
-}
+
+class DivisionError extends Error {}
 function divide(a, b) {
   if (b === 0) {
     return Err(new DivisionError("Cannot Divide By Zero"));
@@ -29,7 +29,7 @@ function toPromise(fn) {
     return Promise.reject(err);
   }
 }
-const double = (x) => x * 2;
+const double = x => x * 2;
 const FAKE_API_URL = "https://jsonplaceholder.typicode.com/users/1";
 const INVALID_URL = "://invalid";
 test("divide returns error on division by zero", () => {
@@ -60,29 +60,33 @@ test("ErrFromText unwrap throws error with correct message", () => {
 });
 test("map transforms value type (number to string)", () => {
   const result = divide(8, 2);
-  const mapped = result.map((x) => `Value: ${x}`);
+  const mapped = result.map(x => `Value: ${x}`);
   assert.ok(mapped.isOk());
   assert.equal(mapped.ok, "Value: 4");
 });
 test("failed map returns the error", () => {
-  const failedResult = Ok(5).map((x) => `value is ${x}`).map((x) => JSON.parse(x));
+  const failedResult = Ok(5)
+    .map(x => `value is ${x}`)
+    .map(x => JSON.parse(x));
   assert.ok(failedResult.isError());
   assert.ok(failedResult.error.message.startsWith("Unexpected token"));
 });
 test("pipe chains Ok results", () => {
   const result = divide(10, 2);
-  const piped = result.pipe((x) => Ok(x * 2)).pipe((x) => Ok(x.toString()));
+  const piped = result.pipe(x => Ok(x * 2)).pipe(x => Ok(x.toString()));
   assert.ok(piped.isOk());
   assert.equal(piped.ok, "10");
 });
 test("pipe preserves Err state", () => {
   const error = divide(10, 0);
-  const piped = error.pipe((x) => Ok(x * 2));
+  const piped = error.pipe(x => Ok(x * 2));
   assert.ok(piped.isError());
   assert.equal(piped.error.message, "Cannot Divide By Zero");
 });
 test("pipe short-circuits on first Err in chain", () => {
-  const result = divide(10, 2).pipe((x) => divide(x, 0)).pipe((x) => Ok(x * 100));
+  const result = divide(10, 2)
+    .pipe(x => divide(x, 0))
+    .pipe(x => Ok(x * 100));
   assert.ok(result.isError());
   assert.equal(result.error.message, "Cannot Divide By Zero");
 });
@@ -97,8 +101,8 @@ test("ErrFromObject creates ErrorState with custom properties", () => {
 });
 test("ErrFromObject methods: map and pipe return ErrorState", () => {
   const result = ErrFromObject({ foo: "bar" }, "fail");
-  const mapped = result.map((x) => x + 1);
-  const piped = result.pipe((x) => Ok(x + 1));
+  const mapped = result.map(x => x + 1);
+  const piped = result.pipe(x => Ok(x + 1));
   assert.ok(mapped.isError());
   assert.ok(piped.isError());
   assert.equal(mapped.error.message, "fail");
@@ -155,7 +159,7 @@ test("wrapAsync(): resolves with ErrorState on failure (fetch)", async () => {
   assert.equal(res.error.cause.code, "ERR_INVALID_URL");
 });
 test("wrapAsyncThrowable(): resolves with Ok on success", async () => {
-  const fetchJson = wrapAsyncThrowable(async (url) => {
+  const fetchJson = wrapAsyncThrowable(async url => {
     const res = await fetch(url);
     if (!res.ok) throw new Error("Failed to fetch");
     return res;
@@ -165,7 +169,7 @@ test("wrapAsyncThrowable(): resolves with Ok on success", async () => {
   assert.ok(result.ok.ok);
 });
 test("wrapAsyncThrowable(): resolves with Err on failed fetch", async () => {
-  const fetchJson = wrapAsyncThrowable(async (url) => {
+  const fetchJson = wrapAsyncThrowable(async url => {
     const res = await fetch(url);
     if (!res.ok) throw new Error("Failed to fetch");
     return res.json();
