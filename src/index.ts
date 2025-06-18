@@ -8,5 +8,7 @@ export {
   unwrap,
   wrap,
   wrapAsync,
+  wrapAsyncThrowable,
+  wrapThrowable,
 } from "./main.js";
-export type { ErrorState, OkState, Result } from "./types.js";
+export type { Result } from "./types.js";

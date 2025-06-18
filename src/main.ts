@@ -1,4 +1,5 @@
 import type {
+  Callback,
   CustomError,
   CustomErrorProps,
   ErrorState,
@@ -198,6 +199,65 @@ export async function wrapAsync<T>(
   } catch (error) {
     return Err(toError(error));
   }
+}
+
+/**
+ * Wraps a function that might throw errors into a function that returns a Result type.
+ * @template Args - The tuple type of arguments the function accepts
+ * @template T - The type of value the function returns
+ * @param callback - The function to wrap, which may throw errors
+ * @returns A new function that takes the same arguments but returns a Result type
+ * @example
+ * const divide = (a: number, b: number): number => {
+ *   if (b === 0) throw new Error("Division by zero");
+ *   return a / b;
+ * };
+ * const safeDivide = wrapThrowable(divide);
+ * const result = safeDivide(10, 2); // { ok: 5, error: undefined }
+ * const errorResult = safeDivide(10, 0); // { ok: undefined, error: Error("Division by zero") }
+ */
+export function wrapThrowable<Args extends unknown[], T>(
+  callback: Callback<Args, T>
+): Callback<Args, Result<T, Error>> {
+  return (...args: Args) => {
+    try {
+      return Ok(callback(...args));
+    } catch (e) {
+      return Err(toError(e));
+    }
+  };
+}
+
+/**
+ * Wraps an async function that might throw errors into a function that returns a Promise of Result type.
+ * @template Args - The tuple type of arguments the function accepts
+ * @template T - The type of value the function's Promise resolves to
+ * @param callback - The async function to wrap, which may throw errors or reject its Promise
+ * @returns A new async function that takes the same arguments but returns a Promise of Result type
+ * @example
+ * const fetchJson = wrapAsyncThrowable(async (url: string) => {
+ *   const res = await fetch(url);
+ *   if (!res.ok) throw new Error("Failed to fetch");
+ *   return res.json();
+ * });
+ *
+ * const result = await fetchJson("https://example.com/data.json");
+ * if (result.isOk()) {
+ *   console.log(result.ok);
+ * } else {
+ *   console.error(result.error.message);
+ * }
+ */
+export function wrapAsyncThrowable<Args extends unknown[], T>(
+  callback: Callback<Args, Promise<T>>
+): Callback<Args, Promise<Result<T, Error>>> {
+  return async (...args: Args) => {
+    try {
+      return Ok(await callback(...args));
+    } catch (e) {
+      return Err(toError(e));
+    }
+  };
 }
 
 // --- Functions for backward compatibility with v1 (deprecated since v2.0.0 ) --- //

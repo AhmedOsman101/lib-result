@@ -107,3 +107,5 @@ export interface CustomErrorProps {
 }
 
 export type CustomError = Error & CustomErrorProps;
+
+export type Callback<Args extends unknown[], T> = (...args: Args) => T;
