@@ -8,6 +8,8 @@ import {
   type Result,
   wrap,
   wrapAsync,
+  wrapAsyncThrowable,
+  wrapThrowable,
 } from "../dist/index.js";
 
 class DivisionError extends Error {}
@@ -17,6 +19,11 @@ function divide(a: number, b: number): Result<number, DivisionError> {
     return Err(new DivisionError("Cannot Divide By Zero"));
   }
   return Ok(a / b);
+}
+
+function mayDivide(a: number, b: number): number {
+  if (b === 0) throw new Error("Division by zero");
+  return a / b;
 }
 
 function toPromise<T>(fn: () => T | Promise<T>): Promise<T> {
@@ -29,7 +36,10 @@ function toPromise<T>(fn: () => T | Promise<T>): Promise<T> {
 
 const double = (x: number) => x * 2;
 
-// ─── TESTS ─────────────────────────────────────────────────────────────
+const FAKE_API_URL = "https://jsonplaceholder.typicode.com/users/1" as const;
+const INVALID_URL = "://invalid" as const;
+
+// ─── METHODS API TESTS ─────────────────────────────────────────────────────────────
 
 test("divide returns error on division by zero", () => {
   const division = divide(1, 0);
@@ -70,6 +80,7 @@ test("ErrFromText unwrap throws error with correct message", () => {
 test("map transforms value type (number to string)", () => {
   const result = divide(8, 2); // Ok(4)
   const mapped = result.map(x => `Value: ${x}`);
+
   assert.ok(mapped.isOk());
   assert.equal(mapped.ok, "Value: 4");
 });
@@ -88,6 +99,7 @@ test("pipe chains Ok results", () => {
   const piped = result
     .pipe(x => Ok(x * 2)) // Ok(10)
     .pipe(x => Ok(x.toString())); // Ok("10")
+
   assert.ok(piped.isOk());
   assert.equal(piped.ok, "10");
 });
@@ -95,6 +107,7 @@ test("pipe chains Ok results", () => {
 test("pipe preserves Err state", () => {
   const error = divide(10, 0); // Division Error
   const piped = error.pipe(x => Ok(x * 2));
+
   assert.ok(piped.isError());
   assert.equal(piped.error.message, "Cannot Divide By Zero");
 });
@@ -103,6 +116,7 @@ test("pipe short-circuits on first Err in chain", () => {
   const result = divide(10, 2) // Ok(5)
     .pipe(x => divide(x, 0)) // Err
     .pipe(x => Ok(x * 100)); // Should not run
+
   assert.ok(result.isError());
   assert.equal(result.error.message, "Cannot Divide By Zero");
 });
@@ -110,6 +124,7 @@ test("pipe short-circuits on first Err in chain", () => {
 test("ErrFromObject creates ErrorState with custom properties", () => {
   const errProps = { code: 404, info: "Not Found" };
   const result = ErrFromObject<number>(errProps, "Custom error");
+
   assert.ok(result.isError());
   assert.equal(result.error.message, "Custom error");
   assert.equal(result.error.code, 404);
@@ -121,6 +136,7 @@ test("ErrFromObject methods: map and pipe return ErrorState", () => {
   const result = ErrFromObject<number>({ foo: "bar" }, "fail");
   const mapped = result.map(x => x + 1);
   const piped = result.pipe(x => Ok(x + 1));
+
   assert.ok(mapped.isError());
   assert.ok(piped.isError());
   assert.equal(mapped.error.message, "fail");
@@ -143,6 +159,24 @@ test("wrap(): returns Err on thrown error", () => {
 
   assert.ok(res.isError());
   assert.equal(res.error.message, "Boom!");
+});
+
+// ─── WRAP THROWABLE TESTS ─────────────────────────────────────────────────────────────
+
+test("wrapThrowable(): returns Ok on success", () => {
+  const safeDivide = wrapThrowable(mayDivide);
+  const result = safeDivide(10, 2);
+
+  assert.ok(result.isOk());
+  assert.equal(result.ok, 5);
+});
+
+test("wrapThrowable(): returns Err on thrown error", () => {
+  const safeDivide = wrapThrowable(mayDivide);
+  const result = safeDivide(10, 0);
+
+  assert.ok(result.isError());
+  assert.equal(result.error.message, "Division by zero");
 });
 
 // ─── ASYNC TESTS ─────────────────────────────────────────────────────────────
@@ -168,18 +202,45 @@ test("wrapAsync(): resolves with Err on failure", async () => {
 });
 
 test("wrapAsync(): resolves with Ok on success (fetch)", async () => {
-  const res = await wrapAsync(() =>
-    fetch("https://jsonplaceholder.typicode.com/users/1")
-  );
+  const res = await wrapAsync(() => fetch(FAKE_API_URL));
 
   assert.ok(res.isOk());
   assert.ok(res.ok.ok);
 });
 
 test("wrapAsync(): resolves with ErrorState on failure (fetch)", async () => {
-  const res = await wrapAsync(() => fetch("://invalid"));
+  const res = await wrapAsync(() => fetch(INVALID_URL));
 
   assert.ok(res.isError());
   // @ts-expect-error: testing
   assert.equal(res.error.cause.code, "ERR_INVALID_URL");
+});
+
+// ─── WRAP ASYNC THROWABLE TESTS ─────────────────────────────────────────────────────────────
+
+test("wrapAsyncThrowable(): resolves with Ok on success", async () => {
+  const fetchJson = wrapAsyncThrowable(async (url: string) => {
+    const res = await fetch(url);
+    if (!res.ok) throw new Error("Failed to fetch");
+    return res;
+  });
+
+  const result = await fetchJson(FAKE_API_URL);
+
+  assert.ok(result.isOk());
+  assert.ok(result.ok.ok);
+});
+
+test("wrapAsyncThrowable(): resolves with Err on failed fetch", async () => {
+  const fetchJson = wrapAsyncThrowable(async (url: string) => {
+    const res = await fetch(url);
+    if (!res.ok) throw new Error("Failed to fetch");
+    return res.json();
+  });
+
+  const result = await fetchJson(INVALID_URL);
+
+  assert.ok(result.isError());
+  // @ts-expect-error: testing
+  assert.equal(result.error.cause.code, "ERR_INVALID_URL");
 });
