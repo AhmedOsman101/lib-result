@@ -102,21 +102,33 @@ export type Result<T, E extends Error = Error> =
   | OkState<T, E>
   | ErrorState<E, T>;
 
-export interface CustomErrorProps {
-  // biome-ignore lint/suspicious/noExplicitAny: Allows any key-value pairs
-  [key: string]: any;
-}
-
 /**
  * Represents a custom error type that extends the built-in `Error` object
  * with additional properties defined in `CustomErrorProps`.
  *
  * @example
- * const err: CustomError = Object.assign(new Error("Oops"), { code: 404, info: "Not Found" });
+ * const err: CustomError<{ code: number; info: string }> =
+ *   Object.assign(new Error("Oops"), { code: 404, info: "Not Found" });
  * console.log(err.info); // "Not Found"
  * console.log(err.code); // 404
  */
-export type CustomError = Error & CustomErrorProps;
+export type CustomError<T extends OptionalKeyValue = undefined> =
+  T extends undefined ? Error : Error & CustomErrorProps<T>;
+
+/**
+ * Defines the shape of properties that can be added to a custom error.
+ * When T is undefined, resolves to never. Otherwise, it combines T with optional
+ * standard error properties.
+ * @template T - The type of additional properties to include in the error.
+ * @example
+ * type ApiErrorProps = CustomErrorProps<{ code: number; status: string }>;
+ * // Equivalent to: { code: number; status: string; message?: string; cause?: unknown }
+ */
+export type CustomErrorProps<T extends OptionalKeyValue> = T extends undefined
+  ? never
+  : T & { message?: string; cause?: unknown };
+
+// --- Helper Types --- //
 
 /**
  * A function type that takes a tuple of arguments and returns a value.
@@ -130,3 +142,26 @@ export type CustomError = Error & CustomErrorProps;
  * type GetText = Callback<[], string>;
  */
 export type Callback<Args extends unknown[], T> = (...args: Args) => T;
+
+/**
+ * Represents an object that can have any string or symbol keys with unknown value types.
+ * Useful for type-checking objects with dynamic property access.
+ * @example
+ * const config: KeyValue = {
+ *   timeout: 1000,
+ *   retry: true,
+ *   onError: (err: Error) => {}
+ * };
+ */
+export type KeyValue = Record<string | symbol, unknown>;
+
+/**
+ * A variant of KeyValue that can also be undefined.
+ * Useful for optional configuration objects or function parameters.
+ * @example
+ * function configure(options?: OptionalKeyValue) {
+ *   // options might be undefined
+ *   const timeout = options?.timeout; // unknown
+ * }
+ */
+export type OptionalKeyValue = KeyValue | undefined;
