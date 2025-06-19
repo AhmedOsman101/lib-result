@@ -2,11 +2,6 @@
 
 A Rust-inspired `Result` type for type-safe error handling in TypeScript and JavaScript.
 
-> [!NOTE]
->
-> To check out the full documentation, API details, and advanced usage
-> See the [lib-result Wiki](https://github.com/AhmedOsman101/lib-result/wiki) for comprehensive guides, API docs, and examples. The wiki is the main source for up-to-date documentation.
-
 > [!WARNING]
 >
 > **Deprecation Notice for Version 1.x** As of version 2.0.0, the standalone `isOk`, `isErr`, and `unwrap` functions are deprecated in favor of the `isOk()`, `isError()`, and `unwrap()` methods on `Result` objects (e.g., `result.isOk()`).
@@ -161,6 +156,11 @@ if (customErr.isError()) {
   console.error(customErr.error.info); // "Custom"
 }
 ```
+
+> [!NOTE]
+>
+> To check out the full documentation, API details, and advanced usage
+> See the [lib-result Wiki](https://github.com/AhmedOsman101/lib-result/wiki) for comprehensive guides, API docs, and examples. The wiki is the main source for up-to-date documentation.
 
 ## API
 
