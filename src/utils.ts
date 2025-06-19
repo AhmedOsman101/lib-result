@@ -41,7 +41,7 @@ export function toError(e: unknown): CustomError {
  * // Returns true
  * isKeyValue({ key: 'value' });
  * isKeyValue(Object.create(null));
- * 
+ *
  * // Returns false
  * isKeyValue(null);
  * isKeyValue(undefined);
@@ -68,7 +68,7 @@ export function isKeyValue(value: unknown): value is KeyValue {
  * console.log(err instanceof Error); // true
  * console.log(err.code); // 404
  * console.log(err.details); // { path: '/api/resource' }
- * 
+ *
  * // With cause
  * const cause = new Error('Original error');
  * const errWithCause = createCustomError({

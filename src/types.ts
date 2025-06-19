@@ -1,3 +1,6 @@
+/** biome-ignore-all lint/complexity/noBannedTypes: No alternative */
+// deno-lint-ignore-file no-explicit-any ban-types
+
 /**
  * Defines methods for a `Result` type, providing type-safe operations for checking and extracting values.
  * @template T - The type of the success value.
@@ -117,7 +120,7 @@ export type CustomError<T extends OptionalKeyValue = undefined> =
 
 /**
  * Defines the shape of properties that can be added to a custom error.
- * When T is undefined, resolves to never. Otherwise, it combines T with optional
+ * When `T` is `undefined`, resolves to `never`. Otherwise, it combines `T` with optional
  * standard error properties.
  * @template T - The type of additional properties to include in the error.
  * @example
@@ -126,7 +129,11 @@ export type CustomError<T extends OptionalKeyValue = undefined> =
  */
 export type CustomErrorProps<T extends OptionalKeyValue> = T extends undefined
   ? never
-  : T & { message?: string; cause?: unknown };
+  : T &
+      // if T already has a `message` key, add nothing; otherwise add an optional message
+      (T extends { message: string } ? {} : { message?: string }) &
+      // biome-ignore lint/suspicious/noExplicitAny: `cause` can hold any value
+      (T extends { cause: any } ? {} : { cause?: unknown });
 
 // --- Helper Types --- //
 
