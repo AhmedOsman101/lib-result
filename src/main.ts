@@ -3,6 +3,7 @@ import type {
   CustomError,
   CustomErrorProps,
   ErrorState,
+  KeyValue,
   OkState,
   Result,
 } from "./types.js";
@@ -118,40 +119,60 @@ export function ErrFromText<T>(message: string): ErrorState<Error, T> {
 }
 
 /**
- * Creates a failure `Result` in the `Error` state from custom error properties and an optional message.
- * Useful for attaching additional metadata to errors.
+ * Creates a failure `Result` in the `Error` state from custom error properties.
+ * This is particularly useful for creating type-safe error objects with additional metadata.
  *
- * @template T - The type of the success value (used for type compatibility with `Result`).
- * @param {CustomErrorProps} props - An object containing custom properties to attach to the error.
- * @param {string} message - The error message (default is empty string).
- * @returns {ErrorState<CustomError, T>} A `Result` in the `Error` state with a custom error and no value.
+ * @template T - The success type parameter (unused in the error case but maintains Result type compatibility)
+ * @template E - The type of additional properties for the custom error
+ * @param {CustomErrorProps<E>} props - An object containing error properties including an optional message and cause
+ * @returns {ErrorState<CustomError<E>, T>} A `Result` in the `Error` state with the provided error properties
+ *
  * @example
- * const result = ErrFromObject({ code: 404, info: "Not Found" }, "Custom error");
+ * // Basic usage with custom properties
+ * const result = ErrFromObject<number, { code: number; status: string }>({
+ *   message: 'Resource not found',
+ *   code: 404,
+ *   status: 'Not Found'
+ * });
+ *
  * if (result.isError()) {
- *   console.log(result.error.code); // 404
- *   console.log(result.error.message); // "Custom error"
+ *   console.log(result.error.message); // 'Resource not found'
+ *   console.log(result.error.code);    // 404
+ *   console.log(result.error.status);   // 'Not Found'
+ * }
+ *
+ * // With error cause
+ * try {
+ *   // Some operation that might throw
+ * } catch (cause) {
+ *   const result = ErrFromObject({
+ *     message: 'Operation failed',
+ *     cause,
+ *     timestamp: new Date().toISOString()
+ *   });
  * }
  */
-export function ErrFromObject<T>(
-  props?: CustomErrorProps,
-  message = ""
-): ErrorState<CustomError, T> {
+export function ErrFromObject<T, E extends KeyValue = KeyValue>(
+  props?: CustomErrorProps<E>
+): ErrorState<CustomError<E>, T> {
   return {
     ok: undefined,
-    error: createCustomError(props, message),
-    isError(): this is ErrorState<CustomError, T> {
+    error: createCustomError(props),
+    isError(): this is ErrorState<CustomError<E>, T> {
       return this.error !== undefined;
     },
-    isOk(): this is OkState<T, CustomError> {
+    isOk(): this is OkState<T, CustomError<E>> {
       return this.error === undefined;
     },
     unwrap(): never {
       throw this.error;
     },
-    map<U>(_fn: (value: T) => U): Result<U, CustomError> {
+    map<U>(_fn: (value: T) => U): Result<U, CustomError<E>> {
       return Err(this.error);
     },
-    pipe<U>(_fn: (value: T) => Result<U, CustomError>): Result<U, CustomError> {
+    pipe<U>(
+      _fn: (value: T) => Result<U, CustomError<E>>
+    ): Result<U, CustomError<E>> {
       return Err(this.error);
     },
   };
