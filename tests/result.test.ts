@@ -1,4 +1,5 @@
 import { describe, expect, test } from "vitest";
+
 import {
   Err,
   ErrFromObject,
@@ -11,32 +12,15 @@ import {
   wrapThrowable,
 } from "../dist/index.js";
 
-class DivisionError extends Error {}
-
-function divide(a: number, b: number): Result<number, DivisionError> {
-  if (b === 0) {
-    return Err(new DivisionError("Cannot Divide By Zero"));
-  }
-  return Ok(a / b);
-}
-
-function mayDivide(a: number, b: number): number {
-  if (b === 0) throw new Error("Division by zero");
-  return a / b;
-}
-
-function toPromise<T>(fn: () => T | Promise<T>): Promise<T> {
-  try {
-    return Promise.resolve(fn());
-  } catch (err) {
-    return Promise.reject(err);
-  }
-}
-
-const double = (x: number) => x * 2;
-
-const FAKE_API_URL = "https://jsonplaceholder.typicode.com/users/1" as const;
-const INVALID_URL = "://invalid" as const;
+import {
+  DivisionError,
+  divide,
+  double,
+  FAKE_API_URL,
+  INVALID_URL,
+  mayDivide,
+  toPromise,
+} from "./testing-utils.js";
 
 describe("Result API", () => {
   describe("divide()", () => {
@@ -51,6 +35,15 @@ describe("Result API", () => {
 
       expect(division.isOk()).toBe(true);
       expect(division.ok).toBe(5);
+    });
+  });
+
+  describe("Err()", () => {
+    test("should return DivisionError", () => {
+      const divisionError = Err(new DivisionError());
+
+      expect(divisionError.isError()).toBe(true);
+      expect(divisionError.isOk()).toBe(false);
     });
   });
 

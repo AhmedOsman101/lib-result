@@ -37,7 +37,7 @@
     "pretest": "pnpm build && clear",
     "test": "pnpm pretest && pnpm test:run",
     "test:run": "vitest run",
-    "test:watch": "vitest",
+    "test:watch": "vitest --watch",
     "test:coverage": "vitest run --coverage",
     "prepublishOnly": "pnpm build && pnpm format"
   },

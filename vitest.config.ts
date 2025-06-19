@@ -19,8 +19,8 @@ export default defineConfig({
         "tests",
         "tsup.config.ts",
         "vitest.config.ts",
-        "src/types.ts",
-        "src/index.ts",
+        "src/types.ts", // only contain types
+        "src/index.ts", // only contain exports
       ],
       thresholds: {
         lines: 80,
