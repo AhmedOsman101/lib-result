@@ -21,6 +21,7 @@ export default defineConfig({
         "vitest.config.ts",
         "src/types.ts", // only contain types
         "src/index.ts", // only contain exports
+        "src/deprecated.ts",
       ],
       thresholds: {
         lines: 80,

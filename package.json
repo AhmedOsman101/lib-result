@@ -34,11 +34,10 @@
     "format": "biome check --fix .",
     "format:unsafe": "biome check --fix --unsafe .",
     "build": "pnpm clean && tsup && attw --pack .",
-    "pretest": "pnpm build && clear",
     "test": "pnpm build && pnpm test:run",
     "test:run": "vitest run",
     "test:watch": "vitest --watch",
-    "test:coverage": "vitest run --coverage",
+    "test:coverage": "vitest run --coverage; rm -rf coverage",
     "prepublishOnly": "pnpm build && pnpm format"
   },
   "devDependencies": {

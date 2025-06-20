@@ -24,7 +24,7 @@
     "declaration": true, // Generate .d.ts type declarations
     "sourceMap": true,
     "declarationMap": true,
-    "lib": ["es2022"]
+    "lib": ["es2022", "DOM"]
   },
   "include": ["src/**/*.ts"],
   "exclude": ["node_modules", "dist", "**/*.test.ts"]
