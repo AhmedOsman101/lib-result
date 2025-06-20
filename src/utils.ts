@@ -1,12 +1,13 @@
 import type { CustomError, CustomErrorProps, KeyValue } from "./types.js";
 
 /**
- * Converts an unknown value to an `Error` instance.
+ * Converts an unknown value to an `Error` instance or a compatible custom error.
  * @param {unknown} e - The value to convert. Can be an `Error`, string, or any other value.
- * @returns {Error} An `Error` instance:
- * - Returns the input unchanged if it's already an `Error` instance
+ * @returns {Error} An `Error` instance or a compatible custom error:
+ * - Returns the input if it's already an `Error` instance
  * - Creates a new `Error` with the input as message if it's a string
- * - Creates a new `Error` with "Unknown error" message and the input as cause otherwise
+ * - Creates a new custom error with properties if it's a key-value object
+ * - Otherwise, creates a new `Error` with "Unknown error" message
  * @example
  * // With Error instance
  * const error = toError(new Error("Failed"));
