@@ -60,30 +60,34 @@ export function Ok<T, E extends Error = Error>(ok: T): OkState<T, E> {
  * const result = Err(new Error("Something went wrong"));
  * // result: { ok: undefined, error: Error("Something went wrong") } // and some helper methods
  */
-export function Err<E extends Error, T>(error: E): ErrorState<E, T> {
-  if (error instanceof Error) {
-    return {
-      ok: undefined,
-      error,
-      isError(): this is ErrorState<E, T> {
-        return this.error !== undefined;
-      },
-      isOk(): this is OkState<T, E> {
-        return this.error === undefined;
-      },
-      unwrap(): never {
-        throw this.error;
-      },
-      map<U>(_fn: (value: T) => U): Result<U, E> {
-        return Err(this.error);
-      },
-      pipe<U>(_fn: (value: T) => Result<U, E>): Result<U, E> {
-        return Err(this.error);
-      },
-    };
+export function Err<T = undefined, E extends Error = Error>(
+  error: E
+): ErrorState<E, T> {
+  if (!(error instanceof Error)) {
+    throw new TypeError(
+      "Err expects an Error instance, use ErrFromObject instead."
+    );
   }
 
-  throw new TypeError("Err expects an Error instance");
+  return {
+    ok: undefined,
+    error,
+    isError(): this is ErrorState<E, T> {
+      return this.error !== undefined;
+    },
+    isOk(): this is OkState<T, E> {
+      return this.error === undefined;
+    },
+    unwrap(): never {
+      throw this.error;
+    },
+    map<U>(_fn: (value: T) => U): ErrorState<E, U> {
+      return Err(this.error);
+    },
+    pipe<U>(_fn: (value: T) => Result<U, E>): ErrorState<E, U> {
+      return Err(this.error);
+    },
+  };
 }
 
 /*
@@ -96,7 +100,9 @@ export function Err<E extends Error, T>(error: E): ErrorState<E, T> {
  * const result = ErrFromText("Something went wrong");
  * // result: { ok: undefined, error: Error("Something went wrong") } // and some helper methods
  */
-export function ErrFromText<T>(message: string): ErrorState<Error, T> {
+export function ErrFromText<T = undefined>(
+  message: string
+): ErrorState<Error, T> {
   return {
     ok: undefined,
     error: new Error(message),
@@ -109,10 +115,10 @@ export function ErrFromText<T>(message: string): ErrorState<Error, T> {
     unwrap(): never {
       throw this.error;
     },
-    map<U>(_fn: (value: T) => U): Result<U, Error> {
+    map<U>(_fn: (value: T) => U): ErrorState<Error, U> {
       return Err(this.error);
     },
-    pipe<U>(_fn: (value: T) => Result<U, Error>): Result<U, Error> {
+    pipe<U>(_fn: (value: T) => Result<U, Error>): ErrorState<Error, U> {
       return Err(this.error);
     },
   };
@@ -123,9 +129,9 @@ export function ErrFromText<T>(message: string): ErrorState<Error, T> {
  * This is particularly useful for creating type-safe error objects with additional metadata.
  *
  * @template T - The success type parameter (unused in the error case but maintains Result type compatibility)
- * @template E - The type of additional properties for the custom error
- * @param {CustomErrorProps<E>} props - An object containing error properties including an optional message and cause
- * @returns {ErrorState<CustomError<E>, T>} A `Result` in the `Error` state with the provided error properties
+ * @template P - The type of additional properties for the custom error
+ * @param {CustomErrorProps<P>} props - An object containing error properties including an optional message and cause
+ * @returns {ErrorState<CustomError<P>, T>} A `Result` in the `Error` state with the provided error properties
  *
  * @example
  * // Basic usage with custom properties
@@ -152,27 +158,27 @@ export function ErrFromText<T>(message: string): ErrorState<Error, T> {
  *   });
  * }
  */
-export function ErrFromObject<T, E extends KeyValue = KeyValue>(
-  props?: CustomErrorProps<E>
-): ErrorState<CustomError<E>, T> {
+export function ErrFromObject<P extends KeyValue = KeyValue, T = undefined>(
+  props: CustomErrorProps<P>
+): ErrorState<CustomError<P>, T> {
   return {
     ok: undefined,
     error: createCustomError(props),
-    isError(): this is ErrorState<CustomError<E>, T> {
+    isError(): this is ErrorState<CustomError<P>, T> {
       return this.error !== undefined;
     },
-    isOk(): this is OkState<T, CustomError<E>> {
+    isOk(): this is OkState<T, CustomError<P>> {
       return this.error === undefined;
     },
     unwrap(): never {
       throw this.error;
     },
-    map<U>(_fn: (value: T) => U): Result<U, CustomError<E>> {
+    map<U>(_fn: (value: T) => U): ErrorState<CustomError<P>, U> {
       return Err(this.error);
     },
     pipe<U>(
-      _fn: (value: T) => Result<U, CustomError<E>>
-    ): Result<U, CustomError<E>> {
+      _fn: (value: T) => Result<U, CustomError<P>>
+    ): ErrorState<CustomError<P>, U> {
       return Err(this.error);
     },
   };
@@ -182,7 +188,7 @@ export function ErrFromObject<T, E extends KeyValue = KeyValue>(
  * Wraps a synchronous function, capturing its return value as an `Ok` result or any thrown error as an `Error` result.
  * @template T - The type of the success value returned by the callback.
  * @param callback - A synchronous function that may return a value or throw an error.
- * @returns {Result<T, Error>} A `Result` containing the function's return value (`Ok`) or the caught error (`Error`).
+ * @returns {Result<T, CustomError>} A `Result` containing the function's return value (`Ok`) or the caught error (`Error`).
  * @example
  * function divide(a: number, b: number): number {
  *   if (b === 0) throw new Error("Division by zero");
@@ -191,7 +197,7 @@ export function ErrFromObject<T, E extends KeyValue = KeyValue>(
  * const result = wrap(() => divide(10, 2)); // { ok: 5, error: undefined }
  * const errorResult = wrap(() => divide(10, 0)); // { ok: undefined, error: Error("Division by zero") }
  */
-export function wrap<T>(callback: () => T): Result<T, Error> {
+export function wrap<T>(callback: () => T): Result<T, CustomError> {
   try {
     return Ok(callback());
   } catch (error) {
@@ -203,7 +209,7 @@ export function wrap<T>(callback: () => T): Result<T, Error> {
  * Wraps an asynchronous function, capturing its resolved value as an `Ok` result or any rejected error as an `Error` result.
  * @template T - The type of the success value resolved by the callback's promise.
  * @param callback - An asynchronous function that returns a `Promise` which may resolve to a value or reject with an error.
- * @returns {Promise<Result<T, Error>>} A `Promise` resolving to a `Result` containing the resolved value (`Ok`) or the caught error (`Error`).
+ * @returns {Promise<Result<T, CustomError>>} A `Promise` resolving to a `Result` containing the resolved value (`Ok`) or the caught error (`Error`).
  * @example
  * async function divideAsync(a: number, b: number): Promise<number> {
  *   if (b === 0) throw new Error("Division by zero");
@@ -214,7 +220,7 @@ export function wrap<T>(callback: () => T): Result<T, Error> {
  */
 export async function wrapAsync<T>(
   callback: () => Promise<T>
-): Promise<Result<T, Error>> {
+): Promise<Result<T, CustomError>> {
   try {
     return Ok(await callback());
   } catch (error) {
@@ -237,9 +243,9 @@ export async function wrapAsync<T>(
  * const result = safeDivide(10, 2); // { ok: 5, error: undefined }
  * const errorResult = safeDivide(10, 0); // { ok: undefined, error: Error("Division by zero") }
  */
-export function wrapThrowable<Args extends unknown[], T>(
+export function wrapThrowable<T, Args extends unknown[] = []>(
   callback: Callback<Args, T>
-): Callback<Args, Result<T, Error>> {
+): Callback<Args, Result<T, CustomError>> {
   return (...args: Args) => {
     try {
       return Ok(callback(...args));
@@ -269,9 +275,9 @@ export function wrapThrowable<Args extends unknown[], T>(
  *   console.error(result.error.message);
  * }
  */
-export function wrapAsyncThrowable<Args extends unknown[], T>(
+export function wrapAsyncThrowable<T, Args extends unknown[] = []>(
   callback: Callback<Args, Promise<T>>
-): Callback<Args, Promise<Result<T, Error>>> {
+): Callback<Args, Promise<Result<T, CustomError>>> {
   return async (...args: Args) => {
     try {
       return Ok(await callback(...args));
@@ -279,85 +285,4 @@ export function wrapAsyncThrowable<Args extends unknown[], T>(
       return Err(toError(e));
     }
   };
-}
-
-// --- Functions for backward compatibility with v1 (deprecated since v2.0.0 ) --- //
-
-/**
- * Checks if a `Result` is in the `Ok` state.
- * @template T - The type of the success value.
- * @template E - The error type
- * @param {Result<T, E>} result - The Result to check
- * @returns {result is OkState<T>} `true` if the `Result` is in the `Ok` state, narrowing the type to `OkState<T, E>`.
- * @deprecated Since version 2.0.0. Use `result.isOk()` for a more consistent and encapsulated API.
- * @example
- * const result = Ok(42);
- * // Deprecated usage
- * if (isOk(result)) {
- *   console.log(result.ok);
- * }
- * // Preferred usage
- * if (result.isOk()) {
- *   console.log(result.ok);
- * }
- */
-export function isOk<T, E extends Error = Error>(
-  result: Result<T, E>
-): result is OkState<T, E> {
-  return result.error === undefined;
-}
-
-/**
- * Checks if a `Result` is in the `Error` state.
- * @template T - The type of the success value.
- * @template E - The error type, must extend `Error` (defaults to `Error`).
- * @param {Result<T, E>} result - The `Result` to check.
- * @returns {result is ErrorState<E>} `true` if the `Result` is in the `Error` state, narrowing the type to `ErrorState<E, T>`.
- * @deprecated Since version 2.0.0. Use `result.isError()` for a more consistent and encapsulated API.
- * @example
- * const result = Err(new Error("Failed"));
- * // Deprecated usage
- * if (isError(result)) {
- *   console.error(result.error.message);
- * }
- * // Preferred usage
- * if (result.isErr()) {
- *   console.error(result.error.message);
- * }
- */
-export function isErr<T, E extends Error = Error>(
-  result: Result<T, E>
-): result is ErrorState<E, T> {
-  return result.error !== undefined;
-}
-
-/**
- * Extracts the success value from a `Result` or throws the error if in the `Error` state.
- * @template T - The type of the success value.
- * @template E - The error type, must extend `Error` (defaults to `Error`).
- * @param {Result<T, E>} result - The `Result` to unwrap.
- * @returns {T} The success value if the `Result` is in the `Ok` state.
- * @throws {E} The error if the `Result` is in the `Error` state.
- * @deprecated Since version 2.1.4. Use `result.unwrap()` for a more consistent and encapsulated API.
- * @example
- * const result = Ok(42);
- * const errorResult = Err(new Error("Failed"));
- * // Deprecated usage
- * console.log(unwrap(result)); // 42
- * try {
- *   unwrap(errorResult); // Throws Error: "Failed"
- * } catch (e) {
- *   console.error(e.message); // "Failed"
- * }
- * // Preferred usage
- * console.log(result.unwrap()); // 42
- * try {
- *   errorResult.unwrap(); // Throws Error: "Failed"
- * } catch (e) {
- *   console.error(e.message); // "Failed"
- * }
- */
-export function unwrap<T, E extends Error = Error>(result: Result<T, E>): T {
-  if (result.isOk()) return result.ok;
-  throw result.error;
 }
