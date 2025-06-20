@@ -86,7 +86,8 @@ export interface OkState<T, E extends Error = Error>
  * @template E - The error type, must extend `Error`.
  * @template T - The type of the success value (used for type compatibility with `Result`).
  */
-export interface ErrorState<E extends Error, T> extends ResultMethods<T, E> {
+export interface ErrorState<E extends Error = Error, T = undefined>
+  extends ResultMethods<T, E> {
   /** Always `undefined` in the `Error` state, indicating no value. */
   ok: undefined;
   /** The error of type `E`. */
@@ -132,7 +133,7 @@ export type CustomErrorProps<T extends OptionalKeyValue> = T extends undefined
   : T &
       // if T already has a `message` key, add nothing; otherwise add an optional message
       (T extends { message: string } ? {} : { message?: string }) &
-      // biome-ignore lint/suspicious/noExplicitAny: `cause` can hold any value
+      // biome-ignore lint/suspicious/noExplicitAny: cause can accept any value
       (T extends { cause: any } ? {} : { cause?: unknown });
 
 // --- Helper Types --- //
