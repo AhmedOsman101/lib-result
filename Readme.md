@@ -2,11 +2,6 @@
 
 A Rust-inspired `Result` type for type-safe error handling in TypeScript and JavaScript.
 
-> [!WARNING]
->
-> **Deprecation Notice for Version 1.x** As of version 2.0.0, the standalone `isOk`, `isErr`, and `unwrap` functions are deprecated in favor of the `isOk()`, `isError()`, and `unwrap()` methods on `Result` objects (e.g., `result.isOk()`).
-> Please update your code to use the new method-based API and migrate to version 2.x for continued support.
-
 ## Installation
 
 ```bash
