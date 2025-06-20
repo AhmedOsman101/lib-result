@@ -7,6 +7,28 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### ⚠ BREAKING CHANGES
 
+* `isErr()`, `isOk()`, and `unwrap()` were removed from the top-level API. Any code using these must migrate to the instance-based alternatives:
+    - `result.isError()` instead of `isErr(result)`
+    - `result.isOk()` instead of `isOk(result)`
+    - `result.unwrap()` instead of `unwrap(result)`
+
+### Features
+
+* add result api and utils tests ([6f84528](https://github.com/AhmedOsman101/lib-result/commit/6f845286c0cbda247401f6eda659d571cb1a636e))
+* enhance ErrFromObject for custom error props ([51b7d98](https://github.com/AhmedOsman101/lib-result/commit/51b7d9854dc46e1c89336043fd50e241e6312fd2))
+* remove deprecated functions from main ([9b98aca](https://github.com/AhmedOsman101/lib-result/commit/9b98aca5da6d382576b396d6f455d30ac37a28dc))
+* **utils:** enhance error handling with custom errors ([ff5e10e](https://github.com/AhmedOsman101/lib-result/commit/ff5e10ee35c6255bf04872e233d698f1ca324b61))
+
+
+### Bug Fixes
+
+* allow ErrorState with default Error type ([3180c94](https://github.com/AhmedOsman101/lib-result/commit/3180c94b0b645c3f3028860bda3788bfa1642a16))
+
+## [3.0.0](https://github.com/AhmedOsman101/lib-result/compare/v2.3.0...v3.0.0) (2025-06-20)
+
+
+### ⚠ BREAKING CHANGES
+
 * `isErr()`, `isOk()`, and `unwrap()` were removed from the top-level API.
 Any code using these must migrate to the instance-based alternatives:
 - `result.isError()` instead of `isErr(result)`
