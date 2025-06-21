@@ -1,7 +1,5 @@
 import { describe, expect, test } from "vitest";
-
 import { Ok } from "../dist/index.js";
-
 import { divide, double } from "./testing-utils.js";
 
 describe("Result API", () => {
