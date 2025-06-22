@@ -157,28 +157,6 @@ if (customErr.isError()) {
 > To check out the full documentation, API details, and advanced usage
 > See the [lib-result Wiki](https://github.com/AhmedOsman101/lib-result/wiki) for comprehensive guides, API docs, and examples. The wiki is the main source for up-to-date documentation.
 
-## API
-
-### Functions
-
-- `Ok<T, E extends Error = Error>(ok: T)`: Creates an `Ok` result with a success value.
-- `Err<E extends Error, T>(error: E)`: Creates an `ErrorState` result with an error instance.
-- `ErrFromText<T>(message: string)`: Creates an `ErrorState` result from a string message.
-- `ErrFromObject<T>(props: CustomErrorProps, message?: string)`: Creates an `ErrorState` result with a custom error object and message.
-- `wrap<T, E extends Error = Error>(callback: () => T)`: Wraps a synchronous function, returning an `Ok` result for the return value or an `ErrorState` result for thrown errors.
-- `wrapAsync<T, E extends Error = Error>(callback: () => Promise<T>)`: Wraps an asynchronous function, returning a `Promise` resolving to an `Ok` result for resolved values or an `ErrorState` result for rejected errors.
-- `unwrap<T, E extends Error>(result: Result<T, E>)` _(Deprecated)_: Extracts the `Ok` value or throws the `ErrorState` error. Use `result.unwrap()` instead.
-- `isOk<T, E extends Error>(result: Result<T, E>)` _(Deprecated)_: Checks if the result is `Ok`. Use `result.isOk()` instead.
-- `isErr<T, E extends Error>(result: Result<T, E>)` _(Deprecated)_: Checks if the result is `Err`. Use `result.isError()` instead.
-
-### Result Methods
-
-- `result.isOk(): this is OkState<T, E>`: Returns `true` if the result is `Ok`, narrowing the type to `OkState`.
-- `result.isError(): this is ErrorState<E, T>`: Returns `true` if the result is `ErrorState`, narrowing the type to `ErrorState`.
-- `result.unwrap(): T`: Returns the `Ok` value or throws the `ErrorState` error.
-- `result.map<U>(fn: (value: T) => U): Result<U, E>`: Transforms the `Ok` value if present, preserving errors.
-- `result.pipe<U>(fn: (value: T) => Result<U, E>): Result<U, E>`: Chains a transformation that returns a new `Result`, short-circuiting on errors.
-
 ## Source Code
 
 You can view the full codebase, contribute, or report issues at the following repository:
