@@ -2,6 +2,17 @@
 
 ## [3.1.0](https://github.com/AhmedOsman101/lib-result/compare/v3.0.0...v3.1.0) (2025-06-22)
 
+
+### Features
+
+* add `expect` method to `Result` ([58570af](https://github.com/AhmedOsman101/lib-result/commit/58570af878f489300c0010e6e8aa48cf9016d7ed))
+* add match method to Result API ([f296fdb](https://github.com/AhmedOsman101/lib-result/commit/f296fdb5233ee419c4e341c0362e5543e307b1cc))
+* add orElse method to Result API ([9001261](https://github.com/AhmedOsman101/lib-result/commit/9001261fd67a48449a06a6311a92c2952c2e674e))
+* add result mixins with Ok and Err functions ([6555147](https://github.com/AhmedOsman101/lib-result/commit/65551475a0930d68c400f592fdb6bd40cc680b28))
+* add unwrapOr method to Result API ([411556f](https://github.com/AhmedOsman101/lib-result/commit/411556fa19274767a368788f9c95739f1a017ea3))
+
+## [3.1.0](https://github.com/AhmedOsman101/lib-result/compare/v3.0.0...v3.1.0) (2025-06-22)
+
 ### Features
 
 - add `expect` method to Result API ([58570af](https://github.com/AhmedOsman101/lib-result/commit/58570af878f489300c0010e6e8aa48cf9016d7ed))
