@@ -66,6 +66,29 @@ export interface ResultMethods<T, E extends Error> {
    * }
    */
   pipe<U>(fn: (value: T) => Result<U, E>): Result<U, E>;
+
+  /**
+   * Pattern matches on the Result state, transforming both `Ok` and `Err` cases into a common type.
+   * @template U - The type that both transformations will produce.
+   * @param {(value: T) => U} okFn - Function to transform the success value if Result is `Ok`.
+   * @param {(error: E) => U} errFn - Function to transform the error if Result is `Err`.
+   * @returns {U} The result of either `okFn` or `errFn` depending on the Result state.
+   * @example
+   * const result: Result<number, Error> = Ok(42);
+   * const message = result.match(
+   *   value => `Success: ${value}`,
+   *   error => `Error: ${error.message}`
+   * ); // "Success: 42"
+   *
+   * const error: Result<number, Error> = Err(new Error("Failed"));
+   * const errorMessage = error.match(
+   *   value => `Success: ${value}`,
+   *   error => `Error: ${error.message}`
+   * ); // "Error: Failed"
+   */
+  match<U>(okFn: (value: T) => U, errFn: (value: E) => U): U;
+
+  // orElse<U>(fn: (error: E) => U): T | U;
 }
 
 /**

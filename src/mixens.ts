@@ -8,6 +8,15 @@ import type {
 } from "./types.js";
 import { createCustomError, toError } from "./utils.js";
 
+const methodsArray = [
+  withIsOk,
+  withIsError,
+  withUnwrap,
+  withMap,
+  withPipe,
+  withMatch,
+] as const;
+
 function compose<T>(base: T, ...fns: ((obj: T) => T)[]) {
   return Object.freeze(fns.reduce((obj, fn) => fn(obj), base));
 }
@@ -63,6 +72,19 @@ function withPipe<T, E extends Error, R extends Result<T, E>>(base: R) {
   });
 }
 
+function withMatch<T, E extends Error, R extends Result<T, E>>(base: R) {
+  return Object.assign(base, {
+    match<U>(this: R, okFn: (value: T) => U, errFn: (value: E) => U): U {
+      try {
+        if (this.isOk()) return okFn(this.ok as T);
+      } catch (e) {
+        return errFn(toError(e) as E);
+      }
+      return errFn(this.error as E);
+    },
+  });
+}
+
 /**
  * Creates a successful `Result` in the `Ok` state.
  * @template T - The type of the success value.
@@ -73,15 +95,8 @@ function withPipe<T, E extends Error, R extends Result<T, E>>(base: R) {
  * const result = Ok(42);
  * // result: { ok: 42, error: undefined } // and some helper methods
  */
-function Ok<T, E extends Error = Error>(ok: T): Readonly<OkState<T, E>> {
-  return compose(
-    { ok, error: undefined } as OkState<T, E>,
-    withIsOk,
-    withIsError,
-    withUnwrap,
-    withMap,
-    withPipe
-  );
+function Ok<T, E extends Error = Error>(ok: T): OkState<T, E> {
+  return compose({ ok, error: undefined } as OkState<T, E>, ...methodsArray);
 }
 
 /**
@@ -97,20 +112,13 @@ function Ok<T, E extends Error = Error>(ok: T): Readonly<OkState<T, E>> {
  */
 function Err<T = undefined, E extends Error = Error>(
   error: E
-): Readonly<ErrorState<E, T>> {
+): ErrorState<E, T> {
   if (!(error instanceof Error)) {
     throw new TypeError(
       "Err expects an Error instance, use ErrFromObject instead."
     );
   }
-  return compose(
-    { ok: undefined, error } as ErrorState<E, T>,
-    withIsOk,
-    withIsError,
-    withUnwrap,
-    withMap,
-    withPipe
-  );
+  return compose({ ok: undefined, error } as ErrorState<E, T>, ...methodsArray);
 }
 
 /*
@@ -124,25 +132,10 @@ function Err<T = undefined, E extends Error = Error>(
  * // result: { ok: undefined, error: Error("Something went wrong") } // and some helper methods
  */
 function ErrFromText<T = undefined>(message: string): ErrorState<Error, T> {
-  return {
-    ok: undefined,
-    error: new Error(message),
-    isError(): this is ErrorState<Error, T> {
-      return this.error !== undefined;
-    },
-    isOk(): this is OkState<T, Error> {
-      return this.error === undefined;
-    },
-    unwrap(): never {
-      throw this.error;
-    },
-    map<U>(_fn: (value: T) => U): ErrorState<Error, U> {
-      return Err(this.error);
-    },
-    pipe<U>(_fn: (value: T) => Result<U, Error>): ErrorState<Error, U> {
-      return Err(this.error);
-    },
-  };
+  return compose(
+    { ok: undefined, error: new Error(message) } as ErrorState<Error, T>,
+    ...methodsArray
+  );
 }
 
 /**
@@ -182,27 +175,13 @@ function ErrFromText<T = undefined>(message: string): ErrorState<Error, T> {
 function ErrFromObject<P extends KeyValue = KeyValue, T = undefined>(
   props: CustomErrorProps<P>
 ): ErrorState<CustomError<P>, T> {
-  return {
-    ok: undefined,
-    error: createCustomError(props),
-    isError(): this is ErrorState<CustomError<P>, T> {
-      return this.error !== undefined;
-    },
-    isOk(): this is OkState<T, CustomError<P>> {
-      return this.error === undefined;
-    },
-    unwrap(): never {
-      throw this.error;
-    },
-    map<U>(_fn: (value: T) => U): ErrorState<CustomError<P>, U> {
-      return Err(this.error);
-    },
-    pipe<U>(
-      _fn: (value: T) => Result<U, CustomError<P>>
-    ): ErrorState<CustomError<P>, U> {
-      return Err(this.error);
-    },
-  };
+  return compose(
+    { ok: undefined, error: createCustomError(props) } as ErrorState<
+      CustomError<P>,
+      T
+    >,
+    ...methodsArray
+  );
 }
 
 export { Ok, Err, ErrFromText, ErrFromObject };
