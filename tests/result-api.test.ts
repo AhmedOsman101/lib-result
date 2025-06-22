@@ -1,5 +1,5 @@
-import { describe, expect, test } from "vitest";
-import { Ok } from "../dist/index.js";
+import { describe, expect, test, vi } from "vitest";
+import { Err, Ok } from "../dist/index.js";
 import { divide, double } from "./testing-utils.js";
 
 describe("Result API", () => {
@@ -100,6 +100,62 @@ describe("Result API", () => {
     test("throws the error for Err results", () => {
       const division = divide(1, 0);
       expect(() => division.unwrap()).toThrow("Cannot Divide By Zero");
+    });
+  });
+  describe("match()", () => {
+    test("calls okFn and returns its result for Ok state", () => {
+      const result = Ok(10);
+      const message = result.match(
+        value => `Success: ${value * 2}`,
+        error => `Error: ${error.message}`
+      );
+      expect(message).toBe("Success: 20");
+    });
+
+    test("calls errFn and returns its result for Err state", () => {
+      const errorResult = Err(new Error("Something went wrong"));
+      const message = errorResult.match(
+        value => `Success: ${value}`,
+        error => `Error: ${error.message.toUpperCase()}`
+      );
+      expect(message).toBe("Error: SOMETHING WENT WRONG");
+    });
+
+    test("ensures okFn is not called for Err state", () => {
+      const errorResult = Err(new Error("Test Error"));
+      const okFn = vi.fn().mockReturnValue("Success: value");
+      const message = errorResult.match(
+        okFn,
+        error => `Error: ${error.message}`
+      );
+      expect(okFn).not.toHaveBeenCalled();
+      expect(message).toBe("Error: Test Error");
+    });
+
+    test("ensures errFn is not called for Ok state", () => {
+      const okResult = Ok("Hello");
+      const errFn = vi.fn().mockReturnValue("Error: message");
+      const message = okResult.match(
+        value => `Success: ${value.toUpperCase()}`,
+        errFn
+      );
+      expect(errFn).not.toHaveBeenCalled();
+      expect(message).toBe("Success: HELLO");
+    });
+
+    test("handles okFn throwing an error by calling errFn with the thrown error", () => {
+      const result = Ok(5);
+      const errorMessage = "Function failed!";
+      const output = result.match(
+        value => {
+          if (value === 5) {
+            throw new Error(errorMessage);
+          }
+          return `Success: ${value}`;
+        },
+        error => `Caught Error: ${error.message}`
+      );
+      expect(output).toBe(`Caught Error: ${errorMessage}`);
     });
   });
 });

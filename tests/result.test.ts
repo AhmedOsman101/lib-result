@@ -1,21 +1,14 @@
 import { describe, expect, test, vi } from "vitest";
-// import {
-//   Err,
-//   ErrFromObject,
-//   ErrFromText,
-//   Ok,
-//   wrap,
-//   wrapAsync,
-//   wrapAsyncThrowable,
-//   wrapThrowable,
-// } from "../dist/index.js";
-import { Err, ErrFromObject, ErrFromText, Ok } from "../dist/index.js";
 import {
+  Err,
+  ErrFromObject,
+  ErrFromText,
+  Ok,
   wrap,
   wrapAsync,
   wrapAsyncThrowable,
   wrapThrowable,
-} from "../src/main.ts";
+} from "../dist/index.js";
 import { toPromise } from "./testing-utils.ts";
 
 describe("Result Type", () => {
