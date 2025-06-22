@@ -12,6 +12,7 @@ const methodsArray = [
   withIsOk,
   withIsError,
   withUnwrap,
+  withExpect,
   withMap,
   withPipe,
   withMatch,
@@ -43,6 +44,18 @@ function withUnwrap<T, E extends Error, R extends Result<T, E>>(base: R) {
     unwrap(this: R): T | never {
       if (this.isOk()) return this.ok;
       throw this.error as E;
+    },
+  });
+}
+
+function withExpect<T, E extends Error, R extends Result<T, E>>(base: R) {
+  return Object.assign(base, {
+    expect(this: R, message: string): T | never {
+      if (this.isOk()) return this.ok;
+      throw createCustomError({
+        message,
+        cause: this.error as E,
+      });
     },
   });
 }

@@ -28,6 +28,15 @@ export interface ResultMethods<T, E extends Error> {
   unwrap(): T;
 
   /**
+   * Extracts the success value from an `OkState<T>` result.
+   * If the result is an `ErrorState<E>`, it throws a `CustomError` with the provided message,
+   * and the original error from `ErrorState<E>` is passed as the `cause` property.
+   * @returns {T} The success value if `OkState<T>`.
+   * @throws {CustomError} Throws a `CustomError` containing the provided message and the original error as its cause, if the result is in the Error state.
+   */
+  expect(message: string): T;
+
+  /**
    * Transforms the success value of a `Result` using the provided function, preserving the error if in the `Err` state.
    * @template U - The type of the transformed success value.
    * @param fn - A function that takes the `Ok` value of type `T` and returns a new value of type `U`.

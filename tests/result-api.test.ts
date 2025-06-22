@@ -1,6 +1,6 @@
 import { describe, expect, test, vi } from "vitest";
 import { Err, Ok } from "../dist/index.js";
-import { divide, double } from "./testing-utils.js";
+import { DivisionError, divide, double } from "./testing-utils.js";
 
 describe("Result API", () => {
   describe("isError()", () => {
@@ -102,6 +102,32 @@ describe("Result API", () => {
       expect(() => division.unwrap()).toThrow("Cannot Divide By Zero");
     });
   });
+
+  describe("expect()", () => {
+    test("returns the value for Ok results", () => {
+      const result = Ok(42);
+      expect(result.expect("Failed")).toBe(42);
+    });
+
+    test("throws the error with the message for Err results", () => {
+      const division = divide(1, 0);
+      expect(() => division.expect("Failed to divide")).toThrow(
+        "Failed to divide"
+      );
+    });
+
+    test("Passes the cause property correctly", () => {
+      const division = divide(1, 0);
+      try {
+        division.expect("Failed to divide");
+        // biome-ignore lint/suspicious/noExplicitAny: testing
+      } catch (e: any) {
+        expect(e.cause).toBeInstanceOf(DivisionError);
+        expect(e.cause.message).toBe("Cannot Divide By Zero");
+      }
+    });
+  });
+
   describe("match()", () => {
     test("calls okFn and returns its result for Ok state", () => {
       const result = Ok(10);
