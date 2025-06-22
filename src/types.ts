@@ -76,9 +76,9 @@ export interface ResultMethods<T, E extends Error> {
 export interface OkState<T, E extends Error = Error>
   extends ResultMethods<T, E> {
   /** The success value of type `T`. */
-  ok: T;
+  readonly ok: T;
   /** Always `undefined` in the `Ok` state, indicating no error. */
-  error: undefined;
+  readonly error: undefined;
 }
 
 /**
@@ -89,9 +89,9 @@ export interface OkState<T, E extends Error = Error>
 export interface ErrorState<E extends Error = Error, T = undefined>
   extends ResultMethods<T, E> {
   /** Always `undefined` in the `Error` state, indicating no value. */
-  ok: undefined;
+  readonly ok: undefined;
   /** The error of type `E`. */
-  error: E;
+  readonly error: E;
 }
 
 /**
