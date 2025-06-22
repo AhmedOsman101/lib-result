@@ -17,6 +17,7 @@ const methodsArray = [
   withPipe,
   withMatch,
   withOrElse,
+  withUnwrapOr,
 ] as const;
 
 function compose<T>(base: T, ...fns: ((obj: T) => T)[]) {
@@ -108,6 +109,14 @@ function withOrElse<T, E extends Error, R extends Result<T, E>>(base: R) {
       } catch (e) {
         throw toError(e);
       }
+    },
+  });
+}
+
+function withUnwrapOr<T, E extends Error, R extends Result<T, E>>(base: R) {
+  return Object.assign(base, {
+    unwrapOr(this: R, fallback: T): T {
+      return this.isOk() ? (this.ok as T) : fallback;
     },
   });
 }

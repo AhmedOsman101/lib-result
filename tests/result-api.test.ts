@@ -185,7 +185,7 @@ describe("Result API", () => {
     });
   });
 
-  describe("orElse", () => {
+  describe("orElse()", () => {
     test("returns the ok value if Result is Ok", () => {
       const result = Ok(42);
       const value = result.orElse(() => 0);
@@ -204,6 +204,20 @@ describe("Result API", () => {
       const value = okResult.orElse(errorFn);
       expect(value).toBe(100);
       expect(errorFn).not.toHaveBeenCalled();
+    });
+  });
+
+  describe("unwrapOr()", () => {
+    test("returns the ok value if Result is Ok", () => {
+      const result = Ok(42);
+      const value = result.unwrapOr(0);
+      expect(value).toBe(42);
+    });
+
+    test("returns the fallback value if Result is Err", () => {
+      const errorResult = Err<string>(new Error("Failed"));
+      const fallback = errorResult.unwrapOr("Failed");
+      expect(fallback).toBe("Failed");
     });
   });
 });

@@ -110,6 +110,20 @@ export interface ResultMethods<T, E extends Error> {
    * const fallback = error.orElse(() => 0); // 0
    */
   orElse<U>(fn: (error: E) => U): T | U;
+
+  /**
+   * Returns the success value if the Result is `Ok`, or the fallback value if it's `Err`.
+   * @template T - The type of the ok and the fallback value.
+   * @param {T} fallback - Fallback value to return if the result is `ErrorState`.
+   * @returns {T} Either the success value or the fallback value.
+   * @example
+   * const result: Result<number, Error> = Ok(42);
+   * const value = result.unwrapOr(0); // 42
+   *
+   * const error: Result<number, Error> = Err(new Error("Failed"));
+   * const fallback = error.unwrapOr(0); // 0
+   */
+  unwrapOr(fallback: T): T;
 }
 
 /**
