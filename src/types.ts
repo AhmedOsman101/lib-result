@@ -88,7 +88,19 @@ export interface ResultMethods<T, E extends Error> {
    */
   match<U>(okFn: (value: T) => U, errFn: (value: E) => U): U;
 
-  // orElse<U>(fn: (error: E) => U): T | U;
+  /**
+   * Returns the success value if the Result is `Ok`, or the result of the provided function if it's `Err`.
+   * @template U - The type that the error handler function returns.
+   * @param {(error: E) => U} fn - Function to handle the error case and provide an alternative value.
+   * @returns {T | U} Either the success value or the result of the error handler function.
+   * @example
+   * const result: Result<number, Error> = Ok(42);
+   * const value = result.orElse(() => 0); // 42
+   *
+   * const error: Result<number, Error> = Err(new Error("Failed"));
+   * const fallback = error.orElse(() => 0); // 0
+   */
+  orElse<U>(fn: (error: E) => U): T | U;
 }
 
 /**

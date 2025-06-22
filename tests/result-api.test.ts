@@ -158,4 +158,26 @@ describe("Result API", () => {
       expect(output).toBe(`Caught Error: ${errorMessage}`);
     });
   });
+
+  describe("orElse", () => {
+    test("returns the ok value if Result is Ok", () => {
+      const result = Ok(42);
+      const value = result.orElse(() => 0);
+      expect(value).toBe(42);
+    });
+
+    test("calls the error handler and returns its value if Result is Err", () => {
+      const errorResult = Err(new Error("Failed"));
+      const fallback = errorResult.orElse(e => e.message);
+      expect(fallback).toBe("Failed");
+    });
+
+    test("ensures the error handler is not called for Ok state", () => {
+      const okResult = Ok(100);
+      const errorFn = vi.fn().mockReturnValue(0);
+      const value = okResult.orElse(errorFn);
+      expect(value).toBe(100);
+      expect(errorFn).not.toHaveBeenCalled();
+    });
+  });
 });

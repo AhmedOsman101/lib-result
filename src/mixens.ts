@@ -15,6 +15,7 @@ const methodsArray = [
   withMap,
   withPipe,
   withMatch,
+  withOrElse,
 ] as const;
 
 function compose<T>(base: T, ...fns: ((obj: T) => T)[]) {
@@ -77,10 +78,23 @@ function withMatch<T, E extends Error, R extends Result<T, E>>(base: R) {
     match<U>(this: R, okFn: (value: T) => U, errFn: (value: E) => U): U {
       try {
         if (this.isOk()) return okFn(this.ok as T);
+        return errFn(this.error as E);
       } catch (e) {
         return errFn(toError(e) as E);
       }
-      return errFn(this.error as E);
+    },
+  });
+}
+
+function withOrElse<T, E extends Error, R extends Result<T, E>>(base: R) {
+  return Object.assign(base, {
+    orElse<U>(this: R, errFn: (value: E) => U): T | U {
+      try {
+        if (this.isOk()) return this.ok as T;
+        return errFn(this.error as E);
+      } catch (e) {
+        throw toError(e);
+      }
     },
   });
 }
@@ -176,10 +190,10 @@ function ErrFromObject<P extends KeyValue = KeyValue, T = undefined>(
   props: CustomErrorProps<P>
 ): ErrorState<CustomError<P>, T> {
   return compose(
-    { ok: undefined, error: createCustomError(props) } as ErrorState<
-      CustomError<P>,
-      T
-    >,
+    {
+      ok: undefined,
+      error: createCustomError(props),
+    } as ErrorState<CustomError<P>, T>,
     ...methodsArray
   );
 }
