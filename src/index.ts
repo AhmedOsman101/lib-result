@@ -10,4 +10,4 @@ export {
   ErrFromText,
   Ok,
 } from "./mixens.js";
-export type { Result } from "./types.js";
+export type { CustomError, Result } from "./types.js";
