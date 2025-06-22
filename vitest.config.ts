@@ -21,6 +21,8 @@ export default defineConfig({
         "vitest.config.ts",
         "src/types.ts", // only contain types
         "src/index.ts", // only contain exports
+        "src/mixens.ts", // tested with main.ts
+        "src/**draft**", // drafts doesn't need to be tested
         "src/deprecated.ts",
       ],
       thresholds: {
