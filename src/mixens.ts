@@ -5,8 +5,8 @@ import type {
   KeyValue,
   OkState,
   Result,
-} from "./types.js";
-import { createCustomError, toError } from "./utils.js";
+} from "./types.ts";
+import { createCustomError, toError } from "./utils.ts";
 
 const methodsArray = [
   withIsOk,

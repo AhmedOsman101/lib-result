@@ -21,6 +21,8 @@
     "noUncheckedIndexedAccess": true,
     "noImplicitOverride": true,
     /* Output Control */
+    "allowImportingTsExtensions": true,
+    "noEmit": true, // Disable emitting files; use for type-checking only
     "declaration": true, // Generate .d.ts type declarations
     "sourceMap": true,
     "declarationMap": true,

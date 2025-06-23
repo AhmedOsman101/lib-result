@@ -1,6 +1,6 @@
-import { Err, Ok } from "./mixens.js";
-import type { Callback, CustomError, Result } from "./types.js";
-import { toError } from "./utils.js";
+import { Err, Ok } from "./mixens.ts";
+import type { Callback, CustomError, Result } from "./types.ts";
+import { toError } from "./utils.ts";
 
 /**
  * Wraps a synchronous function, capturing its return value as an `Ok` result or any thrown error as an `Error` result.

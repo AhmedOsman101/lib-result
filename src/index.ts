@@ -3,11 +3,11 @@ export {
   wrapAsync,
   wrapAsyncThrowable,
   wrapThrowable,
-} from "./main.js";
+} from "./main.ts";
 export {
   Err,
   ErrFromObject,
   ErrFromText,
   Ok,
-} from "./mixens.js";
-export type { CustomError, Result } from "./types.js";
+} from "./mixens.ts";
+export type { CustomError, Result } from "./types.ts";

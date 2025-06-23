@@ -1,4 +1,4 @@
-import type { CustomError, CustomErrorProps, KeyValue } from "./types.js";
+import type { CustomError, CustomErrorProps, KeyValue } from "./types.ts";
 
 /**
  * Converts an unknown value to an `Error` instance or a compatible custom error.

@@ -1,4 +1,4 @@
-import type { ErrorState, OkState, Result } from "./types.js";
+import type { ErrorState, OkState, Result } from "./types.ts";
 
 // DEPRECATED: Since v2.0.0, Completely removed in v3.0.0 //
 
