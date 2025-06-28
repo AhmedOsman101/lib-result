@@ -1,5 +1,14 @@
 # Changelog
 
+All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
+
+## [3.2.0](https://github.com/AhmedOsman101/lib-result/compare/v3.1.1...v3.2.0) (2025-06-28)
+
+
+### Features
+
+* add errFromUnknown to create error result ([e80e524](https://github.com/AhmedOsman101/lib-result/commit/e80e524cb5cba745da5eda4d4a40296c69ae09b3))
+
 ## [3.1.0](https://github.com/AhmedOsman101/lib-result/compare/v3.0.0...v3.1.0) (2025-06-22)
 
 ### Features
