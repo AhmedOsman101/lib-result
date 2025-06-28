@@ -8,6 +8,7 @@ export {
   Err,
   ErrFromObject,
   ErrFromText,
+  ErrFromUnknown,
   Ok,
 } from "./mixens.ts";
 export type { CustomError, Result } from "./types.ts";

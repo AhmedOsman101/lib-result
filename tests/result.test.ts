@@ -3,6 +3,7 @@ import {
   Err,
   ErrFromObject,
   ErrFromText,
+  ErrFromUnknown,
   Ok,
   wrap,
   wrapAsync,
@@ -66,6 +67,37 @@ describe("Result Type", () => {
     test("throws TypeError when non-Error is passed", () => {
       // @ts-expect-error Testing invalid input
       expect(() => Err("not an error")).toThrow(TypeError);
+    });
+  });
+
+  describe("ErrFromUnknown()", () => {
+    test("creates an error result from a string message", () => {
+      const result = ErrFromUnknown("Failed");
+
+      expect(result.error).toBeInstanceOf(Error);
+      expect(result.ok).toBeUndefined();
+      expect(result.isOk()).toBe(false);
+      expect(result.isError()).toBe(true);
+      expect(() => result.unwrap()).toThrow("Failed");
+    });
+
+    test("does not map over an error result", () => {
+      const result = ErrFromUnknown({ message: "something happened" }).map(
+        value => value
+      );
+      expect(result.error).toBeInstanceOf(Error);
+      expect(result.error?.message).toBe("something happened");
+    });
+
+    test("does not pipe through a function when in error state", () => {
+      const mockFn = vi.fn();
+      const result = ErrFromUnknown({ code: 500 }).pipe(mockFn);
+
+      expect(mockFn).not.toHaveBeenCalled();
+      expect(result.error).toBeInstanceOf(Error);
+      expect(result.isError()).toBe(true);
+      // @ts-expect-error Testing invalid input
+      expect(result.error?.code).toBe(500);
     });
   });
 

@@ -157,6 +157,31 @@ function Err<T = undefined, E extends Error = Error>(
   return compose({ ok: undefined, error } as ErrorState<E, T>, ...methodsArray);
 }
 
+/**
+ * Creates a failure `Result` in the `Error` state from an `unknown` variable.
+ * @template T - The type of the success value (used for type compatibility with `Result`).
+ * @param {unknown} error - The unknown error from catch statement.
+ * @returns {ErrorState<CustomError, T>} A `Result` in the `ErrorState` with the provided error and no value.
+ * @example
+ * function mayThrow() {
+ *   try {
+ *     throw new Error("Something went wrong")
+ *   } catch (e) {
+ *     return ErrFromUnknown(e);
+ *   };
+ * }
+ * const result = mayThrow();
+ * // result: { ok: undefined, error: Error("Something went wrong") } // and some helper methods
+ */
+function ErrFromUnknown<T = undefined>(
+  error: unknown
+): ErrorState<CustomError, T> {
+  return compose(
+    { ok: undefined, error: toError(error) } as ErrorState<CustomError, T>,
+    ...methodsArray
+  );
+}
+
 /*
  **
  * Creates a failure `Result` in the `Error` state from a string message.
@@ -220,4 +245,4 @@ function ErrFromObject<P extends KeyValue = KeyValue, T = undefined>(
   );
 }
 
-export { Ok, Err, ErrFromText, ErrFromObject };
+export { Ok, Err, ErrFromText, ErrFromObject, ErrFromUnknown };
