@@ -78,24 +78,27 @@ export interface ResultMethods<T, E extends Error> {
 
   /**
    * Pattern matches on the Result state, transforming both `Ok` and `Err` cases into a common type.
+   *
    * @template U - The type that both transformations will produce.
-   * @param {(value: T) => U} okFn - Function to transform the success value if Result is `Ok`.
-   * @param {(error: E) => U} errFn - Function to transform the error if Result is `Err`.
+   * @param {object} matchers - An object containing the transformation functions for `Ok` and `Err` states.
+   * @param {(value: T) => U} matchers.okFn - The function to apply if the Result is `Ok`. It receives the `Ok` value.
+   * @param {(value: E) => U} matchers.errFn - The function to apply if the Result is `Err`. It receives the `Err` value.
    * @returns {U} The result of either `okFn` or `errFn` depending on the Result state.
+   *
    * @example
    * const result: Result<number, Error> = Ok(42);
-   * const message = result.match(
-   *   value => `Success: ${value}`,
-   *   error => `Error: ${error.message}`
-   * ); // "Success: 42"
+   * const message = result.match({
+   * okFn: value => `Success: ${value}`,
+   * errFn: error => `Error: ${error.message}`
+   * }); // "Success: 42"
    *
-   * const error: Result<number, Error> = Err(new Error("Failed"));
-   * const errorMessage = error.match(
-   *   value => `Success: ${value}`,
-   *   error => `Error: ${error.message}`
-   * ); // "Error: Failed"
+   * const error: Result<number> = Err(new Error("Failed"));
+   * const errorMessage = error.match({
+   * okFn: value => `Success: ${value}`,
+   * errFn: error => `Error: ${error.message}`
+   * }); // "Error: Failed"
    */
-  match<U>(okFn: (value: T) => U, errFn: (value: E) => U): U;
+  match<U>(matchers: { okFn: (value: T) => U; errFn: (value: E) => U }): U;
 
   /**
    * Returns the success value if the Result is `Ok`, or the result of the provided function if it's `Err`.

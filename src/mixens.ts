@@ -89,12 +89,15 @@ function withPipe<T, E extends Error, R extends Result<T, E>>(base: R) {
 
 function withMatch<T, E extends Error, R extends Result<T, E>>(base: R) {
   return Object.assign(base, {
-    match<U>(this: R, okFn: (value: T) => U, errFn: (value: E) => U): U {
+    match<U>(
+      this: R,
+      matchers: { okFn: (value: T) => U; errFn: (value: E) => U }
+    ): U {
       try {
-        if (this.isOk()) return okFn(this.ok as T);
-        return errFn(this.error as E);
+        if (this.isOk()) return matchers.okFn(this.ok as T);
+        return matchers.errFn(this.error as E);
       } catch (e) {
-        return errFn(toError(e) as E);
+        return matchers.errFn(toError(e) as E);
       }
     },
   });
