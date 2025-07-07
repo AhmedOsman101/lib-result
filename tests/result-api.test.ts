@@ -147,6 +147,15 @@ describe("Result API", () => {
       expect(message).toBe("Error: SOMETHING WENT WRONG");
     });
 
+    test("calls errFn and returns its result for Err state with no args", () => {
+      const errorResult = Err(new Error("Something went wrong"));
+      const message = errorResult.match({
+        okFn: value => `Success: ${value}`,
+        errFn: () => "Error: Unknown Error",
+      });
+      expect(message).toBe("Error: Unknown Error");
+    });
+
     test("ensures okFn is not called for Err state", () => {
       const errorResult = Err(new Error("Test Error"));
       const okFn = vi.fn().mockReturnValue("Success: value");

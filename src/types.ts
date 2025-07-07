@@ -98,7 +98,7 @@ export interface ResultMethods<T, E extends Error> {
    * errFn: error => `Error: ${error.message}`
    * }); // "Error: Failed"
    */
-  match<U>(matchers: { okFn: (value: T) => U; errFn: (value: E) => U }): U;
+  match<U>(matchers: { okFn: (value: T) => U; errFn: (error?: E) => U }): U;
 
   /**
    * Returns the success value if the Result is `Ok`, or the result of the provided function if it's `Err`.

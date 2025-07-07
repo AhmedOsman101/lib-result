@@ -91,7 +91,7 @@ function withMatch<T, E extends Error, R extends Result<T, E>>(base: R) {
   return Object.assign(base, {
     match<U>(
       this: R,
-      matchers: { okFn: (value: T) => U; errFn: (value: E) => U }
+      matchers: { okFn: (value: T) => U; errFn: (error?: E) => U }
     ): U {
       try {
         if (this.isOk()) return matchers.okFn(this.ok as T);
