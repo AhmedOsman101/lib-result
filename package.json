@@ -9,7 +9,13 @@
     "url": "https://github.com/AhmedOsman101/lib-result.git"
   },
   "homepage": "https://github.com/AhmedOsman101/lib-result/wiki",
-  "keywords": ["typescript", "javascript", "result", "rust", "error-handling"],
+  "keywords": [
+    "typescript",
+    "javascript",
+    "result",
+    "rust",
+    "error-handling"
+  ],
   "type": "module",
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
@@ -20,7 +26,9 @@
       "require": "./dist/index.cjs"
     }
   },
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "clean": "rm -rf dist/*",
     "format": "biome check --fix .",
@@ -37,6 +45,7 @@
     "@arethetypeswrong/cli": "^0.18.2",
     "@biomejs/biome": "2.0.5",
     "@vitest/coverage-v8": "3.2.4",
+    "axios": "^1.11.0",
     "esbuild": "^0.25.5",
     "husky": "^9.1.7",
     "tsup": "^8.5.0",
