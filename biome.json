@@ -106,7 +106,18 @@
         },
         "useShorthandAssign": "info",
         "useThrowOnlyError": "on",
-        "useTrimStartEnd": "on"
+        "useTrimStartEnd": "on",
+        "useConsistentObjectDefinitions": {
+          "level": "warn",
+          "options": {
+            "syntax": "shorthand"
+          }
+        },
+        "useGroupedAccessorPairs": "info",
+        "useExportsLast": "off",
+        "useNumericSeparators": "info",
+        "useObjectSpread": "off",
+        "useSymbolDescription": "warn"
       },
       "a11y": {
         "useButtonType": "off"
@@ -135,7 +146,10 @@
         "useJsxKeyInIterable": "warn",
         "useValidTypeof": "error",
         "useYield": "warn",
-        "useValidForDirection": "info"
+        "useValidForDirection": "info",
+        "noNestedComponentDefinitions": "info",
+        "useJsonImportAttributes": "warn",
+        "useSingleJsDocAsterisk": "on"
       },
       "complexity": {
         "noUselessCatch": "warn",
@@ -155,7 +169,8 @@
         "noEmptyTypeParameters": "on",
         "noUselessTernary": "info",
         "noUselessUndefinedInitialization": "info",
-        "useWhile": "info"
+        "useWhile": "info",
+        "useIndexOf": "warn"
       },
       "suspicious": {
         "noImplicitAnyLet": "warn",
@@ -192,10 +207,14 @@
         "useGetterReturn": "on",
         "useIsArray": "error",
         "useNumberToFixedDigitsArgument": "info",
-        "useStrictMode": "info"
+        "useStrictMode": "info",
+        "noBitwiseOperators": "off",
+        "noConstantBinaryExpressions": "info",
+        "noTsIgnore": "on",
+        "noUselessEscapeInString": "warn",
+        "useStaticResponseMethods": "on"
       },
       "nursery": {
-        "noBitwiseOperators": "off",
         "useSortedClasses": {
           "fix": "safe",
           "level": "warn",
@@ -204,31 +223,12 @@
           }
         },
         "noAwaitInLoop": "info",
-        "noConstantBinaryExpression": "info",
         "noFloatingPromises": "warn",
         "noImportCycles": "error",
-        "noTsIgnore": "on",
-        "useConsistentObjectDefinition": {
-          "level": "warn",
-          "options": {
-            "syntax": "shorthand"
-          }
-        },
-        "noNestedComponentDefinitions": "info",
         "noShadow": "on",
         "noUnresolvedImports": "off",
-        "noUselessEscapeInString": "warn",
         "noUselessUndefined": "on",
-        "useAdjacentGetterSetter": "info",
-        "useConsistentResponse": "on",
-        "useExhaustiveSwitchCases": "on",
-        "useExportsLast": "off",
-        "useIndexOf": "warn",
-        "useJsonImportAttribute": "warn",
-        "useNumericSeparators": "info",
-        "useObjectSpread": "off",
-        "useSingleJsDocAsterisk": "on",
-        "useSymbolDescription": "warn"
+        "useExhaustiveSwitchCases": "on"
       }
     }
   },
