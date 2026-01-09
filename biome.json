@@ -10,10 +10,10 @@
     "ignoreUnknown": true,
     "includes": [
       "**",
-      "!**/node_modules/**",
-      "!**/prisma/**",
-      "!**/dist/**",
-      "!**/.git/**",
+      "!**/node_modules",
+      "!**/prisma",
+      "!**/dist",
+      "!**/.git",
       "!**/*.vue",
       "!**/*.svelte",
       "!**/fresh.gen.ts"
@@ -222,7 +222,6 @@
             "attributes": ["classList", "class", "className"]
           }
         },
-        "noAwaitInLoop": "info",
         "noFloatingPromises": "warn",
         "noImportCycles": "error",
         "noShadow": "on",
