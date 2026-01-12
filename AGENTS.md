@@ -5,6 +5,7 @@ This file contains guidelines for agentic coding agents working on this reposito
 ## Commands
 
 ### Building and Testing
+
 - `pnpm build` - Clean and build the project (cleans dist, runs tsup, attw)
 - `pnpm format` - Format code with Biome
 - `pnpm format:unsafe` - Format with unsafe Biome fixes
@@ -20,6 +21,7 @@ Always run `pnpm build` and `pnpm format` before committing changes.
 ## Code Style
 
 ### Formatting
+
 - Use Biome for formatting and linting
 - 2 spaces indentation
 - 80 character line width
@@ -29,6 +31,7 @@ Always run `pnpm build` and `pnpm format` before committing changes.
 - No trailing whitespace
 
 ### TypeScript
+
 - Target: ES2022
 - Strict mode enabled with all strict checks
 - Use `import type` for type-only imports
@@ -37,12 +40,14 @@ Always run `pnpm build` and `pnpm format` before committing changes.
 - Enable `noImplicitOverride` for method overrides
 
 ### Imports
+
 - Always use `.ts` extensions for relative imports within the project
 - Group imports: external libraries first, then internal type imports, then internal imports
 - Type imports: `import type { Result } from "./types.ts"`
 - Value imports: `import { Ok, Err } from "./mixens.ts"`
 
 ### Naming Conventions
+
 - Functions and variables: camelCase
 - Interfaces and types: PascalCase
 - Special constructors: PascalCase (e.g., `Ok()`, `Err()`)
@@ -50,6 +55,7 @@ Always run `pnpm build` and `pnpm format` before committing changes.
 - Test files: `*.test.ts`
 
 ### Code Patterns
+
 - Use Result type for all operations that may fail
 - Prefer `isOk()` and `isError()` for type narrowing
 - Use `map()` for transformations that cannot fail
@@ -61,6 +67,7 @@ Always run `pnpm build` and `pnpm format` before committing changes.
 - Use `wrapAsyncThrowable()` for async functions
 
 ### Error Handling
+
 - Always use Result type instead of throwing errors
 - Use `Err()` with Error instances
 - Use `ErrFromText()` for simple string errors
@@ -71,6 +78,7 @@ Always run `pnpm build` and `pnpm format` before committing changes.
 - Use `expect(message)` to provide context for unwrapping errors
 
 ### Testing
+
 - Write tests for both success and error paths
 - Use descriptive test names
 - Test edge cases and error conditions
@@ -81,6 +89,7 @@ Always run `pnpm build` and `pnpm format` before committing changes.
 - Use `@ts-expect-error` comments when intentionally testing invalid inputs
 
 ### File Organization
+
 - Source code in `/src`
 - Tests in `/tests`
 - `index.ts` - Main export file
@@ -91,6 +100,7 @@ Always run `pnpm build` and `pnpm format` before committing changes.
 - Export all public APIs from `index.ts`
 
 ### General Guidelines
+
 - Prefer `const` over `let`
 - Use template literals instead of string concatenation
 - Avoid unnecessary type annotations (let TypeScript infer)

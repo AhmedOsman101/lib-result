@@ -13,7 +13,16 @@ npm install lib-result
 ### TypeScript
 
 ```typescript
-import { Err, ErrFromText, Ok, type Result, wrap, wrapAsync } from "lib-result";
+import {
+  Err,
+  ErrFromObject,
+  ErrFromText,
+  ErrFromUnknown,
+  Ok,
+  type Result,
+  wrap,
+  wrapAsync,
+} from "lib-result";
 
 class DivisionError extends Error {}
 
@@ -46,6 +55,17 @@ try {
   console.error(e.message); // "Failed"
 }
 
+// Using expect for custom error messages
+try {
+  errorResult.expect("Failed to get user");
+} catch (e: any) {
+  console.error(e.message); // "Failed to get user"
+  console.error(e.cause.message); // "Failed"
+}
+
+// Using unwrapOr for safe fallbacks
+const safeValue = errorResult.unwrapOr(0); // 0
+
 // Using wrap for synchronous operations
 const wrappedResult = wrap(() => divide(10, 2));
 if (wrappedResult.isOk()) {
@@ -68,12 +88,28 @@ if (chained.isOk()) {
   console.log(chained.ok); // 3
 }
 
+// Using match for pattern matching
+const message = result.match({
+  okFn: value => `Success: ${value}`,
+  errFn: error => `Error: ${error.message}`,
+});
+console.log(message); // "Success: 3"
+
+// Using ErrFromUnknown for catch blocks
+function parseJson(json: string) {
+  try {
+    return Ok(JSON.parse(json));
+  } catch (error) {
+    return ErrFromUnknown(error);
+  }
+}
+
 // Using ErrFromObject to create an error with custom properties
-import { ErrFromObject } from "lib-result";
-const customErr = ErrFromObject<number>(
-  { code: 123, info: "Custom" },
-  "Something went wrong"
-);
+const customErr = ErrFromObject<number, { code: number; info: string }>({
+  message: "Something went wrong",
+  code: 123,
+  info: "Custom",
+});
 if (customErr.isError()) {
   console.error(customErr.error.message); // "Something went wrong"
   console.error(customErr.error.code); // 123
@@ -84,7 +120,15 @@ if (customErr.isError()) {
 ### JavaScript
 
 ```javascript
-import { Err, ErrFromText, Ok, wrap, wrapAsync } from "lib-result";
+import {
+  Err,
+  ErrFromObject,
+  ErrFromText,
+  ErrFromUnknown,
+  Ok,
+  wrap,
+  wrapAsync,
+} from "lib-result";
 
 class DivisionError extends Error {}
 
@@ -117,6 +161,17 @@ try {
   console.error(e.message); // "Failed"
 }
 
+// Using expect for custom error messages
+try {
+  errorResult.expect("Failed to get user");
+} catch (e) {
+  console.error(e.message); // "Failed to get user"
+  console.error(e.cause.message); // "Failed"
+}
+
+// Using unwrapOr for safe fallbacks
+const safeValue = errorResult.unwrapOr(0); // 0
+
 // Using wrap for synchronous operations
 const wrappedResult = wrap(() => divide(10, 2));
 if (wrappedResult.isOk()) {
@@ -139,12 +194,28 @@ if (chained.isOk()) {
   console.log(chained.ok); // 3
 }
 
+// Using match for pattern matching
+const message = result.match({
+  okFn: value => `Success: ${value}`,
+  errFn: error => `Error: ${error.message}`,
+});
+console.log(message); // "Success: 3"
+
+// Using ErrFromUnknown for catch blocks
+function parseJson(json) {
+  try {
+    return Ok(JSON.parse(json));
+  } catch (error) {
+    return ErrFromUnknown(error);
+  }
+}
+
 // Using ErrFromObject to create an error with custom properties
-import { ErrFromObject } from "lib-result";
-const customErr = ErrFromObject(
-  { code: 123, info: "Custom" },
-  "Something went wrong"
-);
+const customErr = ErrFromObject({
+  message: "Something went wrong",
+  code: 123,
+  info: "Custom",
+});
 if (customErr.isError()) {
   console.error(customErr.error.message); // "Something went wrong"
   console.error(customErr.error.code); // 123
