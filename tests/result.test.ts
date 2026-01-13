@@ -240,7 +240,7 @@ describe("Result Type", () => {
     });
 
     describe("wrapAsyncThrowable", () => {
-      test("wraps an async function that resolves", async () => {
+      test("wraps a mock async function that resolves", async () => {
         const asyncFn = vi.fn().mockResolvedValue(42);
         const safeAsyncFn = wrapAsyncThrowable<number>(asyncFn);
 
@@ -254,6 +254,35 @@ describe("Result Type", () => {
         const safeAsyncFn = wrapAsyncThrowable(asyncFn);
 
         const result = await safeAsyncFn();
+        expect(result.isError()).toBe(true);
+        expect(result.error).toBeInstanceOf(Error);
+        expect(result.error?.message).toBe("Async failed");
+        expect(() => result.unwrap()).toThrow("Async failed");
+      });
+
+      test("wraps an async function that resolves", async () => {
+        const asyncFn = async (num: number) => {
+          return await Promise.resolve(num);
+        };
+
+        const safeAsyncFn = wrapAsyncThrowable(
+          async (num: number) => await asyncFn(num)
+        );
+
+        const result = await safeAsyncFn(42);
+        expect(result.ok).toBe(42);
+      });
+
+      test("catches promise rejections", async () => {
+        const asyncFn = async (num: number) => {
+          if (num === 42) await Promise.reject(new Error("Async failed"));
+        };
+
+        const safeAsyncFn = wrapAsyncThrowable(
+          async (num: number) => await asyncFn(num)
+        );
+
+        const result = await safeAsyncFn(42);
         expect(result.isError()).toBe(true);
         expect(result.error).toBeInstanceOf(Error);
         expect(result.error?.message).toBe("Async failed");
