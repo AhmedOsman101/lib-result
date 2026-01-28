@@ -43,7 +43,7 @@ function withIsError<T, E extends Error, R extends Result<T, E>>(base: R) {
 function withUnwrap<T, E extends Error, R extends Result<T, E>>(base: R) {
   return Object.assign(base, {
     unwrap(this: R): T | never {
-      if (this.isOk()) return this.ok;
+      if (this.isOk()) return this.ok as T;
       throw this.error as E;
     },
   });
@@ -52,7 +52,7 @@ function withUnwrap<T, E extends Error, R extends Result<T, E>>(base: R) {
 function withExpect<T, E extends Error, R extends Result<T, E>>(base: R) {
   return Object.assign(base, {
     expect(this: R, message: string): T | never {
-      if (this.isOk()) return this.ok;
+      if (this.isOk()) return this.ok as T;
       throw createCustomError({
         message,
         cause: this.error as E,
@@ -154,7 +154,7 @@ function Err<T = undefined, E extends Error = Error>(
 ): ErrorState<E, T> {
   if (!(error instanceof Error)) {
     throw new TypeError(
-      "Err expects an Error instance, use ErrFromObject instead."
+      "Err() expects an Error instance, use ErrFromObject() instead."
     );
   }
   return compose({ ok: undefined, error } as ErrorState<E, T>, ...methodsArray);

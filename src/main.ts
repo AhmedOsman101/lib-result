@@ -1,6 +1,5 @@
-import { Err, Ok } from "./mixens.ts";
+import { ErrFromUnknown, Ok } from "./mixens.ts";
 import type { Callback, CustomError, Result } from "./types.ts";
-import { toError } from "./utils.ts";
 
 /**
  * Wraps a synchronous function, capturing its return value as an `Ok` result or any thrown error as an `Error` result.
@@ -19,7 +18,7 @@ export function wrap<T>(callback: () => T): Result<T, CustomError> {
   try {
     return Ok(callback());
   } catch (error) {
-    return Err(toError(error));
+    return ErrFromUnknown(error);
   }
 }
 
@@ -42,7 +41,7 @@ export async function wrapAsync<T>(
   try {
     return Ok(await callback());
   } catch (error) {
-    return Err(toError(error));
+    return ErrFromUnknown(error);
   }
 }
 
@@ -67,8 +66,8 @@ export function wrapThrowable<T, Args extends unknown[] = []>(
   return (...args: Args) => {
     try {
       return Ok(callback(...args));
-    } catch (e) {
-      return Err(toError(e));
+    } catch (error) {
+      return ErrFromUnknown(error);
     }
   };
 }
@@ -99,8 +98,8 @@ export function wrapAsyncThrowable<T, Args extends unknown[] = []>(
   return async (...args: Args) => {
     try {
       return Ok(await callback(...args));
-    } catch (e) {
-      return Err(toError(e));
+    } catch (error) {
+      return ErrFromUnknown(error);
     }
   };
 }
