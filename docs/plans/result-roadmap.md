@@ -18,6 +18,44 @@ Adopt the strongest ideas found across `neverthrow`, `ts-result`, and `ts-result
 
 #### 1. Add `mapErr`
 
+What it does:
+
+- transforms the error branch while leaving the success value untouched
+- lets users convert one error type into another without unwrapping the `Result`
+
+Example shape:
+
+```ts
+const result = Err(new ValidationError("bad input"));
+
+const mapped = result.mapErr(
+  error => new HttpError(`Request failed: ${error.message}`)
+);
+// mapped: Result<never, HttpError>
+```
+
+Examples from rival libraries:
+
+### `neverthrow`
+
+```ts
+const mapped = err("bad input").mapErr(error => `wrapped: ${error}`);
+```
+
+### `ts-result`
+
+```ts
+const mapped = Err("bad input").mapErr(error => `wrapped: ${error}`);
+```
+
+### `ts-results`
+
+```ts
+const mapped = Err(new Error("bad input")).mapErr(
+  error => new Error(`wrapped: ${error.message}`)
+);
+```
+
 Why:
 
 - present in all three rival libraries
@@ -30,6 +68,41 @@ Target outcome:
 - `Result<T, E>.mapErr<F extends Error>(fn: (error: E) => F): Result<T, F>`
 
 #### 2. Add `unwrapOrElse`
+
+What it does:
+
+- returns the success value when the `Result` is `Ok`
+- computes a fallback value from the error when the `Result` is `Err`
+- unlike `unwrapOr`, the fallback is lazy and has access to the error
+
+Example shape:
+
+```ts
+const value = result.unwrapOrElse(error => {
+  return error.message === "not found" ? 0 : -1;
+});
+```
+
+Examples from rival libraries:
+
+### `ts-result`
+
+```ts
+const value = Err("bad input").unwrapOrElse(error => error.length);
+```
+
+### Closest current `lib-result` equivalent
+
+```ts
+const value = result.orElse(error => {
+  return error.message === "not found" ? 0 : -1;
+});
+```
+
+Why this matters:
+
+- users from Rust-style libraries will search for `unwrapOrElse`
+- it makes the intention clearer than overloading `orElse` for plain values
 
 Why:
 
@@ -46,6 +119,37 @@ Note:
 - after adding this, reevaluate whether the current `orElse` name should remain as-is, be deprecated, or be complemented by a Result-returning recovery method
 
 #### 3. Add Result aggregation helpers
+
+What they do:
+
+- combine multiple `Result`s into one
+- common fail-fast form: return all success values if every result is `Ok`, otherwise return the first `Err`
+- optional all-errors form: collect all errors instead of stopping at the first one
+
+Example shapes:
+
+```ts
+const combined = Result.all(Ok(1), Ok(2), Ok(3));
+// Ok([1, 2, 3])
+
+const failed = Result.all(Ok(1), Err(new Error("boom")), Ok(3));
+// Err(Error("boom"))
+```
+
+Examples from rival libraries:
+
+### `neverthrow`
+
+```ts
+const combined = Result.combine([ok(1), ok(2), ok(3)]);
+```
+
+### `ts-results`
+
+```ts
+const combined = Result.all(Ok(1), Ok(2), Ok(3));
+const anyOk = Result.any(Err("a"), Ok(2), Err("c"));
+```
 
 Why:
 
@@ -67,6 +171,43 @@ Recommended naming direction:
 
 #### 4. Add a Result-returning recovery combinator
 
+What it does:
+
+- if the result is `Ok`, return it unchanged
+- if the result is `Err`, run a callback that returns a new `Result`
+- this allows true recovery on the error path while staying inside the `Result` type
+
+Example shape:
+
+```ts
+const recovered = result.recoverWith(error => {
+  if (error.message === "missing cache") {
+    return Ok(fallbackValue);
+  }
+
+  return Err(error);
+});
+```
+
+Examples from rival libraries:
+
+### `neverthrow`
+
+```ts
+const recovered = err("bad input").orElse(error => ok(error.length));
+```
+
+### `ts-result`
+
+```ts
+const recovered = Err("bad input").orElse(error => Ok(error.length));
+```
+
+Why this matters:
+
+- this is different from `unwrapOr` and `unwrapOrElse`, which collapse to a plain value
+- it enables retry, fallback loading, and selective recovery flows
+
 Why:
 
 - `neverthrow` and `ts-result` both support recovery that returns a new `Result`
@@ -83,6 +224,34 @@ Preferred direction:
 - candidates: `recover`, `recoverWith`, or `orElseResult`
 
 #### 5. Add side-effect tap helpers
+
+What they do:
+
+- run side effects for logging, tracing, or metrics
+- return the original `Result` unchanged so the main pipeline can continue
+
+Example shape:
+
+```ts
+const finalResult = divide(10, 2)
+  .tap(value => logger.info(`value=${value}`))
+  .tapError(error => logger.error(error.message));
+```
+
+Examples from rival libraries:
+
+### `neverthrow`
+
+```ts
+const result = ok(1)
+  .andTee(value => console.log(value))
+  .orTee(error => console.error(error));
+```
+
+Why this matters:
+
+- users often want observability without changing the carried value
+- names like `tap` and `tapError` are clearer than `andTee` and `orTee`
 
 Why:
 
@@ -104,6 +273,24 @@ Design constraint:
 
 #### 6. Add `unwrapErr`
 
+What it does:
+
+- returns the contained error if the `Result` is `Err`
+- throws if the `Result` is `Ok`
+- gives symmetry with `unwrap`
+
+Examples from rival libraries:
+
+### `ts-result`
+
+```ts
+const error = Err("bad input").unwrapErr();
+```
+
+### `ts-results`
+
+`ts-results` documents `unwrapErr` / `expectErr` style symmetry as part of its Rust-inspired surface.
+
 Why:
 
 - improves API symmetry
@@ -111,6 +298,35 @@ Why:
 - lower value than `mapErr`, aggregation, and recovery composition
 
 #### 7. Add `mapOr` / `mapOrElse`
+
+What they do:
+
+- collapse a `Result` into a plain value without returning another `Result`
+- `mapOr(defaultValue, mapFn)` uses a fixed fallback
+- `mapOrElse(defaultFn, mapFn)` computes the fallback from the error
+
+Example shapes:
+
+```ts
+const label = result.mapOr("unknown", value => value.name);
+
+const label2 = result.mapOrElse(
+  error => `error:${error.message}`,
+  value => value.name
+);
+```
+
+Examples from rival libraries:
+
+### `ts-result`
+
+```ts
+const label = result.mapOr("unknown", value => value.name);
+const label2 = result.mapOrElse(
+  error => `error:${error}`,
+  value => value.name
+);
+```
 
 Why:
 
@@ -125,6 +341,23 @@ Risk:
 
 #### 8. Decide whether `Option` belongs in `lib-result`
 
+What it is:
+
+- `Option<T>` models presence or absence without an error payload
+- usually represented as `Some(value)` or `None`
+- useful when a missing value is expected and should not be treated as an error
+
+Example from `ts-results`:
+
+```ts
+const image = getLoggedInUsername().andThen(getImageForUsername);
+```
+
+Why it matters:
+
+- it broadens the library from error handling into general Rust-style data modeling
+- it can be valuable, but it is a product-scope decision rather than a small API addition
+
 Why:
 
 - `ts-results` gains a lot of breadth from bundling `Option`
@@ -138,6 +371,24 @@ Recommendation:
   - a Rust-inspired error-and-option toolkit
 
 #### 9. Evaluate a lightweight async abstraction later
+
+What it would do:
+
+- wrap `Promise<Result<T, E>>` in an object that still exposes Result-like methods
+- allow async pipelines like `map`, `mapErr`, `andThen`, and `match` without constantly `await`ing intermediate results
+
+Example from `neverthrow`:
+
+```ts
+const result = fromPromise(fetchUser(), toError)
+  .map(user => user.name)
+  .andThen(name => fromPromise(loadProfile(name), toError));
+```
+
+Why it matters:
+
+- it is the biggest capability advantage `neverthrow` has
+- but it adds a lot of API surface and implementation complexity
 
 Why:
 
