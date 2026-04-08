@@ -1,3 +1,4 @@
+import axios from "axios";
 import { describe, expect, test, vi } from "vitest";
 import {
   Err,
@@ -10,7 +11,7 @@ import {
   wrapAsyncThrowable,
   wrapThrowable,
 } from "../dist/index.js";
-import { toPromise } from "./testing-utils.ts";
+import { DivisionError, toPromise } from "./testing-utils.ts";
 
 describe("Result Type", () => {
   describe("Ok()", () => {
@@ -217,7 +218,7 @@ describe("Result Type", () => {
     describe("wrapThrowable", () => {
       test("wraps a function that might throw", () => {
         const fn = vi.fn().mockReturnValue(42);
-        const safeFn = wrapThrowable<number>(fn);
+        const safeFn = wrapThrowable(fn);
 
         const result = safeFn();
         expect(fn).toHaveBeenCalled();
@@ -227,13 +228,13 @@ describe("Result Type", () => {
 
       test("catches errors from the wrapped function", () => {
         const fn = vi.fn().mockImplementation(() => {
-          throw new Error("Failed");
+          throw new DivisionError("Failed");
         });
         const safeFn = wrapThrowable(fn);
 
         const result = safeFn();
         expect(result.isError()).toBe(true);
-        expect(result.error).toBeInstanceOf(Error);
+        expect(result.error).toBeInstanceOf(DivisionError);
         expect(result.error?.message).toBe("Failed");
         expect(() => result.unwrap()).toThrow("Failed");
       });
@@ -247,6 +248,47 @@ describe("Result Type", () => {
         const result = await safeAsyncFn();
         expect(result.ok).toBe(42);
         expect(asyncFn).toHaveBeenCalled();
+      });
+
+      test("wraps axios.get function that resolves", async () => {
+        const safeAsyncFn = wrapAsyncThrowable(axios.get);
+
+        type Todo = {
+          userId: number;
+          id: number;
+          title: string;
+          completed: boolean;
+        };
+
+        const result = await safeAsyncFn<Todo>(
+          "https://jsonplaceholder.typicode.com/todos/1"
+        );
+
+        expect(result.ok?.data).toStrictEqual({
+          userId: 1,
+          id: 1,
+          title: "delectus aut autem",
+          completed: false,
+        });
+      });
+
+      test("wraps axios.get function that rejects", async () => {
+        const safeAsyncFn = wrapAsyncThrowable(axios.get);
+
+        type Todo = {
+          userId: number;
+          id: number;
+          title: string;
+          completed: boolean;
+        };
+
+        const result = await safeAsyncFn<Todo>(
+          "https://jsonplaceholder.typicode.com/todos/1000"
+        );
+
+        expect(result.error).toBeDefined();
+        // @ts-expect-error temporary
+        expect(result.error?.code).toBe("ERR_BAD_REQUEST");
       });
 
       test("catches promise rejections", async () => {

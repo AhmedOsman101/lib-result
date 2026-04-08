@@ -1,8 +1,8 @@
 [[language]]
 name = "typescript"
 language-servers = [
-  "deno-lsp",
+  # "deno-lsp",
   "biome",
   "scls",
-  # { name = "typescript-language-server", except-features = ["format"] },
+  { name = "typescript-language-server", except-features = ["format"] },
 ]
