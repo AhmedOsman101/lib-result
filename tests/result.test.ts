@@ -11,7 +11,7 @@ import {
   wrapAsyncThrowable,
   wrapThrowable,
 } from "../dist/index.js";
-import { DivisionError, toPromise } from "./testing-utils.ts";
+import { DivisionError, toPromise, withHttpServer } from "./testing-utils.ts";
 
 describe("Result Type", () => {
   describe("Ok()", () => {
@@ -241,23 +241,26 @@ describe("Result Type", () => {
     });
 
     describe("wrapAsyncThrowable", () => {
-      test("wraps a mock async function that resolves", async () => {
-        const asyncFn = vi.fn().mockResolvedValue(42);
-        const safeAsyncFn = wrapAsyncThrowable<number>(asyncFn);
+      test("wraps axios.get with a real local server success response", async () => {
+        const safeAsyncFn = wrapAsyncThrowable(axios.get);
 
-        const result = await safeAsyncFn();
-        expect(result.ok).toBe(42);
-        expect(asyncFn).toHaveBeenCalled();
+        const result = await withHttpServer(
+          () => ({
+            body: { value: 42 },
+          }),
+          async baseUrl => await safeAsyncFn<{ value: number }>(baseUrl)
+        );
+
+        expect(result.ok?.data).toStrictEqual({ value: 42 });
       });
 
-      test("wraps axios.get function that resolves", async () => {
+      test("wraps axios.get against a real local server", async () => {
         const todo = {
           userId: 1,
           id: 1,
           title: "delectus aut autem",
           completed: false,
         };
-        vi.spyOn(axios, "get").mockResolvedValueOnce({ data: todo });
         const safeAsyncFn = wrapAsyncThrowable(axios.get);
 
         type Todo = {
@@ -267,17 +270,18 @@ describe("Result Type", () => {
           completed: boolean;
         };
 
-        const result = await safeAsyncFn<Todo>("/todos/1");
+        const result = await withHttpServer(
+          request => ({
+            body: request.url === "/todos/1" ? todo : { message: "Not found" },
+            statusCode: request.url === "/todos/1" ? 200 : 404,
+          }),
+          async baseUrl => await safeAsyncFn<Todo>(`${baseUrl}/todos/1`)
+        );
 
-        expect(axios.get).toHaveBeenCalledWith("/todos/1");
         expect(result.ok?.data).toStrictEqual(todo);
       });
 
-      test("wraps axios.get function that rejects", async () => {
-        const axiosError = Object.assign(new Error("Request failed"), {
-          code: "ERR_BAD_REQUEST",
-        });
-        vi.spyOn(axios, "get").mockRejectedValueOnce(axiosError);
+      test("wraps axios.get rejection from a real local server", async () => {
         const safeAsyncFn = wrapAsyncThrowable(axios.get);
 
         type Todo = {
@@ -287,10 +291,15 @@ describe("Result Type", () => {
           completed: boolean;
         };
 
-        const result = await safeAsyncFn<Todo>("/todos/1000");
+        const result = await withHttpServer(
+          () => ({
+            statusCode: 404,
+            body: { message: "Not found" },
+          }),
+          async baseUrl => await safeAsyncFn<Todo>(`${baseUrl}/todos/1000`)
+        );
 
         expect(result.error).toBeDefined();
-        expect(axios.get).toHaveBeenCalledWith("/todos/1000");
         // @ts-expect-error temporary
         expect(result.error?.code).toBe("ERR_BAD_REQUEST");
       });
