@@ -251,28 +251,13 @@ describe("Result Type", () => {
       });
 
       test("wraps axios.get function that resolves", async () => {
-        const safeAsyncFn = wrapAsyncThrowable(axios.get);
-
-        type Todo = {
-          userId: number;
-          id: number;
-          title: string;
-          completed: boolean;
-        };
-
-        const result = await safeAsyncFn<Todo>(
-          "https://jsonplaceholder.typicode.com/todos/1"
-        );
-
-        expect(result.ok?.data).toStrictEqual({
+        const todo = {
           userId: 1,
           id: 1,
           title: "delectus aut autem",
           completed: false,
-        });
-      });
-
-      test("wraps axios.get function that rejects", async () => {
+        };
+        vi.spyOn(axios, "get").mockResolvedValueOnce({ data: todo });
         const safeAsyncFn = wrapAsyncThrowable(axios.get);
 
         type Todo = {
@@ -282,11 +267,30 @@ describe("Result Type", () => {
           completed: boolean;
         };
 
-        const result = await safeAsyncFn<Todo>(
-          "https://jsonplaceholder.typicode.com/todos/1000"
-        );
+        const result = await safeAsyncFn<Todo>("/todos/1");
+
+        expect(axios.get).toHaveBeenCalledWith("/todos/1");
+        expect(result.ok?.data).toStrictEqual(todo);
+      });
+
+      test("wraps axios.get function that rejects", async () => {
+        const axiosError = Object.assign(new Error("Request failed"), {
+          code: "ERR_BAD_REQUEST",
+        });
+        vi.spyOn(axios, "get").mockRejectedValueOnce(axiosError);
+        const safeAsyncFn = wrapAsyncThrowable(axios.get);
+
+        type Todo = {
+          userId: number;
+          id: number;
+          title: string;
+          completed: boolean;
+        };
+
+        const result = await safeAsyncFn<Todo>("/todos/1000");
 
         expect(result.error).toBeDefined();
+        expect(axios.get).toHaveBeenCalledWith("/todos/1000");
         // @ts-expect-error temporary
         expect(result.error?.code).toBe("ERR_BAD_REQUEST");
       });

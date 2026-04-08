@@ -192,6 +192,21 @@ describe("Result API", () => {
       });
       expect(output).toBe(`Caught Error: ${errorMessage}`);
     });
+
+    test("propagates errors thrown by errFn without calling it twice", () => {
+      const errorResult = Err(new Error("Something went wrong"));
+      const errFn = vi.fn(() => {
+        throw new Error("handler failed");
+      });
+
+      expect(() =>
+        errorResult.match({
+          okFn: () => "Success",
+          errFn,
+        })
+      ).toThrow("handler failed");
+      expect(errFn).toHaveBeenCalledTimes(1);
+    });
   });
 
   describe("orElse()", () => {

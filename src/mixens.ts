@@ -93,9 +93,12 @@ function withMatch<T, E extends Error, R extends Result<T, E>>(base: R) {
       this: R,
       matchers: { okFn: (value: T) => U; errFn: ((error: E) => U) | (() => U) }
     ): U {
-      try {
-        if (this.isOk()) return matchers.okFn(this.ok as T);
+      if (this.isError()) {
         return matchers.errFn(this.error as E);
+      }
+
+      try {
+        return matchers.okFn(this.ok as T);
       } catch (e) {
         return matchers.errFn(toError(e) as E);
       }

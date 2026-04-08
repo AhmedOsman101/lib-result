@@ -27,7 +27,3 @@ export function toPromise<T>(fn: () => T | Promise<T>): Promise<T> {
 }
 
 export const double = (x: number) => x * 2;
-
-export const FAKE_API_URL =
-  "https://jsonplaceholder.typicode.com/users/1" as const;
-export const INVALID_URL = "://invalid" as const;
