@@ -27,10 +27,8 @@
     "format:unsafe": "biome check --fix --unsafe .",
     "build": "pnpm clean && pnpm typecheck",
     "typecheck": "tsc --noUnusedLocals false --noUnusedParameters false --noEmit && tsup && attw --pack .",
-    "test": "pnpm build && pnpm test:run",
-    "test:run": "vitest run",
-    "test:watch": "vitest --watch",
-    "test:coverage": "vitest run --coverage; rm -rf coverage",
+    "test": "pnpm build && vitest run",
+    "test:coverage": "pnpm build && vitest run --coverage; rm -rf coverage",
     "prepublishOnly": "pnpm build && pnpm format",
     "prepare": "husky"
   },

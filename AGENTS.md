@@ -10,10 +10,6 @@ This file contains guidelines for agentic coding agents working on this reposito
 - `pnpm format` - Format code with Biome
 - `pnpm format:unsafe` - Format with unsafe Biome fixes
 - `pnpm test` - Build and run all tests
-- `pnpm test:run` - Run all tests without building
-- `pnpm test:run <test-file>` - Run a specific test file (e.g., `pnpm test:run result.test.ts`)
-- `pnpm test:run -- <pattern>` - Run tests matching a pattern
-- `pnpm test:watch` - Run tests in watch mode
 - `pnpm test:coverage` - Run tests with coverage report
 
 Always run `pnpm build` and `pnpm format` before committing changes.
