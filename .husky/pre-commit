@@ -1,23 +1,70 @@
 #!/usr/bin/env bash
-# shellcheck disable=SC2046,SC2148
+
+pnpm audit --fix &>/dev/null &
+pnpm install &>/dev/null &
+
+yesNo() {
+  local answer prompt="$1"
+  printf '%b' "${prompt} [Y/n] "
+  read -r answer </dev/tty
+
+  [[ ! "${answer}" =~ ^[nN]$ ]]
+}
+
+abort() {
+  printf "\e[31mAborting commit.\e[0m\n"
+  exit 1
+}
 
 gitRoot="$(git rev-parse --show-toplevel)"
 
 cd "${gitRoot}" || exit 1
 
-declare -a files
+# Get list of staged files (adds, copies, modified, renamed)
 mapfile -t files < <(git diff --cached --name-only --diff-filter=ACMR)
 
-# --- Formats only the staged files --- #
-unset BIOME_BINARY &>/dev/null || true
-unset BIOME_CONFIG_PATH &>/dev/null || true
-pnpm exec biome check --fix --no-errors-on-unmatched "${files[@]}" || true
+((${#files[@]})) || exit 0
 
-# --- Adds staged files again (to include the new formatter changes) --- #
-git add "${files[@]}"
+# Create temp directory for patches
+tmpDir="$(mktemp -d)"
+trap 'rm -rf $tmpDir' EXIT
+
+# Save staged diffs (working tree vs HEAD) for each file
+for file in "${files[@]}"; do
+  if [[ -f "${file}" ]]; then
+    git diff -- "${file}" >"${tmpDir}/${file//\//_}.diff"
+  fi
+done
+
+# --- Formats only the staged files --- #
+unset BIOME_BINARY &>/dev/null
+unset BIOME_CONFIG_PATH &>/dev/null
+pnpm exec biome check --fix --no-errors-on-unmatched --staged --reporter=summary "${gitRoot}"
+
+# Compare old diffs with new diffs to find changed files
+formatted_files=()
+for file in "${files[@]}"; do
+  diffFile="${tmpDir}/${file//\//_}.diff"
+  if [[ -f "${diffFile}" ]]; then
+    git diff -- "${file}" >"${diffFile}.new"
+    if ! diff "${diffFile}" "${diffFile}.new" &>/dev/null; then
+      formatted_files+=("${file}")
+    fi
+  fi
+done
+
+# If no files were formatted, proceed without prompt
+if ((${#formatted_files[@]} != 0)); then
+  printf "\e[33m%d file(s) were formatted:\e[0m\n" ${#formatted_files[@]}
+  for f in "${formatted_files[@]}"; do
+    printf "  - %s\n" "${f}"
+  done
+
+  yesNo "\nDo you want to proceed with the commit?" || abort
+fi
 
 # --- Do type checking before any commit --- #
 printf "\e[34mDoing type checks...\e[0m\n"
-pnpm typecheck || exit 1
-
-exit 0
+if ! pnpm --filter=client typecheck; then
+  yesNo "Typechecking failed.\nDo you want to proceed with the commit?" || abort
+fi
