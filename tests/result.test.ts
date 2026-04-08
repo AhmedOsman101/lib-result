@@ -35,6 +35,15 @@ describe("Result Type", () => {
       const result = Ok(2).pipe(x => Ok(x * 2));
       expect(result.ok).toBe(4);
     });
+
+    test("returns an error result when pipe callback throws", () => {
+      const result = Ok(2).pipe(() => {
+        throw new Error("Pipe failed");
+      });
+
+      expect(result.isError()).toBe(true);
+      expect(result.error?.message).toBe("Pipe failed");
+    });
   });
 
   describe("Err()", () => {
@@ -63,6 +72,16 @@ describe("Result Type", () => {
       expect(result.error).toBeInstanceOf(Error);
       expect(result.isError()).toBe(true);
       expect(result.error?.message).toBe("Failed");
+    });
+
+    test("rethrows errors thrown inside orElse as Error instances", () => {
+      const result = Err(new Error("Failed"));
+
+      expect(() =>
+        result.orElse(() => {
+          throw new Error("handler failed");
+        })
+      ).toThrow("handler failed");
     });
 
     test("throws TypeError when non-Error is passed", () => {
@@ -99,6 +118,13 @@ describe("Result Type", () => {
       expect(result.isError()).toBe(true);
       // @ts-expect-error Testing invalid input
       expect(result.error?.code).toBe(500);
+    });
+
+    test("creates a fallback unknown error for unsupported values", () => {
+      const result = ErrFromUnknown(true);
+
+      expect(result.isError()).toBe(true);
+      expect(result.error?.message).toBe("Unknown error");
     });
   });
 
@@ -152,6 +178,14 @@ describe("Result Type", () => {
 
       expect(result.error).toBeInstanceOf(Error);
       expect(result.error.cause).toBe(cause);
+    });
+
+    test("creates a fallback custom error when called without props", () => {
+      // @ts-expect-error Testing runtime fallback behavior
+      const result = ErrFromObject();
+
+      expect(result.isError()).toBe(true);
+      expect(result.error.message).toBe("Unknown Error");
     });
 
     test("does not map over an error result", () => {
