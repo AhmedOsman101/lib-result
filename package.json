@@ -23,8 +23,9 @@
   "files": ["dist"],
   "scripts": {
     "clean": "rm -rf dist/*",
-    "format": "biome check --fix .",
-    "format:unsafe": "biome check --fix --unsafe .",
+    "lint": "unset BIOME_CONFIG_PATH; biome lint .",
+    "format": "unset BIOME_CONFIG_PATH; biome check --fix .",
+    "format:unsafe": "unset BIOME_CONFIG_PATH; biome check --fix --unsafe .",
     "build": "pnpm clean && pnpm typecheck",
     "typecheck": "tsc --noUnusedLocals false --noUnusedParameters false --noEmit && tsup && attw --pack .",
     "test": "pnpm build && vitest run",
@@ -35,8 +36,9 @@
   "devDependencies": {
     "@arethetypeswrong/cli": "^0.18.2",
     "@biomejs/biome": "2.3.11",
+    "@types/node": "^25.5.2",
     "@vitest/coverage-v8": "3.2.4",
-    "axios": "^1.13.4",
+    "axios": "^1.15.0",
     "esbuild": "^0.25.12",
     "husky": "^9.1.7",
     "tsup": "^8.5.1",

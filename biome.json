@@ -16,7 +16,7 @@
       "!**/.git",
       "!**/*.vue",
       "!**/*.svelte",
-      "!**/fresh.gen.ts"
+      "!**/drafts"
     ]
   },
   "assist": {
