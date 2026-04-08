@@ -8,7 +8,8 @@
       "include-v-in-tag": true,
       "changelog-type": "default",
       "always-update": true,
-      "version-file": "version.txt"
+      "version-file": "version.txt",
+      "extra-files": ["package.json"]
     }
   }
 }
