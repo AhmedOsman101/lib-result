@@ -2,6 +2,25 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [4.0.0](https://github.com/AhmedOsman101/lib-result/compare/v3.2.2...v4.0.0) (2026-04-11)
+
+
+### ⚠ BREAKING CHANGES
+
+* map, pipe, match, and mapErr now throw toError(e) instead of returning Err(toError(e)) when their callbacks throw. This fixes the unsafe 'as U' / 'as E' casts that produced a Result with a mismatched runtime type.
+
+### Features
+
+* add mapErr method to Result ([69df83f](https://github.com/AhmedOsman101/lib-result/commit/69df83f7d7ca90581d8edcf5c4d52a493361d0ce))
+* **release:** add force option to gh release ([4943273](https://github.com/AhmedOsman101/lib-result/commit/4943273b4f0537d48df01aaef3500e880b54d7e0))
+* **types:** allow optional error in match errFn ([2fd204e](https://github.com/AhmedOsman101/lib-result/commit/2fd204e1ad78bb94e2c289aab8124a4395ee6e3f))
+
+
+### Bug Fixes
+
+* **mixins:** improve match error handling ([a365f9b](https://github.com/AhmedOsman101/lib-result/commit/a365f9b81c104fbc6bd3a4b26a34ee5e75595aae))
+* propagate thrown errors instead of returning Err with fake type cast ([6b62ede](https://github.com/AhmedOsman101/lib-result/commit/6b62ede7531954c0d4161a29244588d01632ee35))
+
 ## [3.2.2](https://github.com/AhmedOsman101/lib-result/compare/v3.2.1...v3.2.2) (2026-04-11)
 
 
