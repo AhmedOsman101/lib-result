@@ -36,13 +36,12 @@ describe("Result Type", () => {
       expect(result.ok).toBe(4);
     });
 
-    test("returns an error result when pipe callback throws", () => {
-      const result = Ok(2).pipe(() => {
-        throw new Error("Pipe failed");
-      });
-
-      expect(result.isError()).toBe(true);
-      expect(result.error?.message).toBe("Pipe failed");
+    test("throws when pipe callback throws", () => {
+      expect(() =>
+        Ok(2).pipe(() => {
+          throw new Error("Pipe failed");
+        })
+      ).toThrow("Pipe failed");
     });
   });
 

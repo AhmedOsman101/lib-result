@@ -41,12 +41,12 @@ describe("Result API", () => {
       expect(mapped.ok).toBe("Value: 4");
     });
 
-    test("returns error when mapping fails", () => {
-      const failedResult = Ok(5)
-        .map(x => `value is ${x}`)
-        .map(x => JSON.parse(x));
-      expect(failedResult.isError()).toBe(true);
-      expect(failedResult.error?.message).toMatch(/^Unexpected token/);
+    test("throws when mapping fails", () => {
+      expect(() =>
+        Ok(5)
+          .map(x => `value is ${x}`)
+          .map(x => JSON.parse(x))
+      ).toThrow();
     });
 
     test("returns doubled value on successful division", () => {
@@ -178,19 +178,20 @@ describe("Result API", () => {
       expect(message).toBe("Success: HELLO");
     });
 
-    test("handles okFn throwing an error by calling errFn with the thrown error", () => {
+    test("throws when okFn throws", () => {
       const result = Ok(5);
       const errorMessage = "Function failed!";
-      const output = result.match({
-        okFn: value => {
-          if (value === 5) {
-            throw new Error(errorMessage);
-          }
-          return `Success: ${value}`;
-        },
-        errFn: error => `Caught Error: ${error.message}`,
-      });
-      expect(output).toBe(`Caught Error: ${errorMessage}`);
+      expect(() =>
+        result.match({
+          okFn: value => {
+            if (value === 5) {
+              throw new Error(errorMessage);
+            }
+            return `Success: ${value}`;
+          },
+          errFn: () => "should not run",
+        })
+      ).toThrow(errorMessage);
     });
 
     test("propagates errors thrown by errFn without calling it twice", () => {
@@ -289,14 +290,13 @@ describe("Result API", () => {
       expect(mapFn).not.toHaveBeenCalled();
     });
 
-    test("converts a thrown error from the mapper into an Err result", () => {
+    test("throws when the error mapper throws", () => {
       const errorResult = Err(new Error("original"));
-      const output = errorResult.mapErr(() => {
-        throw new Error("mapper threw");
-      });
-      expect(output.isError()).toBe(true);
-      expect(output.error).toBeInstanceOf(Error);
-      expect(output.error?.message).toBe("mapper threw");
+      expect(() =>
+        errorResult.mapErr(() => {
+          throw new Error("mapper threw");
+        })
+      ).toThrow("mapper threw");
     });
 
     test("can be chained after map on Ok", () => {
@@ -307,14 +307,14 @@ describe("Result API", () => {
       expect(result.ok).toBe(20);
     });
 
-    test("can be chained after map on Err", () => {
-      const result = Ok(10)
-        .map(_x => {
-          throw new Error("boom");
-        })
-        .mapErr(e => new Error(`mapped: ${e.message}`));
-      expect(result.isError()).toBe(true);
-      expect(result.error?.message).toBe("mapped: boom");
+    test("throws when map throws before mapErr is reached", () => {
+      expect(() =>
+        Ok(10)
+          .map(_x => {
+            throw new Error("boom");
+          })
+          .mapErr(e => new Error(`mapped: ${e.message}`))
+      ).toThrow("boom");
     });
 
     test("can be chained after pipe", () => {
@@ -325,14 +325,14 @@ describe("Result API", () => {
       expect(result.ok).toBe(6);
     });
 
-    test("can be chained after pipe that throws", () => {
-      const result = Ok(5)
-        .pipe(() => {
-          throw new Error("pipe failed");
-        })
-        .mapErr(e => new Error(`mapped: ${e.message}`));
-      expect(result.isError()).toBe(true);
-      expect(result.error?.message).toBe("mapped: pipe failed");
+    test("throws when pipe throws before mapErr is reached", () => {
+      expect(() =>
+        Ok(5)
+          .pipe(() => {
+            throw new Error("pipe failed");
+          })
+          .mapErr(e => new Error(`mapped: ${e.message}`))
+      ).toThrow("pipe failed");
     });
 
     test("transforms errors with additional properties", () => {

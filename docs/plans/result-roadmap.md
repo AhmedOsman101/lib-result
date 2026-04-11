@@ -16,7 +16,7 @@ Adopt the strongest ideas found across `neverthrow`, `ts-result`, and `ts-result
 
 ### Priority 1 — Core gaps with highest value
 
-#### 1. Add `mapErr`
+#### 1. Add `mapErr` (Done)
 
 What it does:
 

@@ -18,6 +18,7 @@ const methodsArray = [
   withMatch,
   withOrElse,
   withUnwrapOr,
+  // from rivals:
   withMapErr,
 ] as const;
 
@@ -68,7 +69,7 @@ function withMap<T, E extends Error, R extends Result<T, E>>(base: R) {
       try {
         if (this.isOk()) return Ok(fn(this.ok as T));
       } catch (e) {
-        return Err(toError(e) as E);
+        throw toError(e);
       }
       return Err(this.error as E);
     },
@@ -81,7 +82,7 @@ function withPipe<T, E extends Error, R extends Result<T, E>>(base: R) {
       try {
         if (this.isOk()) return fn(this.ok as T);
       } catch (e) {
-        return Err(toError(e) as E);
+        throw toError(e);
       }
       return Err(this.error as E);
     },
@@ -94,14 +95,12 @@ function withMatch<T, E extends Error, R extends Result<T, E>>(base: R) {
       this: R,
       matchers: { okFn: (value: T) => U; errFn: ((error: E) => U) | (() => U) }
     ): U {
-      if (this.isError()) {
-        return matchers.errFn(this.error as E);
-      }
-
       try {
-        return matchers.okFn(this.ok as T);
+        return this.isError()
+          ? matchers.errFn(this.error as E)
+          : matchers.okFn(this.ok as T);
       } catch (e) {
-        return matchers.errFn(toError(e) as E);
+        throw toError(e);
       }
     },
   });
@@ -109,7 +108,7 @@ function withMatch<T, E extends Error, R extends Result<T, E>>(base: R) {
 
 function withOrElse<T, E extends Error, R extends Result<T, E>>(base: R) {
   return Object.assign(base, {
-    orElse<U>(this: R, errFn: (value: E) => U): T | U {
+    orElse<U>(this: R, errFn: (error: E) => U): T | U {
       try {
         if (this.isOk()) return this.ok as T;
         return errFn(this.error as E);
@@ -135,7 +134,7 @@ function withMapErr<T, E extends Error, R extends Result<T, E>>(base: R) {
       try {
         return Err(fn(this.error as E));
       } catch (e) {
-        return Err(toError(e) as U);
+        throw toError(e);
       }
     },
   });
