@@ -130,6 +130,22 @@ export interface ResultMethods<T, E extends Error> {
    * const fallback = error.unwrapOr(0); // 0
    */
   unwrapOr(fallback: T): T;
+
+  /**
+   * Transforms the error value of a `Result` using the provided function, preserving the ok value if in the `Ok` state.
+   * @template U - The type of the transformed error value.
+   * @param fn - A function that takes the `Err` value of type `E` and returns a new error of type `U`.
+   * @returns A new `Result` containing the transformed error (`Err<U>`) if the original `Result` is `Err`, or the same value (`Ok<T>`) if the original `Result` is `Ok`.
+   * @example
+   * const error = ErrFromText("Something happend");
+   * const mapped = error.mapErr(e => new AppError(`Error: ${e.message}`));
+   * // mapped: Result<undefined, AppError>;
+   *
+   * const result = Ok(5);
+   * const mapped = result.mapErr(e => new AppError(`Error: ${e.message}`));
+   * // mapped: Result<number, Error> = Ok("5")
+   */
+  mapErr<U extends Error>(fn: (error: E) => U): Result<T, U>;
 }
 
 /**

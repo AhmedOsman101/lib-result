@@ -244,4 +244,123 @@ describe("Result API", () => {
       expect(fallback).toBe("Failed");
     });
   });
+
+  describe("mapErr()", () => {
+    test("returns Ok unchanged when mapping the error of an Ok result", () => {
+      const result = Ok(42);
+      const errorFn = vi.fn().mockReturnValue(new Error("mapped"));
+      const mapped = result.mapErr(errorFn);
+      expect(mapped.isOk()).toBe(true);
+      expect(mapped.ok).toBe(42);
+      expect(errorFn).not.toHaveBeenCalled();
+    });
+
+    test("transforms the error value for Err results", () => {
+      const original = Err(new Error("original error"));
+      const mapped = original.mapErr(e => new Error(`wrapped: ${e.message}`));
+      expect(mapped.isError()).toBe(true);
+      expect(mapped.error).toBeInstanceOf(Error);
+      expect(mapped.error?.message).toBe("wrapped: original error");
+    });
+
+    test("maps the error and preserves the original error type constraint", () => {
+      class AppError extends Error {
+        constructor(
+          message: string,
+          public readonly code: number
+        ) {
+          super(message);
+          this.name = "AppError";
+        }
+      }
+
+      const result = Err(new Error("boom")).mapErr(
+        e => new AppError(e.message, 500)
+      );
+      expect(result.isError()).toBe(true);
+      expect(result.error).toBeInstanceOf(AppError);
+      expect(result.error?.code).toBe(500);
+    });
+
+    test("ensures the error mapper is not called for Ok state", () => {
+      const okResult = Ok("hello");
+      const mapFn = vi.fn().mockReturnValue(new Error("should not run"));
+      okResult.mapErr(mapFn);
+      expect(mapFn).not.toHaveBeenCalled();
+    });
+
+    test("converts a thrown error from the mapper into an Err result", () => {
+      const errorResult = Err(new Error("original"));
+      const output = errorResult.mapErr(() => {
+        throw new Error("mapper threw");
+      });
+      expect(output.isError()).toBe(true);
+      expect(output.error).toBeInstanceOf(Error);
+      expect(output.error?.message).toBe("mapper threw");
+    });
+
+    test("can be chained after map on Ok", () => {
+      const result = Ok(10)
+        .map(x => x * 2)
+        .mapErr(e => new Error(`should not run: ${e.message}`));
+      expect(result.isOk()).toBe(true);
+      expect(result.ok).toBe(20);
+    });
+
+    test("can be chained after map on Err", () => {
+      const result = Ok(10)
+        .map(_x => {
+          throw new Error("boom");
+        })
+        .mapErr(e => new Error(`mapped: ${e.message}`));
+      expect(result.isError()).toBe(true);
+      expect(result.error?.message).toBe("mapped: boom");
+    });
+
+    test("can be chained after pipe", () => {
+      const result = Ok(5)
+        .pipe(x => Ok(x + 1))
+        .mapErr(() => new Error("should not run"));
+      expect(result.isOk()).toBe(true);
+      expect(result.ok).toBe(6);
+    });
+
+    test("can be chained after pipe that throws", () => {
+      const result = Ok(5)
+        .pipe(() => {
+          throw new Error("pipe failed");
+        })
+        .mapErr(e => new Error(`mapped: ${e.message}`));
+      expect(result.isError()).toBe(true);
+      expect(result.error?.message).toBe("mapped: pipe failed");
+    });
+
+    test("transforms errors with additional properties", () => {
+      const result = Err(
+        Object.assign(new Error("validation failed"), {
+          code: 400,
+          field: "email",
+        })
+      ).mapErr(e => {
+        return Object.assign(new Error(`API error: ${e.message}`), {
+          statusCode: 502,
+          originalCode: (e as { code?: number }).code,
+        });
+      });
+      expect(result.isError()).toBe(true);
+      expect(result.error?.message).toBe("API error: validation failed");
+      expect((result.error as { statusCode?: number }).statusCode).toBe(502);
+      expect((result.error as { originalCode?: number }).originalCode).toBe(
+        400
+      );
+    });
+
+    test("mapErr followed by mapErr chains error transformations", () => {
+      const result = Err(new Error("level 1"))
+        .mapErr(e => new Error(`level 2: ${e.message}`))
+        .mapErr(e => new Error(`level 3: ${e.message}`));
+      expect(result.isError()).toBe(true);
+      expect(result.error?.message).toBe("level 3: level 2: level 1");
+    });
+  });
 });
