@@ -118,6 +118,26 @@ export interface ResultMethods<T, E extends Error> {
   map<U>(fn: (value: T) => U): Result<U, E>;
 
   /**
+   * Transforms the `Ok` value into a plain value, or returns the provided default when the result is `Err`.
+   * The default is evaluated eagerly.
+   * @template U - The plain value type returned by either branch.
+   * @param {U} defaultValue - Value returned when the result is `Err`.
+   * @param {(value: T) => U} fn - Function used to transform the `Ok` value.
+   * @returns {U} Either the transformed `Ok` value or `defaultValue`.
+   */
+  mapOr<U>(defaultValue: U, fn: (value: T) => U): U;
+
+  /**
+   * Transforms either branch of the result into a plain value.
+   * When the result is `Err`, `defaultFn` receives the error; when it is `Ok`, `fn` receives the success value.
+   * @template U - The plain value type returned by either branch.
+   * @param {(error: E) => U} defaultFn - Function used to transform the `Err` value.
+   * @param {(value: T) => U} fn - Function used to transform the `Ok` value.
+   * @returns {U} The value returned by the matching branch transformer.
+   */
+  mapOrElse<U>(defaultFn: (error: E) => U, fn: (value: T) => U): U;
+
+  /**
    * Transforms the error value of a `Result` using the provided function, preserving the ok value if in the `Ok` state.
    * @template U - The type of the transformed error value.
    * @param fn - A function that takes the `Err` value of type `E` and returns a new error of type `U`.

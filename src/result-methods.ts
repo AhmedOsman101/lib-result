@@ -121,6 +121,32 @@ function createWithMap({ err, ok }: ResultFactory): MethodInstaller {
   };
 }
 
+function withMapOr<T, E extends Error, R extends Result<T, E>>(base: R): R {
+  return Object.assign(base, {
+    mapOr<U>(this: R, defaultValue: U, fn: (value: T) => U): U {
+      try {
+        if (this.isError()) return defaultValue;
+        return fn(this.ok as T);
+      } catch (e) {
+        throw toError(e);
+      }
+    },
+  });
+}
+
+function withMapOrElse<T, E extends Error, R extends Result<T, E>>(base: R): R {
+  return Object.assign(base, {
+    mapOrElse<U>(this: R, defaultFn: (error: E) => U, fn: (value: T) => U): U {
+      try {
+        if (this.isError()) return defaultFn(this.error as E);
+        return fn(this.ok as T);
+      } catch (e) {
+        throw toError(e);
+      }
+    },
+  });
+}
+
 function createWithMapErr({ err, ok }: ResultFactory): MethodInstaller {
   return function withMapErr<T, E extends Error, R extends Result<T, E>>(
     base: R
@@ -214,6 +240,8 @@ export function createResultMethods({
     withIsError,
     withIsOk,
     createWithMap({ err, ok }),
+    withMapOr,
+    withMapOrElse,
     createWithMapErr({ err, ok }),
     withMatch,
     withOrElse,
