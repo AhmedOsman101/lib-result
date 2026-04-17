@@ -68,6 +68,28 @@ export interface ResultMethods<T, E extends Error> {
   expectErr(message: string): E;
 
   /**
+   * Runs a side-effect function on the success value when the result is `Ok`.
+   * The original `Result` is returned unchanged.
+   * @param {(value: T) => void} fn - Function invoked with the `Ok` value.
+   * @returns {Result<T, E>} The original result.
+   * @example
+   * const result = Ok(42).inspect(value => console.log(value));
+   * // logs 42 and returns the same Result
+   */
+  inspect(fn: (value: T) => void): Result<T, E>;
+
+  /**
+   * Runs a side-effect function on the error value when the result is `Err`.
+   * The original `Result` is returned unchanged.
+   * @param {(error: E) => void} fn - Function invoked with the `Err` value.
+   * @returns {Result<T, E>} The original result.
+   * @example
+   * const result = Err(new Error("Failed")).inspectErr(error => console.error(error.message));
+   * // logs "Failed" and returns the same Result
+   */
+  inspectErr(fn: (error: E) => void): Result<T, E>;
+
+  /**
    * Checks if the result is in the `Ok` state (contains a value and no error).
    * @returns `true` if the result is `Ok`, narrowing the type to `OkState<T, E>`.
    */

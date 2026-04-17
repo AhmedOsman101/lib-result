@@ -68,6 +68,26 @@ function withExpectErr<T, E extends Error, R extends Result<T, E>>(base: R): R {
   });
 }
 
+function withInspect<T, E extends Error, R extends Result<T, E>>(base: R): R {
+  return Object.assign(base, {
+    inspect(this: R, fn: (value: T) => void): Result<T, E> {
+      if (this.isOk()) fn(this.ok as T);
+      return this;
+    },
+  });
+}
+
+function withInspectErr<T, E extends Error, R extends Result<T, E>>(
+  base: R
+): R {
+  return Object.assign(base, {
+    inspectErr(this: R, fn: (error: E) => void): Result<T, E> {
+      if (this.isError()) fn(this.error as E);
+      return this;
+    },
+  });
+}
+
 function withIsError<T, E extends Error, R extends Result<T, E>>(base: R): R {
   return Object.assign(base, {
     isError(this: R): this is ErrorState<E, T> {
@@ -188,6 +208,9 @@ export function createResultMethods({
     createWithAnd({ err }),
     createWithAndThen({ err }),
     withExpect,
+    withExpectErr,
+    withInspect,
+    withInspectErr,
     withIsError,
     withIsOk,
     createWithMap({ err, ok }),
