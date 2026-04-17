@@ -8,6 +8,8 @@ type ResultFactory = {
 
 type ResultErrorFactory = Pick<ResultFactory, "err">;
 
+type ResultOkFactory = Pick<ResultFactory, "ok">;
+
 type MethodInstaller = <T, E extends Error, R extends Result<T, E>>(
   base: R
 ) => R;
