@@ -1,5 +1,5 @@
 /** biome-ignore-all lint/complexity/noBannedTypes: No alternative */
-// deno-lint-ignore-file no-explicit-any ban-types
+// deno-lint-ignore-file
 
 /**
  * Defines methods for a `Result` type, providing type-safe operations for checking and extracting values.
@@ -8,6 +8,41 @@
  * @template U - The return type of `unwrap`, typically `T` for `OkState` or `never` for `ErrorState`.
  */
 export interface ResultMethods<T, E extends Error> {
+  /**
+   * Chains a transformation by passing the `Ok` value to a function that returns a new `Result`, preserving the `Err` state if present.
+   * This is the Rust-style composition method for sequencing operations that may fail.
+   * @template U - The type of the success value in the returned `Result`.
+   * @param {(value: T) => Result<U, E>} fn - A function that takes the `Ok` value of type `T` and returns a new `Result<U, E>`.
+   * @returns {Result<U, E>} A new `Result<U, E>`: the result of `fn` if the original `Result` is `Ok`, or the same `Err` state if the original `Result` is `Err`.
+   * @example
+   * // Chaining transformations
+   * const result: Result<number, Error> = Ok(5);
+   * const chained = result
+   *   .andThen(x => Ok(x * 2)) // Result<number, Error> = Ok(10)
+   *   .andThen(x => Ok(x.toString())); // Result<string, Error> = Ok("10")
+   * if (chained.isOk()) {
+   *   console.log(chained.ok); // "10"
+   * }
+   *
+   * // Preserving Err state
+   * const error: Result<number, Error> = Err(new Error("Failed"));
+   * const chainedError = error.andThen(x => Ok(x * 2));
+   * // Result<number, Error> = Err(Error("Failed"))
+   * if (chainedError.isError()) {
+   *   console.log(chainedError.error.message); // "Failed"
+   * }
+   */
+  andThen<U>(fn: (value: T) => Result<U, E>): Result<U, E>;
+
+  /**
+   * Extracts the success value from an `OkState<T>` result.
+   * If the result is an `ErrorState<E>`, it throws a `CustomError` with the provided message,
+   * and the original error from `ErrorState<E>` is passed as the `cause` property.
+   * @returns {T} The success value if `OkState<T>`.
+   * @throws {CustomError} Throws a `CustomError` containing the provided message and the original error as its cause, if the result is in the Error state.
+   */
+  expect(message: string): T;
+
   /**
    * Checks if the result is in the `Ok` state (contains a value and no error).
    * @returns `true` if the result is `Ok`, narrowing the type to `OkState<T, E>`.
@@ -19,22 +54,6 @@ export interface ResultMethods<T, E extends Error> {
    * @returns `true` if the result is `Err`, narrowing the type to `ErrorState<E, T>`.
    */
   isError(): this is ErrorState<E, T>;
-
-  /**
-   * Extracts the value from an `OkState<T>` result or throws the error from an `ErrorState<E>` result.
-   * @returns The success value (`T`) if `OkState<T>`, or throws the error (`E`) if `ErrorState<E>`.
-   * @throws {E} The error if the result is in the Error state.
-   */
-  unwrap(): T;
-
-  /**
-   * Extracts the success value from an `OkState<T>` result.
-   * If the result is an `ErrorState<E>`, it throws a `CustomError` with the provided message,
-   * and the original error from `ErrorState<E>` is passed as the `cause` property.
-   * @returns {T} The success value if `OkState<T>`.
-   * @throws {CustomError} Throws a `CustomError` containing the provided message and the original error as its cause, if the result is in the Error state.
-   */
-  expect(message: string): T;
 
   /**
    * Transforms the success value of a `Result` using the provided function, preserving the error if in the `Err` state.
@@ -53,28 +72,20 @@ export interface ResultMethods<T, E extends Error> {
   map<U>(fn: (value: T) => U): Result<U, E>;
 
   /**
-   * Chains a transformation by passing the `Ok` value to a function that returns a new `Result`, preserving the `Err` state if present.
-   * @template U - The type of the success value in the returned `Result`.
-   * @param {(value: T) => Result<U, E>} fn - A function that takes the `Ok` value of type `T` and returns a new `Result<U, E>`.
-   * @returns {Result<U, E>} A new `Result<U, E>`: the result of `fn` if the original `Result` is `Ok`, or the same `Err` state if the original `Result` is `Err`.
+   * Transforms the error value of a `Result` using the provided function, preserving the ok value if in the `Ok` state.
+   * @template U - The type of the transformed error value.
+   * @param fn - A function that takes the `Err` value of type `E` and returns a new error of type `U`.
+   * @returns A new `Result` containing the transformed error (`Err<U>`) if the original `Result` is `Err`, or the same value (`Ok<T>`) if the original `Result` is `Ok`.
    * @example
-   * // Chaining transformations
-   * const result: Result<number, Error> = Ok(5);
-   * const chained = result
-   *   .pipe(x => Ok(x * 2)) // Result<number, Error> = Ok(10)
-   *   .pipe(x => Ok(x.toString())); // Result<string, Error> = Ok("10")
-   * if (chained.isOk()) {
-   *   console.log(chained.ok); // "10"
-   * }
+   * const error = ErrFromText("Something happened");
+   * const mapped = error.mapErr(e => new AppError(`Error: ${e.message}`));
+   * // mapped: Result<undefined, AppError>;
    *
-   * // Preserving Err state
-   * const error: Result<number, Error> = Err(new Error("Failed"));
-   * const chainedError = error.pipe(x => Ok(x * 2)); // Result<number, Error> = Err(Error("Failed"))
-   * if (chainedError.isErr()) {
-   *   console.log(chainedError.error.message); // "Failed"
-   * }
+   * const result = Ok(5);
+   * const mapped = result.mapErr(e => new AppError(`Error: ${e.message}`));
+   * // mapped: Result<number, Error> = Ok("5")
    */
-  pipe<U>(fn: (value: T) => Result<U, E>): Result<U, E>;
+  mapErr<U extends Error>(fn: (error: E) => U): Result<T, U>;
 
   /**
    * Pattern matches on the Result state, transforming both `Ok` and `Err` cases into a common type.
@@ -104,18 +115,25 @@ export interface ResultMethods<T, E extends Error> {
   }): U;
 
   /**
-   * Returns the success value if the Result is `Ok`, or the result of the provided function if it's `Err`.
-   * @template U - The type that the error handler function returns.
-   * @param {(error: E) => U} fn - Function to handle the error case and provide an alternative value.
-   * @returns {T | U} Either the success value or the result of the error handler function.
+   * Extracts the value from an `OkState<T>` result or throws the error from an `ErrorState<E>` result.
+   * @returns The success value (`T`) if `OkState<T>`, or throws the error (`E`) if `ErrorState<E>`.
+   * @throws {E} The error if the result is in the Error state.
+   */
+  unwrap(): T;
+
+  /**
+   * Returns the success value if the Result is `Ok`, or computes a fallback value from the error if it's `Err`.
+   * Unlike `unwrapOr`, the fallback is lazy and receives the original error.
+   * @param {(error: E) => T} fn - Function to handle the error case and provide a fallback value.
+   * @returns {T} Either the success value or the value returned by the error handler.
    * @example
    * const result: Result<number, Error> = Ok(42);
-   * const value = result.orElse(() => 0); // 42
+   * const value = result.unwrapOrElse(() => 0); // 42
    *
    * const error: Result<number, Error> = Err(new Error("Failed"));
-   * const fallback = error.orElse(() => 0); // 0
+   * const fallback = error.unwrapOrElse(err => err.message.length); // 6
    */
-  orElse<U>(fn: (error: E) => U): T | U;
+  unwrapOrElse(fn: (error: E) => T): T;
 
   /**
    * Returns the success value if the Result is `Ok`, or the fallback value if it's `Err`.
@@ -130,22 +148,6 @@ export interface ResultMethods<T, E extends Error> {
    * const fallback = error.unwrapOr(0); // 0
    */
   unwrapOr(fallback: T): T;
-
-  /**
-   * Transforms the error value of a `Result` using the provided function, preserving the ok value if in the `Ok` state.
-   * @template U - The type of the transformed error value.
-   * @param fn - A function that takes the `Err` value of type `E` and returns a new error of type `U`.
-   * @returns A new `Result` containing the transformed error (`Err<U>`) if the original `Result` is `Err`, or the same value (`Ok<T>`) if the original `Result` is `Ok`.
-   * @example
-   * const error = ErrFromText("Something happend");
-   * const mapped = error.mapErr(e => new AppError(`Error: ${e.message}`));
-   * // mapped: Result<undefined, AppError>;
-   *
-   * const result = Ok(5);
-   * const mapped = result.mapErr(e => new AppError(`Error: ${e.message}`));
-   * // mapped: Result<number, Error> = Ok("5")
-   */
-  mapErr<U extends Error>(fn: (error: E) => U): Result<T, U>;
 }
 
 /**

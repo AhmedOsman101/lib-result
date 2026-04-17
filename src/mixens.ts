@@ -1,143 +1,15 @@
+import { createResultMethods } from "./result-methods.ts";
 import type {
   CustomError,
   CustomErrorProps,
   ErrorState,
   KeyValue,
   OkState,
-  Result,
 } from "./types.ts";
 import { createCustomError, toError } from "./utils.ts";
 
-const methodsArray = [
-  withIsOk,
-  withIsError,
-  withUnwrap,
-  withExpect,
-  withMap,
-  withPipe,
-  withMatch,
-  withOrElse,
-  withUnwrapOr,
-  // from rivals:
-  withMapErr,
-] as const;
-
 function compose<T>(base: T, ...fns: ((obj: T) => T)[]) {
   return Object.freeze(fns.reduce((obj, fn) => fn(obj), base));
-}
-
-function withIsOk<T, E extends Error, R extends Result<T, E>>(base: R) {
-  return Object.assign(base, {
-    isOk(this: R): this is OkState<T, E> {
-      return this.error === undefined;
-    },
-  });
-}
-
-function withIsError<T, E extends Error, R extends Result<T, E>>(base: R) {
-  return Object.assign(base, {
-    isError(this: R): this is ErrorState<E, T> {
-      return this.error !== undefined;
-    },
-  });
-}
-
-function withUnwrap<T, E extends Error, R extends Result<T, E>>(base: R) {
-  return Object.assign(base, {
-    unwrap(this: R): T | never {
-      if (this.isOk()) return this.ok as T;
-      throw this.error as E;
-    },
-  });
-}
-
-function withExpect<T, E extends Error, R extends Result<T, E>>(base: R) {
-  return Object.assign(base, {
-    expect(this: R, message: string): T | never {
-      if (this.isOk()) return this.ok as T;
-      throw createCustomError({
-        message,
-        cause: this.error as E,
-      });
-    },
-  });
-}
-
-function withMap<T, E extends Error, R extends Result<T, E>>(base: R) {
-  return Object.assign(base, {
-    map<U>(this: R, fn: (value: T) => U): Result<U, E> {
-      try {
-        if (this.isOk()) return Ok(fn(this.ok as T));
-      } catch (e) {
-        throw toError(e);
-      }
-      return Err(this.error as E);
-    },
-  });
-}
-
-function withPipe<T, E extends Error, R extends Result<T, E>>(base: R) {
-  return Object.assign(base, {
-    pipe<U>(this: R, fn: (value: T) => Result<U, E>): Result<U, E> {
-      try {
-        if (this.isOk()) return fn(this.ok as T);
-      } catch (e) {
-        throw toError(e);
-      }
-      return Err(this.error as E);
-    },
-  });
-}
-
-function withMatch<T, E extends Error, R extends Result<T, E>>(base: R) {
-  return Object.assign(base, {
-    match<U>(
-      this: R,
-      matchers: { okFn: (value: T) => U; errFn: ((error: E) => U) | (() => U) }
-    ): U {
-      try {
-        return this.isError()
-          ? matchers.errFn(this.error as E)
-          : matchers.okFn(this.ok as T);
-      } catch (e) {
-        throw toError(e);
-      }
-    },
-  });
-}
-
-function withOrElse<T, E extends Error, R extends Result<T, E>>(base: R) {
-  return Object.assign(base, {
-    orElse<U>(this: R, errFn: (error: E) => U): T | U {
-      try {
-        if (this.isOk()) return this.ok as T;
-        return errFn(this.error as E);
-      } catch (e) {
-        throw toError(e);
-      }
-    },
-  });
-}
-
-function withUnwrapOr<T, E extends Error, R extends Result<T, E>>(base: R) {
-  return Object.assign(base, {
-    unwrapOr(this: R, fallback: T): T {
-      return this.isOk() ? (this.ok as T) : fallback;
-    },
-  });
-}
-
-function withMapErr<T, E extends Error, R extends Result<T, E>>(base: R) {
-  return Object.assign(base, {
-    mapErr<U extends Error>(this: R, fn: (error: E) => U): Result<T, U> {
-      if (this.isOk()) return Ok(this.ok as T);
-      try {
-        return Err(fn(this.error as E));
-      } catch (e) {
-        throw toError(e);
-      }
-    },
-  });
 }
 
 /**
@@ -175,6 +47,8 @@ function Err<T = undefined, E extends Error = Error>(
   }
   return compose({ ok: undefined, error } as ErrorState<E, T>, ...methodsArray);
 }
+
+const methodsArray = createResultMethods({ err: Err, ok: Ok });
 
 /**
  * Creates a failure `Result` in the `Error` state from an `unknown` variable.
@@ -264,4 +138,4 @@ function ErrFromObject<P extends KeyValue = KeyValue, T = undefined>(
   );
 }
 
-export { Ok, Err, ErrFromText, ErrFromObject, ErrFromUnknown };
+export { Err, ErrFromObject, ErrFromText, ErrFromUnknown, Ok };
