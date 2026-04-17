@@ -59,6 +59,15 @@ export interface ResultMethods<T, E extends Error> {
   expect(message: string): T;
 
   /**
+   * Extracts the error value from an `Err` result.
+   * If the result is `Ok`, it throws a `CustomError` with the provided message.
+   * @param {string} message - Message used when the result unexpectedly contains an `Ok` value.
+   * @returns {E} The contained error when the result is `Err`.
+   * @throws {CustomError} Throws when the result is `Ok`.
+   */
+  expectErr(message: string): E;
+
+  /**
    * Checks if the result is in the `Ok` state (contains a value and no error).
    * @returns `true` if the result is `Ok`, narrowing the type to `OkState<T, E>`.
    */

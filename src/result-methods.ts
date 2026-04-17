@@ -56,6 +56,18 @@ function withExpect<T, E extends Error, R extends Result<T, E>>(base: R): R {
   });
 }
 
+function withExpectErr<T, E extends Error, R extends Result<T, E>>(base: R): R {
+  return Object.assign(base, {
+    expectErr(this: R, message: string): E {
+      if (this.isError()) return this.error as E;
+      throw createCustomError({
+        message,
+        cause: this.error as E,
+      });
+    },
+  });
+}
+
 function withIsError<T, E extends Error, R extends Result<T, E>>(base: R): R {
   return Object.assign(base, {
     isError(this: R): this is ErrorState<E, T> {
