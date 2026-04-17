@@ -1,7 +1,10 @@
 #!/usr/bin/env bash
 
-pnpm audit --fix &>/dev/null &
-pnpm install &>/dev/null &
+{
+  pnpm audit --fix &
+  pnpm install &
+  git add pnpm-{workspace,lock}.yaml &
+} &>/dev/null
 
 yesNo() {
   local answer prompt="$1"
