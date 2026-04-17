@@ -14,6 +14,19 @@ type MethodInstaller = <T, E extends Error, R extends Result<T, E>>(
   base: R
 ) => R;
 
+function createWithAnd({ err }: ResultErrorFactory): MethodInstaller {
+  return function withAnd<T, E extends Error, R extends Result<T, E>>(
+    base: R
+  ): R {
+    return Object.assign(base, {
+      and<U>(this: R, result: Result<U, E>): Result<U, E> {
+        if (this.isOk()) return result;
+        return err(this.error as E);
+      },
+    });
+  };
+}
+
 function createWithAndThen({ err }: ResultErrorFactory): MethodInstaller {
   return function withAndThen<T, E extends Error, R extends Result<T, E>>(
     base: R
@@ -160,6 +173,7 @@ export function createResultMethods({
   ok,
 }: ResultFactory): readonly MethodInstaller[] {
   return [
+    createWithAnd({ err }),
     createWithAndThen({ err }),
     withExpect,
     withIsError,

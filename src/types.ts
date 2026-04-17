@@ -9,6 +9,21 @@
  */
 export interface ResultMethods<T, E extends Error> {
   /**
+   * Returns the provided `Result` if this value is `Ok`, otherwise preserves the current `Err`.
+   * This is the eager counterpart to `andThen`.
+   * @template U - The success type of the provided `Result`.
+   * @param {Result<U, E>} result - The `Result` to return when this value is `Ok`.
+   * @returns {Result<U, E>} The provided `result` when `Ok`, or the current error when `Err`.
+   * @example
+   * const ok = Ok(1).and(Ok("done"));
+   * // ok: Result<string, Error> = Ok("done")
+   *
+   * const err = Err<string>(new Error("Failed")).and(Ok("done"));
+   * // err: Result<string, Error> = Err(Error("Failed"))
+   */
+  and<U>(result: Result<U, E>): Result<U, E>;
+
+  /**
    * Chains a transformation by passing the `Ok` value to a function that returns a new `Result`, preserving the `Err` state if present.
    * This is the Rust-style composition method for sequencing operations that may fail.
    * @template U - The type of the success value in the returned `Result`.
