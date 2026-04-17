@@ -80,12 +80,21 @@ if (asyncResult.isOk()) {
   console.log(asyncResult.ok.status); // 200
 }
 
-// Using map and pipe for chaining transformations
+// Using map and andThen for chaining transformations
 const chained = divide(10, 2)
   .map(x => x + 1) // Ok(6)
-  .pipe(x => divide(x, 2)); // Ok(3)
+  .andThen(x => divide(x, 2)); // Ok(3)
 if (chained.isOk()) {
   console.log(chained.ok); // 3
+}
+
+// Using unwrapOrElse for computed fallback values
+const fallback = errorResult.unwrapOrElse(error => error.message.length);
+
+// Using Rust-style orElse for Result-to-Result recovery
+const recovered = divide(1, 0).orElse(() => Ok(0));
+if (recovered.isOk()) {
+  console.log(recovered.ok); // 0
 }
 
 // Using match for pattern matching
@@ -186,12 +195,21 @@ if (asyncResult.isOk()) {
   console.log(asyncResult.ok.status); // 200
 }
 
-// Using map and pipe for chaining transformations
+// Using map and andThen for chaining transformations
 const chained = divide(10, 2)
   .map(x => x + 1) // Ok(6)
-  .pipe(x => divide(x, 2)); // Ok(3)
+  .andThen(x => divide(x, 2)); // Ok(3)
 if (chained.isOk()) {
   console.log(chained.ok); // 3
+}
+
+// Using unwrapOrElse for computed fallback values
+const fallback = errorResult.unwrapOrElse(error => error.message.length);
+
+// Using Rust-style orElse for Result-to-Result recovery
+const recovered = divide(1, 0).orElse(() => Ok(0));
+if (recovered.isOk()) {
+  console.log(recovered.ok); // 0
 }
 
 // Using match for pattern matching

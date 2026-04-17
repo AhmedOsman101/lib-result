@@ -64,30 +64,44 @@ describe("Result API", () => {
     });
   });
 
-  describe("pipe()", () => {
+  describe("andThen()", () => {
     test("chains Ok results", () => {
       const result = divide(10, 2);
-      const piped = result
-        .pipe(x => Ok(x * 2)) // Ok(10)
-        .pipe(x => Ok(x.toString())); // Ok("10")
+      const chained = result
+        .andThen(x => Ok(x * 2))
+        .andThen(x => Ok(x.toString()));
 
-      expect(piped.isOk()).toBe(true);
-      expect(piped.ok).toBe("10");
+      expect(chained.isOk()).toBe(true);
+      expect(chained.ok).toBe("10");
     });
 
     test("preserves Err state", () => {
       const error = divide(10, 0);
-      const piped = error.pipe(x => Ok(x * 2));
-      expect(piped.isError()).toBe(true);
-      expect(piped.error?.message).toBe("Cannot Divide By Zero");
+      const chained = error.andThen(x => Ok(x * 2));
+      expect(chained.isError()).toBe(true);
+      expect(chained.error?.message).toBe("Cannot Divide By Zero");
     });
 
     test("short-circuits on first Err in chain", () => {
       const result = divide(10, 2) // Ok(5)
-        .pipe(x => divide(x, 0)) // Err
-        .pipe(x => Ok(x * 100)); // Should not run
+        .andThen(x => divide(x, 0))
+        .andThen(x => Ok(x * 100));
       expect(result.isError()).toBe(true);
       expect(result.error?.message).toBe("Cannot Divide By Zero");
+    });
+  });
+
+  describe("and()", () => {
+    test("returns the provided result when current result is Ok", () => {
+      const result = Ok(42).and(Ok("done"));
+      expect(result.isOk()).toBe(true);
+      expect(result.ok).toBe("done");
+    });
+
+    test("preserves the current error when current result is Err", () => {
+      const result = Err<string>(new Error("Failed")).and(Ok("done"));
+      expect(result.isError()).toBe(true);
+      expect(result.error?.message).toBe("Failed");
     });
   });
 
@@ -125,6 +139,53 @@ describe("Result API", () => {
         expect(e.cause).toBeInstanceOf(DivisionError);
         expect(e.cause.message).toBe("Cannot Divide By Zero");
       }
+    });
+  });
+
+  describe("expectErr()", () => {
+    test("returns the error for Err results", () => {
+      const error = new Error("Failed");
+      expect(Err(error).expectErr("Expected Err")).toBe(error);
+    });
+
+    test("throws the provided message for Ok results", () => {
+      expect(() => Ok(42).expectErr("Expected error")).toThrow(
+        "Expected error"
+      );
+    });
+  });
+
+  describe("inspect()", () => {
+    test("runs the callback for Ok results and returns the same result", () => {
+      const callback = vi.fn();
+      const result = Ok(42);
+      const inspected = result.inspect(callback);
+
+      expect(callback).toHaveBeenCalledWith(42);
+      expect(inspected).toBe(result);
+    });
+
+    test("does not run the callback for Err results", () => {
+      const callback = vi.fn();
+      Err(new Error("Failed")).inspect(callback);
+      expect(callback).not.toHaveBeenCalled();
+    });
+  });
+
+  describe("inspectErr()", () => {
+    test("runs the callback for Err results and returns the same result", () => {
+      const callback = vi.fn();
+      const result = Err(new Error("Failed"));
+      const inspected = result.inspectErr(callback);
+
+      expect(callback).toHaveBeenCalledWith(result.error);
+      expect(inspected).toBe(result);
+    });
+
+    test("does not run the callback for Ok results", () => {
+      const callback = vi.fn();
+      Ok(42).inspectErr(callback);
+      expect(callback).not.toHaveBeenCalled();
     });
   });
 
@@ -210,25 +271,66 @@ describe("Result API", () => {
     });
   });
 
+  describe("or()", () => {
+    test("returns the current result when Result is Ok", () => {
+      const result = Ok(42).or(Ok(0));
+      expect(result.isOk()).toBe(true);
+      expect(result.ok).toBe(42);
+    });
+
+    test("returns the fallback result when Result is Err", () => {
+      const fallback = Err<number>(new Error("Failed")).or(Ok(10));
+      expect(fallback.isOk()).toBe(true);
+      expect(fallback.ok).toBe(10);
+    });
+
+    test("allows changing the error type through the fallback result", () => {
+      class RecoveryError extends Error {}
+
+      const fallback = Err<number>(new Error("Failed")).or(
+        Err<number, RecoveryError>(new RecoveryError("Recovered error"))
+      );
+
+      expect(fallback.isError()).toBe(true);
+      expect(fallback.error).toBeInstanceOf(RecoveryError);
+    });
+  });
+
   describe("orElse()", () => {
-    test("returns the ok value if Result is Ok", () => {
-      const result = Ok(42);
-      const value = result.orElse(() => 0);
-      expect(value).toBe(42);
+    test("returns the current result if Result is Ok", () => {
+      const handler = vi.fn().mockReturnValue(Ok(0));
+      const result = Ok(42).orElse(handler);
+
+      expect(result.isOk()).toBe(true);
+      expect(result.ok).toBe(42);
+      expect(handler).not.toHaveBeenCalled();
     });
 
-    test("calls the error handler and returns its value if Result is Err", () => {
-      const errorResult = Err(new Error("Failed"));
-      const fallback = errorResult.orElse(e => e.message);
-      expect(fallback).toBe("Failed");
+    test("calls the error handler and returns its Result if Result is Err", () => {
+      const recovered = Err<number>(new Error("Failed")).orElse(() => Ok(10));
+      expect(recovered.isOk()).toBe(true);
+      expect(recovered.ok).toBe(10);
     });
 
-    test("ensures the error handler is not called for Ok state", () => {
-      const okResult = Ok(100);
-      const errorFn = vi.fn().mockReturnValue(0);
-      const value = okResult.orElse(errorFn);
-      expect(value).toBe(100);
-      expect(errorFn).not.toHaveBeenCalled();
+    test("rethrows errors thrown by the recovery handler", () => {
+      expect(() =>
+        Err<number>(new Error("Failed")).orElse(() => {
+          throw new Error("handler failed");
+        })
+      ).toThrow("handler failed");
+    });
+  });
+
+  describe("unwrapErr()", () => {
+    test("returns the error for Err results", () => {
+      const error = new Error("Failed");
+      expect(Err(error).unwrapErr()).toBe(error);
+    });
+
+    test("throws when called on Ok results", () => {
+      expect(() => Ok(42).unwrapErr()).toThrow(
+        "Received an Ok value '42' instead of an Error"
+      );
     });
   });
 
@@ -243,6 +345,52 @@ describe("Result API", () => {
       const errorResult = Err<string>(new Error("Failed"));
       const fallback = errorResult.unwrapOr("Failed");
       expect(fallback).toBe("Failed");
+    });
+  });
+
+  describe("unwrapOrElse()", () => {
+    test("returns the ok value if Result is Ok", () => {
+      const handler = vi.fn().mockReturnValue(0);
+      const value = Ok(42).unwrapOrElse(handler);
+      expect(value).toBe(42);
+      expect(handler).not.toHaveBeenCalled();
+    });
+
+    test("calls the error handler and returns its value if Result is Err", () => {
+      const fallback = Err<number>(new Error("Failed")).unwrapOrElse(
+        e => e.message.length
+      );
+      expect(fallback).toBe(6);
+    });
+  });
+
+  describe("mapOr()", () => {
+    test("maps the Ok value into a plain value", () => {
+      const value = Ok(5).mapOr(0, x => x * 2);
+      expect(value).toBe(10);
+    });
+
+    test("returns the eager default for Err results", () => {
+      const value = Err<number>(new Error("Failed")).mapOr(0, x => x * 2);
+      expect(value).toBe(0);
+    });
+  });
+
+  describe("mapOrElse()", () => {
+    test("maps the Ok value into a plain value", () => {
+      const value = Ok(5).mapOrElse(
+        error => error.message.length,
+        x => x * 2
+      );
+      expect(value).toBe(10);
+    });
+
+    test("maps the Err value into a plain value", () => {
+      const value = Err<number>(new Error("Failed")).mapOrElse(
+        error => error.message.length,
+        x => x * 2
+      );
+      expect(value).toBe(6);
     });
   });
 
@@ -317,22 +465,22 @@ describe("Result API", () => {
       ).toThrow("boom");
     });
 
-    test("can be chained after pipe", () => {
+    test("can be chained after andThen", () => {
       const result = Ok(5)
-        .pipe(x => Ok(x + 1))
+        .andThen(x => Ok(x + 1))
         .mapErr(() => new Error("should not run"));
       expect(result.isOk()).toBe(true);
       expect(result.ok).toBe(6);
     });
 
-    test("throws when pipe throws before mapErr is reached", () => {
+    test("throws when andThen throws before mapErr is reached", () => {
       expect(() =>
         Ok(5)
-          .pipe(() => {
-            throw new Error("pipe failed");
+          .andThen(() => {
+            throw new Error("andThen failed");
           })
           .mapErr(e => new Error(`mapped: ${e.message}`))
-      ).toThrow("pipe failed");
+      ).toThrow("andThen failed");
     });
 
     test("transforms errors with additional properties", () => {

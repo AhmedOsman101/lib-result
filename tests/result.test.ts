@@ -31,17 +31,17 @@ describe("Result Type", () => {
       expect(result.ok).toBe("4");
     });
 
-    test("pipes through a function that returns a Result", () => {
-      const result = Ok(2).pipe(x => Ok(x * 2));
+    test("chains through a function that returns a Result", () => {
+      const result = Ok(2).andThen(x => Ok(x * 2));
       expect(result.ok).toBe(4);
     });
 
-    test("throws when pipe callback throws", () => {
+    test("throws when andThen callback throws", () => {
       expect(() =>
-        Ok(2).pipe(() => {
-          throw new Error("Pipe failed");
+        Ok(2).andThen(() => {
+          throw new Error("andThen failed");
         })
-      ).toThrow("Pipe failed");
+      ).toThrow("andThen failed");
     });
   });
 
@@ -63,9 +63,9 @@ describe("Result Type", () => {
       expect(result.error?.message).toBe("Failed");
     });
 
-    test("does not pipe through a function when in error state", () => {
+    test("does not call andThen when in error state", () => {
       const mockFn = vi.fn();
-      const result = Err(new Error("Failed")).pipe(mockFn);
+      const result = Err(new Error("Failed")).andThen(mockFn);
 
       expect(mockFn).not.toHaveBeenCalled();
       expect(result.error).toBeInstanceOf(Error);
@@ -73,11 +73,11 @@ describe("Result Type", () => {
       expect(result.error?.message).toBe("Failed");
     });
 
-    test("rethrows errors thrown inside orElse as Error instances", () => {
+    test("rethrows errors thrown inside unwrapOrElse as Error instances", () => {
       const result = Err(new Error("Failed"));
 
       expect(() =>
-        result.orElse(() => {
+        result.unwrapOrElse(() => {
           throw new Error("handler failed");
         })
       ).toThrow("handler failed");
@@ -108,9 +108,9 @@ describe("Result Type", () => {
       expect(result.error?.message).toBe("something happened");
     });
 
-    test("does not pipe through a function when in error state", () => {
+    test("does not call andThen when in error state", () => {
       const mockFn = vi.fn();
-      const result = ErrFromUnknown({ code: 500 }).pipe(mockFn);
+      const result = ErrFromUnknown({ code: 500 }).andThen(mockFn);
 
       expect(mockFn).not.toHaveBeenCalled();
       expect(result.error).toBeInstanceOf(Error);
@@ -144,9 +144,9 @@ describe("Result Type", () => {
       expect(result.error?.message).toBe("Failed");
     });
 
-    test("does not pipe through a function when in error state", () => {
+    test("does not call andThen when in error state", () => {
       const mockFn = vi.fn();
-      const result = ErrFromText("Failed").pipe(mockFn);
+      const result = ErrFromText("Failed").andThen(mockFn);
 
       expect(mockFn).not.toHaveBeenCalled();
       expect(result.error).toBeInstanceOf(Error);
@@ -193,9 +193,9 @@ describe("Result Type", () => {
       expect(result.error?.message).toBe("Failed");
     });
 
-    test("does not pipe through a function when in error state", () => {
+    test("does not call andThen when in error state", () => {
       const mockFn = vi.fn();
-      const result = ErrFromObject({ message: "Failed" }).pipe(mockFn);
+      const result = ErrFromObject({ message: "Failed" }).andThen(mockFn);
 
       expect(mockFn).not.toHaveBeenCalled();
       expect(result.error).toBeInstanceOf(Error);
