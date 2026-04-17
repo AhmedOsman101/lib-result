@@ -24,7 +24,7 @@ Each item includes:
 
 ## Needs To Be Renamed
 
-### 1. `pipe` -> `andThen`
+### 1. `pipe` -> `andThen` (Done)
 
 Current shape:
 
@@ -58,7 +58,7 @@ Explanation:
 
 This method already behaves like Rust's `and_then`, but the current name `pipe` is JavaScript-flavored rather than Rust-flavored. Renaming it to `andThen` makes the API easier to predict for Rust users and aligns the library with the naming used by most Result libraries in TypeScript.
 
-### 2. Current `orElse` -> `unwrapOrElse`
+### 2. Current `orElse` -> `unwrapOrElse` (Done)
 
 Current shape:
 
@@ -92,77 +92,9 @@ Explanation:
 
 The current implementation is correct for value fallback semantics, but the name is wrong from a Rust perspective. In Rust, `or_else` stays inside `Result`, while `unwrap_or_else` collapses the result into a plain value, so keeping the current name would keep misleading users.
 
-### 3. `tap` -> `inspect` if side-effect helpers are introduced before release
-
-Planned shape if added with JS naming:
-
-```ts
-tap(fn: (value: T) => void): Result<T, E>
-```
-
-Target Rust-aligned shape:
-
-```ts
-inspect(fn: (value: T) => void): Result<T, E>
-```
-
-Arguments:
-
-- `fn`: a callback that receives the `Ok` value for side effects only
-
-Returns:
-
-- `Result<T, E>`
-
-Example:
-
-```ts
-const result = Ok(42)
-  .inspect(value => console.log("value", value))
-  .map(value => value + 1);
-```
-
-Explanation:
-
-If the library wants maximum Rust familiarity, `inspect` is the better public name than `tap`. It communicates that the callback is observational and non-transforming, and it matches Rust's mental model directly.
-
-### 4. `tapError` -> `inspectErr` if side-effect helpers are introduced before release
-
-Planned shape if added with JS naming:
-
-```ts
-tapError(fn: (error: E) => void): Result<T, E>
-```
-
-Target Rust-aligned shape:
-
-```ts
-inspectErr(fn: (error: E) => void): Result<T, E>
-```
-
-Arguments:
-
-- `fn`: a callback that receives the `Err` value for side effects only
-
-Returns:
-
-- `Result<T, E>`
-
-Example:
-
-```ts
-const result = Err(new Error("db offline"))
-  .inspectErr(error => console.error(error.message))
-  .mapErr(error => new Error(`wrapped: ${error.message}`));
-```
-
-Explanation:
-
-This method should mirror Rust's `inspect_err` naming if Rust alignment is the priority. It makes the pair `inspect` and `inspectErr` feel coherent and keeps the API from drifting into a mixed Rust/JS vocabulary.
-
 ## Needs To Be Created
 
-### 1. `and`
+### 1. `and` (Done)
 
 Signature:
 
@@ -189,7 +121,7 @@ Explanation:
 
 `and` is a small but standard Rust combinator for sequencing results when the left-hand success value is not needed. It improves parity with Rust and makes some control-flow chains more expressive without requiring an extra callback.
 
-### 2. `orElse`
+### 2. `orElse` (Done)
 
 Signature:
 
@@ -221,7 +153,7 @@ Explanation:
 
 This is the real Rust meaning of `or_else`: recover on the error branch while staying inside `Result`. It is one of the most important missing primitives because it enables fallback loading, retry strategies, and selective recovery without unwrapping.
 
-### 3. `or`
+### 3. `or` (Done)
 
 Signature:
 
@@ -248,7 +180,7 @@ Explanation:
 
 `or` is the non-lazy counterpart to `orElse`. It is useful when the fallback result is already available and improves completeness for users who expect the standard Rust pairing of `and`/`or` and `and_then`/`or_else`.
 
-### 4. `unwrapErr`
+### 4. `unwrapErr` (Done)
 
 Signature:
 
@@ -275,7 +207,7 @@ Explanation:
 
 This method provides symmetry with `unwrap()`. It is not the highest-value combinator, but it is part of the standard Rust surface and makes the library feel more complete and more predictable to Rust users.
 
-### 5. `expectErr`
+### 5. `expectErr` (Done)
 
 Signature:
 
@@ -302,7 +234,7 @@ Explanation:
 
 This complements `expect(...)` and aligns the error branch API with Rust's expectations. It also gives test code and negative-path assertions a cleaner way to express intent.
 
-### 6. `mapOr`
+### 6. `mapOr` (Done)
 
 Signature:
 
@@ -330,7 +262,7 @@ Explanation:
 
 `mapOr` is a compact Rust utility for collapsing a `Result` into a plain value with a fixed fallback. It is especially useful in UI formatting, config extraction, and other places where `match` would be correct but verbose.
 
-### 7. `mapOrElse`
+### 7. `mapOrElse` (Done)
 
 Signature:
 
@@ -359,7 +291,7 @@ Explanation:
 
 This method is the lazy sibling of `mapOr`. It is valuable when fallback behavior depends on the actual error, and it avoids forcing users into a full `match(...)` when they only need a single collapsed output.
 
-### 8. `inspect`
+### 8. `inspect` (Done)
 
 Signature:
 
@@ -387,7 +319,7 @@ Explanation:
 
 `inspect` is a Rust-native way to perform logging, metrics, or tracing without changing the carried value. It helps keep debugging and observability inside fluent pipelines while preserving clear intent that no transformation is happening.
 
-### 9. `inspectErr`
+### 9. `inspectErr` (Done)
 
 Signature:
 
@@ -474,7 +406,7 @@ This helper is not from Rust's core `Result`, but it is a pragmatic TypeScript c
 
 ## Needs To Be Removed
 
-### 1. Remove `pipe`
+### 1. Remove `pipe` (Done)
 
 Current signature:
 
@@ -500,7 +432,7 @@ Explanation:
 
 This method should be removed because its behavior overlaps exactly with the Rust-aligned `andThen`. Keeping both names would add duplicate surface area and make the library less coherent just when the goal is stronger semantic alignment.
 
-### 2. Remove current `orElse`
+### 2. Remove current `orElse` (Done)
 
 Current signature:
 
@@ -527,70 +459,6 @@ const value = Err(new Error("missing")).unwrapOrElse(error => {
 Explanation:
 
 This method should not survive under its current name because it directly conflicts with Rust meaning. The implementation idea is still useful, but the API name is misleading enough that keeping it would undermine the purpose of the breaking-change release.
-
-### 3. Remove `match` only if strict Rust-surface purity is the goal
-
-Current signature:
-
-```ts
-match<U>(matchers: {
-  okFn: (value: T) => U;
-  errFn: ((error: E) => U) | (() => U);
-}): U
-```
-
-Arguments:
-
-- `matchers.okFn`: callback for `Ok`
-- `matchers.errFn`: callback for `Err`
-
-Returns:
-
-- `U`
-
-Example of keeping instead of removing:
-
-```ts
-const label = result.match({
-  okFn: value => `ok:${value}`,
-  errFn: error => `err:${error.message}`,
-});
-```
-
-Explanation:
-
-Rust uses language-level `match`, not a method, so this is not a Rust-native `Result` method. Even so, I recommend keeping it unless you want extreme purity, because in TypeScript it is a practical and expressive helper with no real ambiguity.
-
-### 4. Remove any transitional alias layer after the breaking release settles
-
-Possible temporary compatibility layer:
-
-```ts
-// Transitional only
-pipe -> andThen
-orElse(value fallback) -> unwrapOrElse
-tap -> inspect
-tapError -> inspectErr
-```
-
-Arguments:
-
-- same as their replacement method during the transition window
-
-Returns:
-
-- same as their replacement method during the transition window
-
-Example:
-
-```ts
-// Transitional behavior only, not long-term API
-const result = Ok(1).pipe(value => Ok(value + 1));
-```
-
-Explanation:
-
-If you choose to ship a brief compatibility bridge, it should be explicitly temporary and removed in the next major cleanup once users migrate. Keeping aliases forever would undo the clarity gained by the rename work and reintroduce duplicated concepts into the public surface.
 
 ## Recommended Release Order
 
