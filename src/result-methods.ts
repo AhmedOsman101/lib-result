@@ -181,17 +181,37 @@ function withMatch<T, E extends Error, R extends Result<T, E>>(base: R): R {
   });
 }
 
-function withOrElse<T, E extends Error, R extends Result<T, E>>(base: R): R {
-  return Object.assign(base, {
-    orElse<U>(this: R, errFn: (error: E) => U): T | U {
-      try {
-        if (this.isOk()) return this.ok as T;
-        return errFn(this.error as E);
-      } catch (e) {
-        throw toError(e);
-      }
-    },
-  });
+function createWithOr({ ok }: ResultOkFactory): MethodInstaller {
+  return function withOr<T, E extends Error, R extends Result<T, E>>(
+    base: R
+  ): R {
+    return Object.assign(base, {
+      or<F extends Error>(this: R, result: Result<T, F>): Result<T, F> {
+        if (this.isOk()) return ok(this.ok as T);
+        return result;
+      },
+    });
+  };
+}
+
+function createWithOrElse({ ok }: ResultOkFactory): MethodInstaller {
+  return function withOrElse<T, E extends Error, R extends Result<T, E>>(
+    base: R
+  ): R {
+    return Object.assign(base, {
+      orElse<F extends Error>(
+        this: R,
+        fn: (error: E) => Result<T, F>
+      ): Result<T, F> {
+        try {
+          if (this.isError()) return fn(this.error as E);
+          return ok(this.ok as T);
+        } catch (e) {
+          throw toError(e);
+        }
+      },
+    });
+  };
 }
 
 function withUnwrap<T, E extends Error, R extends Result<T, E>>(base: R): R {
@@ -244,7 +264,8 @@ export function createResultMethods({
     withMapOrElse,
     createWithMapErr({ err, ok }),
     withMatch,
-    withOrElse,
+    createWithOr({ ok }),
+    createWithOrElse({ ok }),
     withUnwrap,
     withUnwrapOr,
     withUnwrapOrElse,

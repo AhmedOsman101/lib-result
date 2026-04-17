@@ -181,6 +181,24 @@ export interface ResultMethods<T, E extends Error> {
   }): U;
 
   /**
+   * Returns this result if it is `Ok`, otherwise returns the provided fallback `Result`.
+   * This is the eager counterpart to `orElse`.
+   * @template F - The error type of the fallback result.
+   * @param {Result<T, F>} result - Fallback result used when this value is `Err`.
+   * @returns {Result<T, F>} The current success value when `Ok`, or the provided fallback result when `Err`.
+   */
+  or<F extends Error>(result: Result<T, F>): Result<T, F>;
+
+  /**
+   * Recovers from an `Err` by calling a function that returns a new `Result`.
+   * If this result is `Ok`, the original success value is preserved.
+   * @template F - The error type of the recovery result.
+   * @param {(error: E) => Result<T, F>} fn - Function called with the current error when the result is `Err`.
+   * @returns {Result<T, F>} The recovery result when `Err`, or the current success value when `Ok`.
+   */
+  orElse<F extends Error>(fn: (error: E) => Result<T, F>): Result<T, F>;
+
+  /**
    * Extracts the value from an `OkState<T>` result or throws the error from an `ErrorState<E>` result.
    * @returns The success value (`T`) if `OkState<T>`, or throws the error (`E`) if `ErrorState<E>`.
    * @throws {E} The error if the result is in the Error state.
