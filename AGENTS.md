@@ -40,7 +40,7 @@ Always run `pnpm build` and `pnpm format` before committing changes.
 - Always use `.ts` extensions for relative imports within the project
 - Group imports: external libraries first, then internal type imports, then internal imports
 - Type imports: `import type { Result } from "./types.ts"`
-- Value imports: `import { Ok, Err } from "./mixens.ts"`
+- Value imports: `import { Ok, Err } from "./mixins.ts"`
 
 ### Naming Conventions
 
@@ -91,7 +91,7 @@ Always run `pnpm build` and `pnpm format` before committing changes.
 - `index.ts` - Main export file
 - `types.ts` - Type definitions and interfaces
 - `main.ts` - Core implementation (wrap functions)
-- `mixens.ts` - Constructor helpers (Ok, Err variants)
+- `mixins.ts` - Constructor helpers (Ok, Err variants)
 - `utils.ts` - Utility functions
 - Export all public APIs from `index.ts`
 

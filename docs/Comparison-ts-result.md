@@ -2,7 +2,7 @@
 
 This note compares `lib-result` against `ts-result` by reading the current code in:
 
-- `src/index.ts`, `src/main.ts`, `src/mixens.ts`, `src/types.ts`
+- `src/index.ts`, `src/main.ts`, `src/mixins.ts`, `src/types.ts`
 - `../lib-result-rivals/ts-result/src/result.ts`
 - `../lib-result-rivals/ts-result/README.md`
 

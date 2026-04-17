@@ -2,7 +2,7 @@
 
 This note compares `lib-result` against `neverthrow` by reading the current code in:
 
-- `src/index.ts`, `src/main.ts`, `src/mixens.ts`, `src/types.ts`
+- `src/index.ts`, `src/main.ts`, `src/mixins.ts`, `src/types.ts`
 - `../lib-result-rivals/neverthrow/src/index.ts`
 - `../lib-result-rivals/neverthrow/src/result.ts`
 - `../lib-result-rivals/neverthrow/src/result-async.ts`

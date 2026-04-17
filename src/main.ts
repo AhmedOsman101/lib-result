@@ -1,4 +1,4 @@
-import { ErrFromUnknown, Ok } from "./mixens.ts";
+import { ErrFromUnknown, Ok } from "./mixins.ts";
 import type { Callback, CustomError, Result } from "./types.ts";
 
 /**

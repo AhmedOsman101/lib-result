@@ -2,7 +2,7 @@
 
 This note compares `lib-result` against `ts-results` from the `vultix-ts-results` checkout by reading:
 
-- `src/index.ts`, `src/main.ts`, `src/mixens.ts`, `src/types.ts`
+- `src/index.ts`, `src/main.ts`, `src/mixins.ts`, `src/types.ts`
 - `../lib-result-rivals/vultix-ts-results/src/result.ts`
 - `../lib-result-rivals/vultix-ts-results/src/option.ts`
 - `../lib-result-rivals/vultix-ts-results/src/index.ts`

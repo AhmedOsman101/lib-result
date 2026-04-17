@@ -10,5 +10,5 @@ export {
   ErrFromText,
   ErrFromUnknown,
   Ok,
-} from "./mixens.ts";
+} from "./mixins.ts";
 export type { CustomError, Result } from "./types.ts";
