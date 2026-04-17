@@ -2,6 +2,28 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [5.0.0](https://github.com/AhmedOsman101/lib-result/compare/v4.0.0...v5.0.0) (2026-04-17)
+
+
+### ⚠ BREAKING CHANGES
+
+* **result:** `pipe(...)` has been removed in favor of `andThen(...)`. `orElse(...)` no longer returns a plain fallback value and now expects a callback that returns `Result<T, F>`. code using the old lazy fallback behavior must switch from `orElse(...)` to `unwrapOrElse(...)`.
+
+### Features
+
+* add `and` method to Result ([2a2602a](https://github.com/AhmedOsman101/lib-result/commit/2a2602a7330d068a36f376880d5edc1112809ecb))
+* add expectErr method to Result ([7e12a5d](https://github.com/AhmedOsman101/lib-result/commit/7e12a5dea6b97275d473cf8c2c198afb51b12263))
+* add inspect and inspectErr methods ([b6e26d1](https://github.com/AhmedOsman101/lib-result/commit/b6e26d128d354207883ebcd0bdd2c308c0a69377))
+* add mapOr and mapOrElse methods ([d1675ee](https://github.com/AhmedOsman101/lib-result/commit/d1675ee8c60f0a5e07be65b497b60622c2366a9d))
+* add unwrapErr method ([aa85bc4](https://github.com/AhmedOsman101/lib-result/commit/aa85bc46e5abf3af1f8d29c2664695aed7dd4b7d))
+* **result:** add `or` and `orElse` methods ([39a3827](https://github.com/AhmedOsman101/lib-result/commit/39a38278e41d6b4bd812a50fc09f0da81513a2c5))
+* **result:** align method names with Rust Result semantics ([a25285d](https://github.com/AhmedOsman101/lib-result/commit/a25285d7a489b880dc29166fd785f3b6b233ec17))
+
+
+### Bug Fixes
+
+* **deps:** rename mixins.ts to mixens.ts and update imports ([4ec96e7](https://github.com/AhmedOsman101/lib-result/commit/4ec96e7c96b7ee019ce369bc3b2bb08a74be290d))
+
 ## [4.0.0](https://github.com/AhmedOsman101/lib-result/compare/v3.2.2...v4.0.0) (2026-04-11)
 
 
