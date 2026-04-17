@@ -223,6 +223,15 @@ function withUnwrap<T, E extends Error, R extends Result<T, E>>(base: R): R {
   });
 }
 
+function withUnwrapErr<T, E extends Error, R extends Result<T, E>>(base: R): R {
+  return Object.assign(base, {
+    unwrapErr(this: R): E {
+      if (this.isError()) return this.error as E;
+      throw new Error(`Received an Ok value '${this.ok}' instead of an Error`);
+    },
+  });
+}
+
 function withUnwrapOr<T, E extends Error, R extends Result<T, E>>(base: R): R {
   return Object.assign(base, {
     unwrapOr(this: R, fallback: T): T {
@@ -267,6 +276,7 @@ export function createResultMethods({
     createWithOr({ ok }),
     createWithOrElse({ ok }),
     withUnwrap,
+    withUnwrapErr,
     withUnwrapOr,
     withUnwrapOrElse,
   ] as const;

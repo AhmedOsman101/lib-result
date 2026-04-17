@@ -206,6 +206,13 @@ export interface ResultMethods<T, E extends Error> {
   unwrap(): T;
 
   /**
+   * Extracts the error from an `Err` result.
+   * @returns {E} The contained error.
+   * @throws {Error} Throws when the result is `Ok`.
+   */
+  unwrapErr(): E;
+
+  /**
    * Returns the success value if the Result is `Ok`, or computes a fallback value from the error if it's `Err`.
    * Unlike `unwrapOr`, the fallback is lazy and receives the original error.
    * @param {(error: E) => T} fn - Function to handle the error case and provide a fallback value.
