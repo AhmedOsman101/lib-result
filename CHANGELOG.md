@@ -4,51 +4,46 @@ All notable changes to this project will be documented in this file. See [standa
 
 ## [5.0.0](https://github.com/AhmedOsman101/lib-result/compare/v4.0.0...v5.0.0) (2026-04-17)
 
-
 ### ⚠ BREAKING CHANGES
 
-* **result:** `pipe(...)` has been removed in favor of `andThen(...)`. `orElse(...)` no longer returns a plain fallback value and now expects a callback that returns `Result<T, F>`. code using the old lazy fallback behavior must switch from `orElse(...)` to `unwrapOrElse(...)`.
+- **result:** `pipe(...)` has been removed in favor of `andThen(...)`. `orElse(...)` no longer returns a plain fallback value and now expects a callback that returns `Result<T, F>`. code using the old lazy fallback behavior must switch from `orElse(...)` to `unwrapOrElse(...)`.
 
 ### Features
 
-* add `and` method to Result ([2a2602a](https://github.com/AhmedOsman101/lib-result/commit/2a2602a7330d068a36f376880d5edc1112809ecb))
-* add expectErr method to Result ([7e12a5d](https://github.com/AhmedOsman101/lib-result/commit/7e12a5dea6b97275d473cf8c2c198afb51b12263))
-* add inspect and inspectErr methods ([b6e26d1](https://github.com/AhmedOsman101/lib-result/commit/b6e26d128d354207883ebcd0bdd2c308c0a69377))
-* add mapOr and mapOrElse methods ([d1675ee](https://github.com/AhmedOsman101/lib-result/commit/d1675ee8c60f0a5e07be65b497b60622c2366a9d))
-* add unwrapErr method ([aa85bc4](https://github.com/AhmedOsman101/lib-result/commit/aa85bc46e5abf3af1f8d29c2664695aed7dd4b7d))
-* **result:** add `or` and `orElse` methods ([39a3827](https://github.com/AhmedOsman101/lib-result/commit/39a38278e41d6b4bd812a50fc09f0da81513a2c5))
-* **result:** align method names with Rust Result semantics ([a25285d](https://github.com/AhmedOsman101/lib-result/commit/a25285d7a489b880dc29166fd785f3b6b233ec17))
-
+- add `and` method to Result ([2a2602a](https://github.com/AhmedOsman101/lib-result/commit/2a2602a7330d068a36f376880d5edc1112809ecb))
+- add expectErr method to Result ([7e12a5d](https://github.com/AhmedOsman101/lib-result/commit/7e12a5dea6b97275d473cf8c2c198afb51b12263))
+- add inspect and inspectErr methods ([b6e26d1](https://github.com/AhmedOsman101/lib-result/commit/b6e26d128d354207883ebcd0bdd2c308c0a69377))
+- add mapOr and mapOrElse methods ([d1675ee](https://github.com/AhmedOsman101/lib-result/commit/d1675ee8c60f0a5e07be65b497b60622c2366a9d))
+- add unwrapErr method ([aa85bc4](https://github.com/AhmedOsman101/lib-result/commit/aa85bc46e5abf3af1f8d29c2664695aed7dd4b7d))
+- **result:** add `or` and `orElse` methods ([39a3827](https://github.com/AhmedOsman101/lib-result/commit/39a38278e41d6b4bd812a50fc09f0da81513a2c5))
+- **result:** align method names with Rust Result semantics ([a25285d](https://github.com/AhmedOsman101/lib-result/commit/a25285d7a489b880dc29166fd785f3b6b233ec17))
 
 ### Bug Fixes
 
-* **deps:** rename mixins.ts to mixens.ts and update imports ([4ec96e7](https://github.com/AhmedOsman101/lib-result/commit/4ec96e7c96b7ee019ce369bc3b2bb08a74be290d))
+- **deps:** rename mixins.ts to mixens.ts and update imports ([4ec96e7](https://github.com/AhmedOsman101/lib-result/commit/4ec96e7c96b7ee019ce369bc3b2bb08a74be290d))
 
 ## [4.0.0](https://github.com/AhmedOsman101/lib-result/compare/v3.2.2...v4.0.0) (2026-04-11)
 
-
 ### ⚠ BREAKING CHANGES
 
-* map, pipe, match, and mapErr now throw toError(e) instead of returning Err(toError(e)) when their callbacks throw. This fixes the unsafe 'as U' / 'as E' casts that produced a Result with a mismatched runtime type.
+- map, pipe, match, and mapErr now throw toError(e) instead of returning Err(toError(e)) when their callbacks throw. This fixes the unsafe 'as U' / 'as E' casts that produced a Result with a mismatched runtime type.
 
 ### Features
 
-* add mapErr method to Result ([69df83f](https://github.com/AhmedOsman101/lib-result/commit/69df83f7d7ca90581d8edcf5c4d52a493361d0ce))
-* **release:** add force option to gh release ([4943273](https://github.com/AhmedOsman101/lib-result/commit/4943273b4f0537d48df01aaef3500e880b54d7e0))
-* **types:** allow optional error in match errFn ([2fd204e](https://github.com/AhmedOsman101/lib-result/commit/2fd204e1ad78bb94e2c289aab8124a4395ee6e3f))
-
+- add mapErr method to Result ([69df83f](https://github.com/AhmedOsman101/lib-result/commit/69df83f7d7ca90581d8edcf5c4d52a493361d0ce))
+- **release:** add force option to gh release ([4943273](https://github.com/AhmedOsman101/lib-result/commit/4943273b4f0537d48df01aaef3500e880b54d7e0))
+- **types:** allow optional error in match errFn ([2fd204e](https://github.com/AhmedOsman101/lib-result/commit/2fd204e1ad78bb94e2c289aab8124a4395ee6e3f))
 
 ### Bug Fixes
 
-* **mixins:** improve match error handling ([a365f9b](https://github.com/AhmedOsman101/lib-result/commit/a365f9b81c104fbc6bd3a4b26a34ee5e75595aae))
-* propagate thrown errors instead of returning Err with fake type cast ([6b62ede](https://github.com/AhmedOsman101/lib-result/commit/6b62ede7531954c0d4161a29244588d01632ee35))
+- **mixins:** improve match error handling ([a365f9b](https://github.com/AhmedOsman101/lib-result/commit/a365f9b81c104fbc6bd3a4b26a34ee5e75595aae))
+- propagate thrown errors instead of returning Err with fake type cast ([6b62ede](https://github.com/AhmedOsman101/lib-result/commit/6b62ede7531954c0d4161a29244588d01632ee35))
 
 ## [3.2.2](https://github.com/AhmedOsman101/lib-result/compare/v3.2.1...v3.2.2) (2026-04-11)
 
-
 ### Bug Fixes
 
-* allow errFn in match to be called with no args ([ebd9dd4](https://github.com/AhmedOsman101/lib-result/commit/ebd9dd40efc5774a6d2a22acfa69007c14a50539))
+- allow errFn in match to be called with no args ([ebd9dd4](https://github.com/AhmedOsman101/lib-result/commit/ebd9dd40efc5774a6d2a22acfa69007c14a50539))
 
 ## [3.2.0](https://github.com/AhmedOsman101/lib-result/compare/v3.1.1...v3.2.0) (2025-06-28)
 
