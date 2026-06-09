@@ -71,7 +71,12 @@ function withExpectErr<T, E extends Error, R extends Result<T, E>>(base: R): R {
 function withInspect<T, E extends Error, R extends Result<T, E>>(base: R): R {
   return Object.assign(base, {
     inspect(this: R, fn: (value: T) => void): Result<T, E> {
-      if (this.isOk()) fn(this.ok as T);
+      try {
+        if (this.isOk()) fn(this.ok as T);
+      } catch (e) {
+        throw toError(e);
+      }
+
       return this;
     },
   });
@@ -82,7 +87,12 @@ function withInspectErr<T, E extends Error, R extends Result<T, E>>(
 ): R {
   return Object.assign(base, {
     inspectErr(this: R, fn: (error: E) => void): Result<T, E> {
-      if (this.isError()) fn(this.error as E);
+      try {
+        if (this.isError()) fn(this.error as E);
+      } catch (e) {
+        throw toError(e);
+      }
+
       return this;
     },
   });
@@ -168,12 +178,15 @@ function withMatch<T, E extends Error, R extends Result<T, E>>(base: R): R {
   return Object.assign(base, {
     match<U>(
       this: R,
-      matchers: { okFn: (value: T) => U; errFn: ((error: E) => U) | (() => U) }
+      matchers: { okFn: (value: T) => U; errFn: (() => U) | ((error: E) => U) }
     ): U {
       try {
-        return this.isError()
-          ? matchers.errFn(this.error as E)
-          : matchers.okFn(this.ok as T);
+        if (this.isOk()) return matchers.okFn(this.ok);
+        if (matchers.errFn.length === 0) {
+          return (matchers.errFn as () => U)();
+        }
+
+        return matchers.errFn(this.error as E);
       } catch (e) {
         throw toError(e);
       }
