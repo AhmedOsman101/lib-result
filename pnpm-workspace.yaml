@@ -1,3 +1,13 @@
+allowBuilds:
+  esbuild: true
+minimumReleaseAgeExclude:
+  - postcss@8.5.10
+  - axios@1.15.1 || 1.15.2 || 1.16.0
+  - vitest@3.2.6
+  - brace-expansion@5.0.6
+  - esbuild@0.28.1
+  - form-data@4.0.6
+  - vite@8.0.16
 onlyBuiltDependencies:
   - esbuild
 overrides:
