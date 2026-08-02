@@ -11,6 +11,7 @@
     "verbatimModuleSyntax": true,
     "outDir": "dist", // Output directory
     /* Strictness */
+    "ignoreDeprecations": "6.0", // tsup dts plugin injects baseUrl; TS 6 makes it a hard error
     "strict": true, // Enable all strict type checks
     "noImplicitAny": true, // Prevent implicit 'any' types
     "strictNullChecks": true, // Enable strict null checks
