@@ -212,12 +212,12 @@ describe("Result Type", () => {
       });
 
       test("wraps a throwing function in Err", () => {
-        const result = wrap(() => {
-          throw new Error("Failed");
+        const result = wrap<number, DivisionError>(() => {
+          throw new DivisionError("Failed");
         });
 
         expect(result.isError()).toBe(true);
-        expect(result.error).toBeInstanceOf(Error);
+        expect(result.error).toBeInstanceOf(DivisionError);
         expect(result.error?.message).toBe("Failed");
         expect(result.ok).toBeUndefined();
         expect(result.isOk()).toBe(false);

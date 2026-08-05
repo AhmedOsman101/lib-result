@@ -14,11 +14,13 @@ import type { Callback, CustomError, Result } from "./types.ts";
  * const result = wrap(() => divide(10, 2)); // { ok: 5, error: undefined }
  * const errorResult = wrap(() => divide(10, 0)); // { ok: undefined, error: Error("Division by zero") }
  */
-export function wrap<T>(callback: () => T): Result<T, CustomError> {
+export function wrap<T, E extends Error = CustomError>(
+  callback: () => T
+): Result<T, E> {
   try {
     return Ok(callback());
   } catch (error) {
-    return ErrFromUnknown(error);
+    return ErrFromUnknown(error) as Result<T, E>;
   }
 }
 
@@ -35,13 +37,13 @@ export function wrap<T>(callback: () => T): Result<T, CustomError> {
  * const result = await wrapAsync(async () => await divideAsync(10, 2)); // { ok: 5, error: undefined }
  * const errRes = await wrapAsync(async () => await divideAsync(10, 0)); // { ok: undefined, error: Error("Division by zero") }
  */
-export async function wrapAsync<T>(
+export async function wrapAsync<T, E extends Error = CustomError>(
   callback: () => Promise<T>
-): Promise<Result<T, CustomError>> {
+): Promise<Result<T, E>> {
   try {
     return Ok(await callback());
   } catch (error) {
-    return ErrFromUnknown(error);
+    return ErrFromUnknown(error) as Result<T, E>;
   }
 }
 
