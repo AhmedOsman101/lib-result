@@ -36,6 +36,7 @@
     "format:unsafe": "unset BIOME_CONFIG_PATH; biome check --fix --unsafe .",
     "build": "pnpm clean && pnpm typecheck",
     "typecheck": "tsc --noUnusedLocals false --noUnusedParameters false --noEmit && tsup && attw --pack .",
+    "typecheck:tests": "tsc -p tsconfig.tests.json --noEmit",
     "test": "pnpm build && vitest run",
     "test:coverage": "pnpm build && vitest run --coverage; rm -rf coverage",
     "prepublishOnly": "pnpm build && pnpm format",
