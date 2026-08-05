@@ -16,7 +16,8 @@
       "!**/.git",
       "!**/*.vue",
       "!**/*.svelte",
-      "!**/drafts"
+      "!**/drafts",
+      "!package.json"
     ]
   },
   "assist": {
