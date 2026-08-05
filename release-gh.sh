@@ -19,9 +19,12 @@ while (($#)); do
   esac
 done
 
+remote="$(git remote get-url origin)"
+repoUrl="${remote/git@github.com:/https://github.com/}.git"
+
 if [[ "${choice}" == "pr" ]]; then
   release-please release-pr \
-    --repo-url="https://github.com/AhmedOsman101/lib-result.git" \
+    --repo-url="${repoUrl}" \
     --token="${GITHUB_TOKEN}" \
     --config-file="release-please-config.json" \
     "$@"
@@ -52,7 +55,7 @@ elif [[ "${choice}" == "gh" ]]; then
     echo "Release created! Binaries will be built and uploaded automatically."
   else
     release-please github-release \
-      --repo-url="https://github.com/AhmedOsman101/lib-result.git" \
+      --repo-url="${repoUrl}" \
       --token="${GITHUB_TOKEN}" \
       --config-file="release-please-config.json" \
       "$@"
