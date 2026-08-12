@@ -282,8 +282,10 @@ Returns:
 Example:
 
 ```ts
-const label = Err<{ name: string }>(new Error("missing"))
-  .mapOrElse(error => `error:${error.message}`, user => user.name);
+const label = Err<{ name: string }>(new Error("missing")).mapOrElse(
+  error => `error:${error.message}`,
+  user => user.name
+);
 // "error:missing"
 ```
 
@@ -338,8 +340,9 @@ Returns:
 Example:
 
 ```ts
-const result = Err(new Error("network"))
-  .inspectErr(error => console.error("request failed", error.message));
+const result = Err(new Error("network")).inspectErr(error =>
+  console.error("request failed", error.message)
+);
 ```
 
 Explanation:
@@ -392,11 +395,7 @@ Returns:
 Example:
 
 ```ts
-const result = Result.any(
-  Err(new Error("a")),
-  Ok(2),
-  Err(new Error("c"))
-);
+const result = Result.any(Err(new Error("a")), Ok(2), Err(new Error("c")));
 // Ok(2)
 ```
 

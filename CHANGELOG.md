@@ -4,15 +4,13 @@ All notable changes to this project will be documented in this file. See [standa
 
 ## [5.1.0](https://github.com/AhmedOsman101/lib-result/compare/v5.0.0...v5.1.0) (2026-08-05)
 
-
 ### Features
 
-* **core:** allow custom error types in wrap functions ([a101d50](https://github.com/AhmedOsman101/lib-result/commit/a101d50484f46a8d5a23212e57d30aee0352d2b3))
-
+- **core:** allow custom error types in wrap functions ([a101d50](https://github.com/AhmedOsman101/lib-result/commit/a101d50484f46a8d5a23212e57d30aee0352d2b3))
 
 ### Bug Fixes
 
-* **result:** wrap inspect callbacks and improve match logic ([ac8135b](https://github.com/AhmedOsman101/lib-result/commit/ac8135bcd76bfbe0377bcc3ba3880865124763f7))
+- **result:** wrap inspect callbacks and improve match logic ([ac8135b](https://github.com/AhmedOsman101/lib-result/commit/ac8135bcd76bfbe0377bcc3ba3880865124763f7))
 
 ## [5.0.0](https://github.com/AhmedOsman101/lib-result/compare/v4.0.0...v5.0.0) (2026-04-17)
 

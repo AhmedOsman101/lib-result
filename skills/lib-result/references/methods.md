@@ -49,7 +49,7 @@ Returns the Ok value, or throws a `CustomError` with `message` and the original 
 
 ```ts
 riskyOp().expect("Failed to perform operation");
-// Err → throws CustomError("Failed to perform operation", { cause: originalError })
+// Err -> throws CustomError("Failed to perform operation", { cause: originalError })
 ```
 
 ### `unwrapErr(): E`
@@ -79,7 +79,7 @@ Ok(42).expectErr("Expected error"); // throws CustomError("Expected error")
 Returns the Ok value or the fallback (eager — `fallback` is always evaluated).
 
 ```ts
-Ok(42).unwrapOr(0);          // 42
+Ok(42).unwrapOr(0); // 42
 ErrFromText("fail").unwrapOr(0); // 0
 ```
 
@@ -88,7 +88,7 @@ ErrFromText("fail").unwrapOr(0); // 0
 Returns the Ok value or computes a fallback from the error (lazy).
 
 ```ts
-Ok(42).unwrapOrElse(e => e.message.length);        // 42
+Ok(42).unwrapOrElse(e => e.message.length); // 42
 ErrFromText("fail").unwrapOrElse(e => e.message.length); // 4
 ```
 
@@ -96,14 +96,16 @@ If `fn` throws, the error is re-thrown as an Error instance.
 
 ---
 
-## Transformation (Result → Result)
+## Transformation (Result -> Result)
 
 ### `map<U>(fn: (value: T) => U): Result<U, E>`
 
 Transforms the Ok value with a pure function. Preserves Err.
 
 ```ts
-Ok(5).map(x => x * 2).map(x => x.toString()); // Ok("10")
+Ok(5)
+  .map(x => x * 2)
+  .map(x => x.toString()); // Ok("10")
 Err<number>(new Error("fail")).map(x => x * 2); // Err(Error("fail"))
 ```
 
@@ -129,8 +131,8 @@ Chains a Result-returning function. Short-circuits on Err.
 
 ```ts
 divide(10, 2)
-  .andThen(x => divide(x, 2))   // Ok(2.5)
-  .andThen(x => divide(x, 0));  // Err — short-circuits
+  .andThen(x => divide(x, 2)) // Ok(2.5)
+  .andThen(x => divide(x, 0)); // Err — short-circuits
 ```
 
 If `fn` throws, the error propagates.
@@ -144,7 +146,7 @@ If `fn` throws, the error propagates.
 If Ok, returns the provided result (ignoring the Ok value). If Err, preserves the current error.
 
 ```ts
-Ok(42).and(Ok("done"));             // Ok("done") — ignores 42
+Ok(42).and(Ok("done")); // Ok("done") — ignores 42
 Err(new Error("fail")).and(Ok("done")); // Err(Error("fail"))
 ```
 
@@ -155,7 +157,7 @@ Use when the Ok value is irrelevant. Use `andThen` when you need the value.
 If Ok, returns current. If Err, returns the provided fallback Result (eager).
 
 ```ts
-Ok(42).or(Ok(0));                 // Ok(42)
+Ok(42).or(Ok(0)); // Ok(42)
 Err(new Error("fail")).or(Ok(0)); // Ok(0)
 ```
 
@@ -172,7 +174,7 @@ divide(1, 0).orElse(error => {
 
 ---
 
-## Collapse (Result → Plain Value)
+## Collapse (Result -> Plain Value)
 
 ### `match<U>(matchers: { okFn, errFn }): U`
 
@@ -199,7 +201,7 @@ result.match({
 Transforms Ok to U, or returns an **eager** default. The default is always evaluated.
 
 ```ts
-Ok(5).mapOr(0, x => x * 2);            // 10
+Ok(5).mapOr(0, x => x * 2); // 10
 Err<number>(new Error("fail")).mapOr(0, x => x * 2); // 0
 ```
 
@@ -212,7 +214,7 @@ Transforms both branches into a plain value (lazy).
 ```ts
 result.mapOrElse(
   error => `Error: ${error.message}`,
-  value => `Success: ${value}`,
+  value => `Success: ${value}`
 );
 ```
 
