@@ -1,11 +1,5 @@
 import { createResultMethods } from "./result-methods.ts";
-import type {
-  CustomError,
-  CustomErrorProps,
-  ErrorState,
-  KeyValue,
-  OkState,
-} from "./types.ts";
+import type { CustomError, ErrorState, KeyValue, OkState } from "./types.ts";
 import { createCustomError, toError } from "./utils.ts";
 
 function compose<T>(base: T, ...fns: ((obj: T) => T)[]) {
@@ -96,21 +90,19 @@ function ErrFromText<T = undefined>(message: string): ErrorState<Error, T> {
  * Creates a failure `Result` in the `Error` state from custom error properties.
  * This is particularly useful for creating type-safe error objects with additional metadata.
  *
- * @template T - The success type parameter (unused in the error case but maintains Result type compatibility)
  * @template P - The type of additional properties for the custom error
- * @param {CustomErrorProps<P>} props - An object containing error properties including an optional message and cause
+ * @param {P} props - An object containing error properties. A `message` property is used as the Error message.
  * @returns {ErrorState<CustomError<P>, T>} A `Result` in the `Error` state with the provided error properties
  *
  * @example
  * // Basic usage with custom properties
- * const result = ErrFromObject<number, { code: number; status: string }>({
+ * const result = ErrFromObject<{ code: number; status: string }>({
  *   message: 'Resource not found',
  *   code: 404,
  *   status: 'Not Found'
  * });
  *
  * if (result.isError()) {
- *   console.log(result.error.message); // 'Resource not found'
  *   console.log(result.error.code);    // 404
  *   console.log(result.error.status);   // 'Not Found'
  * }
@@ -127,7 +119,7 @@ function ErrFromText<T = undefined>(message: string): ErrorState<Error, T> {
  * }
  */
 function ErrFromObject<P extends KeyValue = KeyValue, T = undefined>(
-  props: CustomErrorProps<P>
+  props: P
 ): ErrorState<CustomError<P>, T> {
   return compose(
     {

@@ -1,4 +1,4 @@
-import type { CustomError, CustomErrorProps, KeyValue } from "./types.ts";
+import type { CustomError, KeyValue } from "./types.ts";
 
 /**
  * Converts an unknown value to an `Error` instance or a compatible custom error.
@@ -57,7 +57,7 @@ export function isKeyValue(value: unknown): value is KeyValue {
 /**
  * Creates a custom error object that extends the built-in Error with additional properties.
  * @template T - The type of additional properties to add to the error.
- * @param {CustomErrorProps<T>} [props] - An object containing error properties including an optional message and cause.
+ * @param {T} [props] - An object containing error properties. A `message` property is used as the Error message.
  * @returns {CustomError<T>} A new Error instance extended with the provided properties.
  * @example
  * // Basic usage
@@ -80,9 +80,13 @@ export function isKeyValue(value: unknown): value is KeyValue {
  * console.log(errWithCause.cause === cause); // true
  */
 export function createCustomError<T extends KeyValue>(
-  props?: CustomErrorProps<T>
+  props?: T
 ): CustomError<T> {
-  const error = new Error(props?.message || "Unknown Error");
+  const message =
+    isKeyValue(props) && typeof props.message === "string"
+      ? props.message
+      : "Unknown Error";
+  const error = new Error(message);
 
   if (isKeyValue(props)) {
     return Object.assign(error, props) as CustomError<T>;

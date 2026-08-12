@@ -281,7 +281,7 @@ export type Result<T, E extends Error = Error> =
 
 /**
  * Represents a custom error type that extends the built-in `Error` object
- * with additional properties defined in `CustomErrorProps`.
+ * with additional properties.
  *
  * @example
  * const err: CustomError<{ code: number; info: string }> =
@@ -289,25 +289,11 @@ export type Result<T, E extends Error = Error> =
  * console.log(err.info); // "Not Found"
  * console.log(err.code); // 404
  */
-export type CustomError<T extends OptionalKeyValue = undefined> =
-  T extends undefined ? Error : Error & CustomErrorProps<T>;
+export type CustomError<P extends KeyValue | undefined = undefined> =
+  P extends undefined ? Error : Error & P;
 
-/**
- * Defines the shape of properties that can be added to a custom error.
- * When `T` is `undefined`, resolves to `never`. Otherwise, it combines `T` with optional
- * standard error properties.
- * @template T - The type of additional properties to include in the error.
- * @example
- * type ApiErrorProps = CustomErrorProps<{ code: number; status: string }>;
- * // Equivalent to: { code: number; status: string; message?: string; cause?: unknown }
- */
-export type CustomErrorProps<T extends OptionalKeyValue> = T extends undefined
-  ? never
-  : T &
-      // if T already has a `message` key, add nothing; otherwise add an optional message
-      (T extends { message: string } ? {} : { message?: string }) &
-      // biome-ignore lint/suspicious/noExplicitAny: cause can accept any value
-      (T extends { cause: any } ? {} : { cause?: unknown });
+// CustomErrorProps is intentionally removed. Use a custom Error subclass
+// for typed metadata, or rely on Error's built-in `message` and `cause` properties.
 
 // --- Helper Types --- //
 
@@ -335,14 +321,3 @@ export type Callback<Args extends unknown[], T> = (...args: Args) => T;
  * };
  */
 export type KeyValue = Record<string | symbol, unknown>;
-
-/**
- * A variant of KeyValue that can also be undefined.
- * Useful for optional configuration objects or function parameters.
- * @example
- * function configure(options?: OptionalKeyValue) {
- *   // options might be undefined
- *   const timeout = options?.timeout; // unknown
- * }
- */
-export type OptionalKeyValue = KeyValue | undefined;

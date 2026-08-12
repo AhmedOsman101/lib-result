@@ -160,11 +160,12 @@ describe("Result Type", () => {
       const result = ErrFromObject({
         message: "Not found",
         code: 404,
+        cause: new Error("Boom!"),
       });
-
       expect(result.error).toBeInstanceOf(Error);
       expect(result.error.message).toBe("Not found");
       expect(result.error.code).toBe(404);
+      expect(result.error.cause).toBeInstanceOf(Error);
       expect(result.ok).toBeUndefined();
       expect(result.isOk()).toBe(false);
       expect(result.isError()).toBe(true);
