@@ -14,11 +14,6 @@ export function divide(a: number, b: number): Result<number, DivisionError> {
   return Ok(a / b);
 }
 
-export function mayDivide(a: number, b: number): number {
-  if (b === 0) throw new Error("Division by zero");
-  return a / b;
-}
-
 export function toPromise<T>(fn: () => T | Promise<T>): Promise<T> {
   try {
     return Promise.resolve(fn());
