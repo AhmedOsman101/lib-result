@@ -45,10 +45,10 @@
   "devDependencies": {
     "@arethetypeswrong/cli": "^0.18.5",
     "@biomejs/biome": "2.5.6",
-    "@types/node": "^26.1.2",
+    "@types/node": "^26.2.0",
     "@vitest/coverage-v8": "4.1.10",
     "axios": "^1.19.0",
-    "esbuild": "^0.28.1",
+    "esbuild": "^0.28.2",
     "husky": "^9.1.7",
     "tsup": "^8.5.1",
     "typescript": "^6.0.3",
