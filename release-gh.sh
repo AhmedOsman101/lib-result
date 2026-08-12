@@ -20,7 +20,7 @@ while (($#)); do
 done
 
 remote="$(git remote get-url origin)"
-repoUrl="${remote/git@github.com:/https://github.com/}.git"
+repoUrl="${remote/git@github.com:/https://github.com/}"
 
 if [[ "${choice}" == "pr" ]]; then
   release-please release-pr \
