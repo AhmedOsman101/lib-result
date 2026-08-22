@@ -108,3 +108,17 @@ Always run `pnpm build` and `pnpm format` before committing changes.
 - Keep functions small and focused
 - Type all function parameters and return types
 - Use `extends Error` for custom error types
+
+## Agent skills
+
+### Issue tracker
+
+Issues live on GitHub (`gh` CLI), drafted first as local markdown under `.scratch/<feature-slug>/` for human review, then published via `--body-file`. See `docs/agents/issue-tracker.md`.
+
+### Triage labels
+
+Default vocabulary: label strings equal to the five canonical roles (`needs-triage`, `needs-info`, `ready-for-agent`, `ready-for-human`, `wontfix`). See `docs/agents/triage-labels.md`.
+
+### Domain docs
+
+Single-context layout: `CONTEXT.md` + `docs/adr/` at the repo root (created lazily). See `docs/agents/domain.md`.
