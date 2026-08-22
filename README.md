@@ -5,7 +5,12 @@ A Rust-inspired `Result` type for type-safe error handling in TypeScript and Jav
 ## Installation
 
 ```bash
-npm install lib-result
+pnpm add lib-result
+
+# Or:
+# bun add lib-result
+# deno add lib-result
+# npm install lib-result
 ```
 
 ## Usage
