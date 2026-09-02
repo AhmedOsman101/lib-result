@@ -7,10 +7,17 @@ jobs:
       TERM: xterm-256color # Set TERM for CI
     steps:
       - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: '22'
-      - run: npm install -g pnpm
-      - run: pnpm install
-      - run: pnpm test
-      - run: pnpm test:coverage
+          node-version: "24"
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run tests
+        run: pnpm test
+
+      - name: Run coverage tests
+        run: pnpm test:coverage
