@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [6.1.0](https://github.com/AhmedOsman101/lib-result/compare/v6.0.0...v6.1.0) (2026-10-26)
+
+
+### Features
+
+* **types:** export state, method, and callback types ([e5870a2](https://github.com/AhmedOsman101/lib-result/commit/e5870a29df381a124344b208f80e6c7598bb4d3f))
+
+
+### Bug Fixes
+
+* **methods:** stop losing errors in match and unwrap diagnostics ([e385af3](https://github.com/AhmedOsman101/lib-result/commit/e385af3aa03df8d60fb570f24cb1f52c1ee91259))
+* **utils:** keep fallback messages and preserve original thrown values ([5d64fec](https://github.com/AhmedOsman101/lib-result/commit/5d64fecd16590642b0ee41b13af3295d80fe169d))
+
 ## [6.0.0](https://github.com/AhmedOsman101/lib-result/compare/v5.1.0...v6.0.0) (2026-08-12)
 
 ### ⚠ BREAKING CHANGES
