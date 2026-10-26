@@ -153,6 +153,23 @@ describe("Result API", () => {
         "Expected error"
       );
     });
+
+    test("includes the Ok value in the thrown error message", () => {
+      expect(() => Ok(42).expectErr("Expected error")).toThrow(
+        "Ok(42): Expected error"
+      );
+    });
+
+    test("does not attach a cause when called on Ok results", () => {
+      let thrown: unknown;
+      try {
+        Ok(42).expectErr("Expected error");
+      } catch (error) {
+        thrown = error;
+      }
+      expect(thrown).toBeInstanceOf(Error);
+      expect(Object.hasOwn(thrown as Error, "cause")).toBe(false);
+    });
   });
 
   describe("inspect()", () => {
@@ -215,6 +232,24 @@ describe("Result API", () => {
         errFn: () => "Error: Unknown Error",
       });
       expect(message).toBe("Error: Unknown Error");
+    });
+
+    test("passes the error to a default-parameter errFn", () => {
+      const errorResult = Err(new Error("Real Error"));
+      const message = errorResult.match({
+        okFn: () => "Success",
+        errFn: (error = new Error("Default")) => `Error: ${error.message}`,
+      });
+      expect(message).toBe("Error: Real Error");
+    });
+
+    test("passes the error to a rest-parameter errFn", () => {
+      const errorResult = Err(new Error("Real Error"));
+      const message = errorResult.match({
+        okFn: () => "Success",
+        errFn: (...args: Error[]) => `Args: ${args.length}`,
+      });
+      expect(message).toBe("Args: 1");
     });
 
     test("ensures okFn is not called for Err state", () => {
@@ -330,6 +365,12 @@ describe("Result API", () => {
     test("throws when called on Ok results", () => {
       expect(() => Ok(42).unwrapErr()).toThrow(
         "Received an Ok value '42' instead of an Error"
+      );
+    });
+
+    test("stringifies symbol Ok values in the error message", () => {
+      expect(() => Ok(Symbol("sym")).unwrapErr()).toThrow(
+        "Received an Ok value 'Symbol(sym)' instead of an Error"
       );
     });
   });

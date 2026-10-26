@@ -61,8 +61,7 @@ function withExpectErr<T, E extends Error, R extends Result<T, E>>(base: R): R {
     expectErr(this: R, message: string): E {
       if (this.isError()) return this.error as E;
       throw createCustomError({
-        message,
-        cause: this.error as E,
+        message: `Ok(${String(this.ok)}): ${message}`,
       });
     },
   });
@@ -182,11 +181,10 @@ function withMatch<T, E extends Error, R extends Result<T, E>>(base: R): R {
     ): U {
       try {
         if (this.isOk()) return matchers.okFn(this.ok);
-        if (matchers.errFn.length === 0) {
-          return (matchers.errFn as () => U)();
-        }
-
-        return matchers.errFn(this.error as E);
+        // Extra arguments are ignored by zero-param handlers, and choosing
+        // based on `errFn.length` would silently drop the error for handlers
+        // with default or rest parameters (length counts neither).
+        return (matchers.errFn as (error: E) => U)(this.error as E);
       } catch (e) {
         throw toError(e);
       }
@@ -240,7 +238,9 @@ function withUnwrapErr<T, E extends Error, R extends Result<T, E>>(base: R): R {
   return Object.assign(base, {
     unwrapErr(this: R): E {
       if (this.isError()) return this.error as E;
-      throw new Error(`Received an Ok value '${this.ok}' instead of an Error`);
+      throw new Error(
+        `Received an Ok value '${String(this.ok)}' instead of an Error`
+      );
     },
   });
 }
