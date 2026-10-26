@@ -1,11 +1,5 @@
 #!/usr/bin/env bash
 
-{
-  pnpm audit --fix &
-  pnpm install &
-  git add pnpm-{workspace,lock}.yaml &
-} &>/dev/null
-
 yesNo() {
   local answer prompt="$1"
   printf '%b' "${prompt} [Y/n] "
@@ -68,6 +62,6 @@ fi
 
 # --- Do type checking before any commit --- #
 printf "\e[34mDoing type checks...\e[0m\n"
-if ! pnpm --filter=client typecheck; then
+if ! pnpm typecheck; then
   yesNo "Typechecking failed.\nDo you want to proceed with the commit?" || abort
 fi
