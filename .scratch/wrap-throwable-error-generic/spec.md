@@ -42,10 +42,10 @@ rationale are recorded in ADR 0001.
    to compile exactly as it does today, so that upgrading is a no-op for
    existing call sites.
 6. As a TypeScript consumer with a zero-argument callback, I want a pinned
-   error type to bind as the *error* type — never silently as the success
+   error type to bind as the _error_ type — never silently as the success
    type — so that the nullary edge case cannot mislead me.
 7. As a TypeScript consumer, I want the success-type override pattern on the
-   *returned* wrapper (overriding at the call site of the wrapped result) to
+   _returned_ wrapper (overriding at the call site of the wrapped result) to
    keep working unchanged, so that existing axios-style wrappers survive.
 8. As a TypeScript consumer, I want runtime behavior unchanged — thrown values
    still funneled through the existing unknown-error constructor — so that

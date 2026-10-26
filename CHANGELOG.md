@@ -4,14 +4,13 @@ All notable changes to this project will be documented in this file. See [standa
 
 ## [6.0.0](https://github.com/AhmedOsman101/lib-result/compare/v5.1.0...v6.0.0) (2026-08-12)
 
-
 ### ⚠ BREAKING CHANGES
 
-* **core:** CustomError<T> no longer injects synthetic message? or cause?: unknown fields. The hover in editors is now 'Error & { ... }' with only the props the caller actually passed. External code that typed values as CustomError<{ ... }> will see a narrower type; add message/cause explicitly to your props type if needed.
+- **core:** CustomError<T> no longer injects synthetic message? or cause?: unknown fields. The hover in editors is now 'Error & { ... }' with only the props the caller actually passed. External code that typed values as CustomError<{ ... }> will see a narrower type; add message/cause explicitly to your props type if needed.
 
 ### Code Refactoring
 
-* **core:** simplify CustomError and ErrFromObject types ([9caf3a4](https://github.com/AhmedOsman101/lib-result/commit/9caf3a431bf87689809ef4a7cb20b5e3b4081fa8))
+- **core:** simplify CustomError and ErrFromObject types ([9caf3a4](https://github.com/AhmedOsman101/lib-result/commit/9caf3a431bf87689809ef4a7cb20b5e3b4081fa8))
 
 ## [5.1.0](https://github.com/AhmedOsman101/lib-result/compare/v5.0.0...v5.1.0) (2026-08-05)
 

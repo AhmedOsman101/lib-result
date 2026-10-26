@@ -11,6 +11,7 @@ Issues and specs for this repo live primarily as **GitHub issues** (using the `g
 ## Conventions
 
 ### GitHub (Primary)
+
 - **Create an issue**: `gh issue create --title "..." --body-file .scratch/<feature>/spec.md` or `gh issue create --title "..." --body "..."`
 - **Read an issue**: `gh issue view <number> --comments`
 - **List issues**: `gh issue list --state open --json number,title,body,labels,comments`
@@ -19,6 +20,7 @@ Issues and specs for this repo live primarily as **GitHub issues** (using the `g
 - **Close**: `gh issue close <number> --comment "..."`
 
 ### Local Markdown (Staging)
+
 - One feature per directory: `.scratch/<feature-slug>/`
 - Spec: `.scratch/<feature-slug>/spec.md`
 - Tickets: `.scratch/<feature-slug>/issues/<NN>-<slug>.md` (numbered from `01`)

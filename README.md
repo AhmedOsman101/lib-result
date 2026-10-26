@@ -119,7 +119,11 @@ function parseJson(json: string) {
 }
 
 // Using ErrFromObject to create an error with custom properties
-const customErr = ErrFromObject<number, { code: number; info: string }>({
+const customErr = ErrFromObject<{
+  message: string;
+  code: number;
+  info: string;
+}>({
   message: "Something went wrong",
   code: 123,
   info: "Custom",
