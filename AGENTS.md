@@ -6,7 +6,7 @@ This file contains guidelines for agentic coding agents working on this reposito
 
 ### Building and Testing
 
-- `pnpm build` - Clean and build the project (cleans dist, runs tsup, attw)
+- `pnpm build` - Clean and build the project (cleans dist, runs tsdown, attw, publint)
 - `pnpm format` - Format code with Biome
 - `pnpm format:unsafe` - Format with unsafe Biome fixes
 - `pnpm test` - Build and run all tests
@@ -79,7 +79,7 @@ Always run `pnpm build` and `pnpm format` before committing changes.
 - Use descriptive test names
 - Test edge cases and error conditions
 - Use `vitest` for testing
-- Import from `../dist/index.js` in test files (not from source)
+- Import from `../dist/index.mjs` in test files (not from source)
 - Use `describe`, `test`, `expect` from `vitest`
 - Use `vi.fn()` for mocking
 - Use `@ts-expect-error` comments when intentionally testing invalid inputs

@@ -28,7 +28,13 @@ ErrorState:{ ok: undefined,  error: E          }
 ### Imports
 
 ```ts
-import { Ok, Err, ErrFromText, ErrFromUnknown, ErrFromObject } from "lib-result";
+import {
+  Ok,
+  Err,
+  ErrFromText,
+  ErrFromUnknown,
+  ErrFromObject,
+} from "lib-result";
 import { wrap, wrapAsync, wrapThrowable, wrapAsyncThrowable } from "lib-result";
 import type { Result, CustomError } from "lib-result";
 ```
@@ -72,7 +78,7 @@ Use `import type` for types.
 class ValidationError extends Error {
   constructor(
     message: string,
-    public readonly field: string,
+    public readonly field: string
   ) {
     super(message);
     this.name = "ValidationError";
@@ -118,8 +124,8 @@ function readConfig(path: string): Result<Config, CustomError> {
 class NetworkError extends Error {}
 class CacheError extends Error {}
 
-fetchData(url)                          // Result<Data, NetworkError>
-  .orElse(() => readCache(key));        // Result<Data, NetworkError | CacheError>
+fetchData(url) // Result<Data, NetworkError>
+  .orElse(() => readCache(key)); // Result<Data, NetworkError | CacheError>
 ```
 
 ### Pattern 5: Exhaustive handling with `match`
@@ -137,7 +143,7 @@ const content = readFile("/path").match({
 class ApiError extends Error {
   constructor(
     message: string,
-    public readonly statusCode: number,
+    public readonly statusCode: number
   ) {
     super(message);
   }
@@ -155,11 +161,13 @@ const safeGet = wrapAsyncThrowable(async (url: string) => {
 ```ts
 parseJson(raw)
   .andThen(data => validateData(data))
-  .mapErr(e => ErrFromObject({
-    message: "Validation failed",
-    cause: e,
-    inputType: "json",
-  }));
+  .mapErr(e =>
+    ErrFromObject({
+      message: "Validation failed",
+      cause: e,
+      inputType: "json",
+    })
+  );
 ```
 
 ---
@@ -176,8 +184,8 @@ const result = ErrFromObject<{ field: string; code: number }>({
 });
 
 if (result.isError()) {
-  console.log(result.error.field);  // "email"
-  console.log(result.error.code);   // 400
+  console.log(result.error.field); // "email"
+  console.log(result.error.code); // 400
 }
 ```
 
@@ -190,9 +198,9 @@ The error is still an `Error` instance — properties are merged via `Object.ass
 ### GOTCHA 1: `Err()` requires an Error instance
 
 ```ts
-Err("string");          // TypeError — USE THIS INSTEAD:
-ErrFromText("string");  // ✓
-ErrFromUnknown(e);      // ✓ (catch blocks)
+Err("string"); // TypeError — USE THIS INSTEAD:
+ErrFromText("string"); // ✓
+ErrFromUnknown(e); // ✓ (catch blocks)
 ```
 
 ### GOTCHA 2: Always use `ErrFromUnknown` in catch blocks
@@ -207,7 +215,9 @@ catch (e) {
 ### GOTCHA 3: Callback throws propagate — not caught as Err
 
 ```ts
-Ok(5).map(() => { throw new Error("boom"); }); // throws, does NOT return Err
+Ok(5).map(() => {
+  throw new Error("boom");
+}); // throws, does NOT return Err
 // To handle, wrap in Result:
 Ok(5).andThen(() => ErrFromText("boom"));
 ```
@@ -225,21 +235,21 @@ mapOrElse(() => computeExpensiveDefault(), ...)
 ### GOTCHA 5: `and()` ignores the value vs `andThen()` uses it
 
 ```ts
-Ok(42).and(Ok("done"));            // Ok("done") — ignores 42
-Ok(42).andThen(x => Ok(x * 2));    // Ok(84) — uses 42
+Ok(42).and(Ok("done")); // Ok("done") — ignores 42
+Ok(42).andThen(x => Ok(x * 2)); // Ok(84) — uses 42
 ```
 
 ### GOTCHA 6: `or()` is eager, `orElse()` is lazy
 
 ```ts
-Err("fail").or(Ok(42));               // Ok(42) — result already created
-Err("fail").orElse(e => Ok(42));      // Ok(42) — fn called only if Err
+Err("fail").or(Ok(42)); // Ok(42) — result already created
+Err("fail").orElse(e => Ok(42)); // Ok(42) — fn called only if Err
 ```
 
 ### GOTCHA 7: `orElse()` stays in Result, `unwrapOrElse()` collapses to value
 
 ```ts
-result.orElse(e => Ok(0));           // Result<number, Error> ← still a Result
+result.orElse(e => Ok(0)); // Result<number, Error> ← still a Result
 result.unwrapOrElse(e => e.message.length); // number ← plain value
 ```
 
@@ -252,27 +262,27 @@ result.unwrapOrElse(e => e.message.length); // number ← plain value
 | Chain | `and_then()` | `andThen()` |
 | Recover | `or_else()` | `orElse()` |
 
-### GOTCHA 9: `match()` errFn accepts 0 or 1 args
+### GOTCHA 9: `match()` errFn always receives the error
 
 ```ts
-result.match({ okFn: v => v, errFn: e => `Error: ${e.message}` });  // with error
-result.match({ okFn: v => v, errFn: () => "default" });             // ignore error
+result.match({ okFn: v => v, errFn: e => `Error: ${e.message}` }); // with error
+result.match({ okFn: v => v, errFn: () => "default" }); // error is passed; the callback ignores it
 ```
 
-Implementation uses `fn.length` at runtime.
+The error is always passed to `errFn` — zero-argument callbacks simply ignore it.
 
 ### GOTCHA 10: `unwrap()` throws the original error, `expect()` wraps it
 
 ```ts
-result.unwrap();           // throws E directly
-result.expect("context");  // throws CustomError with msg + { cause: E }
+result.unwrap(); // throws E directly
+result.expect("context"); // throws CustomError with msg + { cause: E }
 ```
 
 ### GOTCHA 11: Results are frozen (shallow)
 
 ```ts
 const r = Ok(42);
-r.ok = 43; // fails silently in strict mode
+r.ok = 43; // throws TypeError: Cannot assign to read only property 'ok'
 ```
 
 ---
