@@ -2,6 +2,9 @@
   "name": "lib-result",
   "author": "Ahmad Othman",
   "license": "MIT",
+  "engines": {
+    "node": ">=16.9.0"
+  },
   "version": "6.0.0",
   "description": "A Rust-inspired `Result` type for type-safe error handling in TypeScript and JavaScript",
   "repository": {
