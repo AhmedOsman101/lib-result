@@ -1,0 +1,59 @@
+# Runs when a GitHub release is published (see release-gh.sh, or a
+# release-please GitHub release), validating the tagged commit and publishing
+# the package to npm.
+#
+# Also runnable manually (workflow_dispatch) as a dry run: pick a branch or
+# tag in the Run workflow UI and it performs the full pipeline — lint, test,
+# pack — without publishing or touching the release.
+name: Release
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write # npm provenance
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    env:
+      TERM: xterm-256color # Set TERM for CI
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: "pnpm"
+          registry-url: "https://registry.npmjs.org"
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Verify version matches the release tag
+        if: github.event_name == 'release'
+        run: test "v$(node -p "require('./package.json').version")" = "$GITHUB_REF_NAME"
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Test
+        run: pnpm test
+
+      - name: Publish to npm
+        if: github.event_name == 'release'
+        run: pnpm publish --provenance --no-git-checks
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Pack tarball
+        run: pnpm pack --pack-destination .
+
+      - name: Upload tarball to the release
+        if: github.event_name == 'release'
+        run: gh release upload "$GITHUB_REF_NAME" --clobber lib-result-*.tgz
+        env:
+          GH_TOKEN: ${{ github.token }}
