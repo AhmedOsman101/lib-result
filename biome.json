@@ -15,6 +15,9 @@
       "!**/dist",
       "!**/.git",
       "!**/*.vue",
+      "!**/*.md",
+      "!**/*.yml",
+      "!**/*.yaml",
       "!**/*.svelte",
       "!**/drafts",
       "!package.json"
@@ -220,15 +223,12 @@
         "noShadow": "on"
       },
       "nursery": {
-        "useSortedClasses": {
-          "fix": "safe",
-          "level": "warn",
-          "options": {
-            "attributes": ["classList", "class", "className"]
-          }
-        },
         "noFloatingPromises": "warn",
-        "useExhaustiveSwitchCases": "on"
+        "useExhaustiveSwitchCases": "on",
+        "useTailwindSortedClasses": {
+          "fix": "safe",
+          "level": "warn"
+        }
       }
     }
   },
@@ -312,5 +312,6 @@
     "linter": {
       "enabled": true
     }
-  }
+  },
+  "tailwind": { "attributes": ["class", "className", "classList"] }
 }
