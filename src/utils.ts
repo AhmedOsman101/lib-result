@@ -31,27 +31,43 @@ export function toError(e: unknown): CustomError {
 
   if (isKeyValue(e)) return createCustomError<typeof e>(e);
 
-  return new Error("Unknown error");
+  if (e === undefined) return new Error("Unknown error");
+
+  return new Error("Unknown error", { cause: e });
 }
 
 /**
- * Type guard to check if a value is a non-null object that can be used as a key-value store.
+ * Type guard to check if a value can be used as a key-value store.
+ * Accepts plain objects (including `Object.create(null)`), `Map` instances,
+ * and objects carrying own enumerable fields (e.g. class instances). Values
+ * without representable key-value content — `Date`, `Set`, arrays,
+ * primitives — are rejected.
  * @param {unknown} value - The value to check.
- * @returns {boolean} `true` if the value is a non-null, non-array object; `false` otherwise.
+ * @returns {boolean} `true` if the value is a key-value store; `false` otherwise.
  * @example
  * // Returns true
  * isKeyValue({ key: 'value' });
  * isKeyValue(Object.create(null));
+ * isKeyValue(new Map([['key', 'value']]));
  *
  * // Returns false
  * isKeyValue(null);
  * isKeyValue(undefined);
  * isKeyValue([]);
+ * isKeyValue(new Date());
  * isKeyValue('string');
  * isKeyValue(123);
  */
 export function isKeyValue(value: unknown): value is KeyValue {
-  return typeof value === "object" && value !== null && !Array.isArray(value);
+  if (typeof value !== "object" || value === null || Array.isArray(value)) {
+    return false;
+  }
+  if (value instanceof Map) return true;
+
+  const proto = Object.getPrototypeOf(value);
+  if (proto === Object.prototype || proto === null) return true;
+
+  return Object.keys(value).length > 0;
 }
 
 /**
@@ -82,14 +98,19 @@ export function isKeyValue(value: unknown): value is KeyValue {
 export function createCustomError<T extends KeyValue>(
   props?: T
 ): CustomError<T> {
+  const record: Record<PropertyKey, unknown> | undefined = props
+    ? props instanceof Map
+      ? Object.fromEntries(props)
+      : props
+    : undefined;
   const message =
-    isKeyValue(props) && typeof props.message === "string"
-      ? props.message
+    record && typeof record.message === "string"
+      ? record.message
       : "Unknown Error";
   const error = new Error(message);
 
-  if (isKeyValue(props)) {
-    return Object.assign(error, props) as CustomError<T>;
+  if (record) {
+    return Object.assign(error, { ...record, message }) as CustomError<T>;
   }
   return error as CustomError<T>;
 }

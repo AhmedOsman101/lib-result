@@ -125,6 +125,19 @@ describe("Result Type", () => {
       expect(result.isError()).toBe(true);
       expect(result.error?.message).toBe("Unknown error");
     });
+
+    test("normalizes a thrown Map into error fields", () => {
+      const result = ErrFromUnknown(
+        new Map<PropertyKey, unknown>([
+          ["message", "boom"],
+          ["code", 404],
+        ])
+      );
+
+      expect(result.isError()).toBe(true);
+      expect(result.error?.message).toBe("boom");
+      expect((result.error as { code?: number }).code).toBe(404);
+    });
   });
 
   describe("ErrFromText()", () => {
@@ -172,6 +185,19 @@ describe("Result Type", () => {
       expect(() => result.unwrap()).toThrow("Not found");
     });
 
+    test("accepts a Map of props", () => {
+      const result = ErrFromObject(
+        new Map<PropertyKey, unknown>([
+          ["message", "Operation failed"],
+          ["code", 500],
+        ])
+      );
+
+      expect(result.error).toBeInstanceOf(Error);
+      expect(result.error?.message).toBe("Operation failed");
+      expect((result.error as { code?: number }).code).toBe(500);
+    });
+
     test("creates a custom error with cause", () => {
       const cause = new Error("Original error");
       const result = ErrFromObject({ cause, message: "hi" });
@@ -186,6 +212,22 @@ describe("Result Type", () => {
 
       expect(result.isError()).toBe(true);
       expect(result.error.message).toBe("Unknown Error");
+    });
+
+    test("keeps fallback message when props.message is not a string", () => {
+      const numeric = ErrFromObject({ message: 404, code: 404 });
+      const nulled = ErrFromObject({ message: null, code: 500 });
+
+      // The computed fallback must win over any non-string message value,
+      // while the remaining props still land on the error.
+      expect(numeric.error).toMatchObject({
+        message: "Unknown Error",
+        code: 404,
+      });
+      expect(nulled.error).toMatchObject({
+        message: "Unknown Error",
+        code: 500,
+      });
     });
 
     test("does not map over an error result", () => {

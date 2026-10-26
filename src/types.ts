@@ -290,7 +290,11 @@ export type Result<T, E extends Error = Error> =
  * console.log(err.code); // 404
  */
 export type CustomError<P extends KeyValue | undefined = undefined> =
-  P extends undefined ? Error : Error & P;
+  P extends undefined
+    ? Error
+    : P extends ReadonlyMap<PropertyKey, infer V>
+      ? Error & Record<string, V>
+      : Error & P;
 
 // CustomErrorProps is intentionally removed. Use a custom Error subclass
 // for typed metadata, or rely on Error's built-in `message` and `cause` properties.
@@ -311,13 +315,18 @@ export type CustomError<P extends KeyValue | undefined = undefined> =
 export type Callback<Args extends unknown[], T> = (...args: Args) => T;
 
 /**
- * Represents an object that can have any string or symbol keys with unknown value types.
- * Useful for type-checking objects with dynamic property access.
+ * Anything that can be represented as a key-value structure: a record of
+ * string, number, or symbol keys with unknown values, or a `Map` holding
+ * the same. `Map` inputs are normalized to record props when errors are
+ * created.
  * @example
  * const config: KeyValue = {
  *   timeout: 1000,
  *   retry: true,
  *   onError: (err: Error) => {}
  * };
+ * const props: KeyValue = new Map([["code", 404]]);
  */
-export type KeyValue = Record<string | symbol, unknown>;
+export type KeyValue =
+  | Record<PropertyKey, unknown>
+  | ReadonlyMap<PropertyKey, unknown>;
