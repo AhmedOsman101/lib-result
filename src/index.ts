@@ -11,4 +11,11 @@ export {
   ErrFromUnknown,
   Ok,
 } from "./mixins.ts";
-export type { CustomError, Result } from "./types.ts";
+export type {
+  Callback,
+  CustomError,
+  ErrorState,
+  OkState,
+  Result,
+  ResultMethods,
+} from "./types.ts";

@@ -1,4 +1,5 @@
 import { describe, expect, test, vi } from "vitest";
+import type { ErrorState, OkState } from "../dist/index.mjs";
 import { Err, Ok } from "../dist/index.mjs";
 import { DivisionError, divide, double } from "./testing-utils.ts";
 
@@ -550,6 +551,18 @@ describe("Result API", () => {
         .mapErr(e => new Error(`level 3: ${e.message}`));
       expect(result.isError()).toBe(true);
       expect(result.error?.message).toBe("level 3: level 2: level 1");
+    });
+  });
+
+  describe("type exports", () => {
+    test("exposes OkState and ErrorState types to consumers", () => {
+      const okState = Ok(1) as OkState<number>;
+      expect(okState.isOk()).toBe(true);
+      expect(okState.ok).toBe(1);
+
+      const errorState = Err(new Error("boom")) as ErrorState<Error>;
+      expect(errorState.isError()).toBe(true);
+      expect(errorState.error.message).toBe("boom");
     });
   });
 });
