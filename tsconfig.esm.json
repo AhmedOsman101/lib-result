@@ -1,9 +1,0 @@
-{
-  "extends": "./tsconfig.json", // Inherit base config
-  "compilerOptions": {
-    /* Basic Settings */
-    "target": "ES2022", // Modern ECMAScript features
-    "module": "nodenext", // Output ES Modules
-    "moduleResolution": "nodenext" // Modern Node.js module resolution
-  }
-}

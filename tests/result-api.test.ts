@@ -1,5 +1,5 @@
 import { describe, expect, test, vi } from "vitest";
-import { Err, Ok } from "../dist/index.js";
+import { Err, Ok } from "../dist/index.mjs";
 import { DivisionError, divide, double } from "./testing-utils.ts";
 
 describe("Result API", () => {

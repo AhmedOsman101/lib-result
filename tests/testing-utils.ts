@@ -1,5 +1,5 @@
 import { createServer, type IncomingMessage, type Server } from "node:http";
-import { Err, Ok, type Result } from "../dist/index.js";
+import { Err, Ok, type Result } from "../dist/index.mjs";
 
 export class DivisionError extends Error {
   constructor(message = "Cannot Divide By Zero") {

@@ -10,7 +10,7 @@ import {
   wrapAsync,
   wrapAsyncThrowable,
   wrapThrowable,
-} from "../dist/index.js";
+} from "../dist/index.mjs";
 import { DivisionError, toPromise, withHttpServer } from "./testing-utils.ts";
 
 describe("Result Type", () => {
