@@ -376,8 +376,9 @@ describe("Result Type", () => {
         );
 
         expect(result.error).toBeDefined();
-        // @ts-expect-error temporary
-        expect(result.error?.code).toBe("ERR_BAD_REQUEST");
+        expect((result.error as { code?: string }).code).toBe(
+          "ERR_BAD_REQUEST"
+        );
       });
 
       test("catches promise rejections", async () => {
@@ -404,7 +405,7 @@ describe("Result Type", () => {
         expect(result.ok).toBe(42);
       });
 
-      test("catches promise rejections", async () => {
+      test("catches rejections raised inside the wrapped function", async () => {
         const asyncFn = async (num: number) => {
           if (num === 42) await Promise.reject(new Error("Async failed"));
         };
