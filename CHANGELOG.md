@@ -1,19 +1,62 @@
 # Changelog
 
-All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
-
 ## [6.1.0](https://github.com/AhmedOsman101/lib-result/compare/v6.0.0...v6.1.0) (2026-10-26)
-
 
 ### Features
 
-* **types:** export state, method, and callback types ([e5870a2](https://github.com/AhmedOsman101/lib-result/commit/e5870a29df381a124344b208f80e6c7598bb4d3f))
-
+* **types:** export `OkState`, `ErrorState`, `ResultMethods`, and `Callback` types for consumers who need to name state/method/callback shapes directly ([e5870a2](https://github.com/AhmedOsman101/lib-result/commit/e5870a2))
+* **utils:** accept `Map` and class instances with own enumerable fields as key-value props in `ErrFromObject`/`ErrFromUnknown`, normalizing `Map` via `Object.fromEntries` ([5d64fec](https://github.com/AhmedOsman101/lib-result/commit/5d64fec))
+* **tests:** add CommonJS smoke suite (`tests/cjs-smoke.test.ts`) and `pnpm test:cjs` script to verify `dist/index.cjs` behavior against the ESM build ([f0b4d38](https://github.com/AhmedOsman101/lib-result/commit/f0b4d38))
+* **tests:** measure source modules instead of the dist bundle via dedicated coverage config; retain reports on disk ([a5c4491](https://github.com/AhmedOsman101/lib-result/commit/a5c4491))
 
 ### Bug Fixes
 
-* **methods:** stop losing errors in match and unwrap diagnostics ([e385af3](https://github.com/AhmedOsman101/lib-result/commit/e385af3aa03df8d60fb570f24cb1f52c1ee91259))
-* **utils:** keep fallback messages and preserve original thrown values ([5d64fec](https://github.com/AhmedOsman101/lib-result/commit/5d64fecd16590642b0ee41b13af3295d80fe169d))
+* **utils:** keep fallback `"Unknown Error"` when `props.message` is not a string in `createCustomError` ([5d64fec](https://github.com/AhmedOsman101/lib-result/commit/5d64fec))
+* **utils:** preserve original thrown values via `Error` `cause` for non-Error/non-string/non-key-value inputs ([5d64fec](https://github.com/AhmedOsman101/lib-result/commit/5d64fec))
+* **methods:** always pass the error to `errFn` in `match` instead of dropping it for zero-argument callbacks ([e385af3](https://github.com/AhmedOsman101/lib-result/commit/e385af3))
+* **methods:** stringify `Symbol` `Ok` values correctly in `unwrapErr` error messages ([e385af3](https://github.com/AhmedOsman101/lib-result/commit/e385af3))
+* **methods:** include the `Ok` value in `expectErr` message and stop attaching a bogus `cause: undefined` key ([e385af3](https://github.com/AhmedOsman101/lib-result/commit/e385af3))
+* **tests:** rename duplicate test name "catches promise rejections" and replace a temporary `@ts-expect-error` with a typed cast ([afa75a2](https://github.com/AhmedOsman101/lib-result/commit/afa75a2))
+
+### Documentation
+
+* **readme:** correct the `ErrFromObject` generic example shape ([effc774](https://github.com/AhmedOsman101/lib-result/commit/effc774))
+* **docs:** update build command and import paths to reflect `tsdown` and `dist/index.mjs` ([86977b5](https://github.com/AhmedOsman101/lib-result/commit/86977b5))
+* **review:** add full codebase review report with post-review addendum documenting all findings and resolutions ([638c84f](https://github.com/AhmedOsman101/lib-result/commit/638c84f))
+
+### Build & Tooling
+
+* **build:** migrate from `tsup` to `tsdown` (Rolldown) with dual ESM/CJS outputs, declaration maps, shims, source maps, and `exports` generation ([fe32854](https://github.com/AhmedOsman101/lib-result/commit/fe32854))
+* **build:** declare `engines.node >= 16.9.0` to reflect the `Error` `cause` option floor ([9acdcd7](https://github.com/AhmedOsman101/lib-result/commit/9acdcd7))
+* **tsconfig:** drop `DOM` lib and stale `vitest/globals` types from test config ([51d62d0](https://github.com/AhmedOsman101/lib-result/commit/51d62d0))
+* **lint:** upgrade Biome to `2.6.3` and scope its formatting to exclude Markdown/YAML ([6e859c4](https://github.com/AhmedOsman101/lib-result/commit/6e859c4))
+* **license:** add MIT `LICENSE` file ([ff37d28](https://github.com/AhmedOsman101/lib-result/commit/ff37d28))
+
+### CI/CD
+
+* **ci:** enforce lint in the testing workflow ([a150876](https://github.com/AhmedOsman101/lib-result/commit/a150876))
+* **ci:** add `release.yml` workflow to publish to npm on release with provenance, version verification, lint/test gates, and tarball upload ([94820bd](https://github.com/AhmedOsman101/lib-result/commit/94820bd))
+* **ci:** add `dependabot.yml` for npm and GitHub Actions weekly updates; narrow auto-merge trigger to `pull_request` ([f723055](https://github.com/AhmedOsman101/lib-result/commit/f723055))
+* **ci:** simplify husky pre-commit hook ([c2a0228](https://github.com/AhmedOsman101/lib-result/commit/c2a0228))
+* **ci:** bump GitHub Actions versions in workflows ([73b8682](https://github.com/AhmedOsman101/lib-result/commit/73b8682))
+* **deps:** bump follow-redirects from 1.16.0 to 1.16.1 ([83ceff8](https://github.com/AhmedOsman101/lib-result/commit/83ceff8))
+
+### Dependencies
+
+* **deps:** bump dependencies for security reasons ([97e3ba2](https://github.com/AhmedOsman101/lib-result/commit/97e3ba2))
+* **deps:** update dependencies and add security overrides ([83e1e35](https://github.com/AhmedOsman101/lib-result/commit/83e1e35))
+* **deps:** specify package manager version ([1817c46](https://github.com/AhmedOsman101/lib-result/commit/1817c46))
+* **ci:** modify CI workflow to use pnpm and Node.js 24 ([b540318](https://github.com/AhmedOsman101/lib-result/commit/b540318))
+* **ci:** add Dependabot auto-merge workflow ([eb7b7e4](https://github.com/AhmedOsman101/lib-result/commit/eb7b7e4))
+
+### Documentation (pre-existing)
+
+* **docs:** add design documentation for pinned-error mode ([7104249](https://github.com/AhmedOsman101/lib-result/commit/7104249))
+* **docs:** add agent operational documentation ([665cc46](https://github.com/AhmedOsman101/lib-result/commit/665cc46))
+
+### Other
+
+* **chore:** rename `Readme.md` to `README.md` ([16ec51e](https://github.com/AhmedOsman101/lib-result/commit/16ec51e))
 
 ## [6.0.0](https://github.com/AhmedOsman101/lib-result/compare/v5.1.0...v6.0.0) (2026-08-12)
 
