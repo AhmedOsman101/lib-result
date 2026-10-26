@@ -30,7 +30,7 @@
     "typecheck:tests": "tsc -p tsconfig.tests.json --noEmit",
     "test": "pnpm build && vitest run",
     "test:cjs": "pnpm build && vitest run --config vitest.cjs.config.ts",
-    "test:coverage": "pnpm build && vitest run --coverage; rm -rf coverage",
+    "test:coverage": "pnpm build && vitest run --config vitest.coverage.config.ts --coverage",
     "prepublishOnly": "pnpm build && pnpm format",
     "prepare": "husky"
   },

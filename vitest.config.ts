@@ -12,20 +12,17 @@ export default defineConfig({
     },
     coverage: {
       provider: "v8",
+      // Reports are kept on disk (html/lcov) for CI artifact upload; the
+      // `text` reporter prints the per-file table.
       reporter: ["text", "html", "lcov"],
+      include: ["src/**/*.ts"],
       exclude: [
         "node_modules",
-        // "src",
         "tests",
-        "tsup.config.ts",
+        "tsdown.config.ts",
         "vitest.config.ts",
-        // "src/types.ts", // only contain types
-        // "src/index.ts", // only contain exports
-        // "src/mixins.ts", // tested with main.ts
-        // "src/**draft**", // drafts doesn't need to be tested
-        // "src/deprecated.ts",
+        "src/drafts/**",
       ],
-      include: ["dist/index.js", "src/utils.ts"],
       thresholds: {
         lines: 80,
         functions: 80,
