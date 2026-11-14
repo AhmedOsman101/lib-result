@@ -31,7 +31,7 @@ if [[ "${choice}" == "pr" ]]; then
 elif [[ "${choice}" == "gh" ]]; then
   if [[ "${FORCE}" == "true" ]]; then
     # Force release: create tag, then create release (triggers workflow)
-    VERSION="$(cat version.txt)"
+    VERSION="$(node -p "require('./package.json').version")"
     TAG_NAME="v${VERSION}"
 
     echo "Force releasing v${VERSION}..."
@@ -52,7 +52,7 @@ elif [[ "${choice}" == "gh" ]]; then
       --generate-notes \
       --target main
 
-    echo "Release created! Binaries will be built and uploaded automatically."
+    echo "Release created! npm publish will run automatically."
   else
     release-please github-release \
       --repo-url="${repoUrl}" \
