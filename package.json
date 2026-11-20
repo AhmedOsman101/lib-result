@@ -37,7 +37,7 @@
     "prepublishOnly": "pnpm build && pnpm format",
     "prepare": "husky"
   },
-  "packageManager": "pnpm@12.14.0",
+  "packageManager": "pnpm@12.21.0",
   "devDependencies": {
     "@arethetypeswrong/core": "^0.18.5",
     "@biomejs/biome": "2.6.7",
